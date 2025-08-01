@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库设置测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4caf50;
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        .info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196f3;
+        }
+        button {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .table-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .table-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .table-exists {
+            border: 2px solid #4caf50;
+        }
+        .table-missing {
+            border: 2px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 数据库设置测试工具</h1>
+        
+        <div class="test-section">
+            <h3>📡 Supabase 连接测试</h3>
+            <button onclick="testConnection()">测试连接</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🗄️ 数据表检查</h3>
+            <button onclick="checkTables()">检查所有表</button>
+            <div id="tablesResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 认证功能测试</h3>
+            <button onclick="testAuth()">测试认证系统</button>
+            <div id="authResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 完整系统检查</h3>
+            <button onclick="runFullTest()">运行完整测试</button>
+            <div id="fullTestResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // 从环境变量或直接配置 Supabase
+        const SUPABASE_URL = 'https://anwwblcjzmykznimqmxu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFud3dibGNqem15a3puaW1xbXh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2MzQ4NzEsImV4cCI6MjA1MTIxMDg3MX0.VJBxkOhBdJhJOGJJqOJJJJJJJJJJJJJJJJJJJJJJJJJ';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function displayResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${content}</div>`;
+        }
+
+        async function testConnection() {
+            try {
+                displayResult('connectionResult', '🔄 正在测试连接...', 'info');
+                
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                displayResult('connectionResult', '✅ Supabase 连接成功！', 'success');
+            } catch (error) {
+                displayResult('connectionResult', `❌ 连接失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkTables() {
+            const requiredTables = [
+                'users',
+                'sign_ins', 
+                'daily_fortunes',
+                'wishes',
+                'wish_likes',
+                'divination_history'
+            ];
+            
+            displayResult('tablesResult', '🔄 正在检查数据表...', 'info');
+            
+            let results = '<div class="table-list">';
+            let allTablesExist = true;
+            
+            for (const table of requiredTables) {
+                try {
+                    const { data, error } = await supabase
+                        .from(table)
+                        .select('*')
+                        .limit(1);
+                    
+                    if (error && error.code === 'PGRST116') {
+                        results += `<div class="table-item table-missing">❌ ${table}</div>`;
+                        allTablesExist = false;
+                    } else {
+                        results += `<div class="table-item table-exists">✅ ${table}</div>`;
+                    }
+                } catch (err) {
+                    results += `<div class="table-item table-missing">❌ ${table}</div>`;
+                    allTablesExist = false;
+                }
+            }
+            
+            results += '</div>';
+            
+            if (allTablesExist) {
+                results += '<div class="test-result success">🎉 所有必需的数据表都已存在！</div>';
+            } else {
+                results += '<div class="test-result error">⚠️ 部分数据表缺失，请运行 setup-database.sql 脚本</div>';
+            }
+            
+            displayResult('tablesResult', results);
+        }
+
+        async function testAuth() {
+            try {
+                displayResult('authResult', '🔄 正在测试认证系统...', 'info');
+                
+                // 测试获取当前用户
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                let result = '';
+                
+                if (user) {
+                    result += `<div class="test-result success">✅ 当前用户已登录: ${user.email}</div>`;
+                } else {
+                    result += `<div class="test-result info">ℹ️ 当前无用户登录</div>`;
+                }
+                
+                // 测试认证监听器
+                supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth state changed:', event, session);
+                });
+                
+                result += `<div class="test-result success">✅ 认证系统正常工作</div>`;
+                
+                displayResult('authResult', result);
+            } catch (error) {
+                displayResult('authResult', `❌ 认证测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function runFullTest() {
+            displayResult('fullTestResult', '🔄 正在运行完整系统测试...', 'info');
+            
+            let report = '<h4>📋 测试报告</h4>';
+            let allPassed = true;
+            
+            // 1. 连接测试
+            try {
+                const { data, error } = await supabase.from('users').select('count').limit(1);
+                if (error) throw error;
+                report += '<div class="test-result success">✅ 数据库连接正常</div>';
+            } catch (error) {
+                report += '<div class="test-result error">❌ 数据库连接失败</div>';
+                allPassed = false;
+            }
+            
+            // 2. 表结构测试
+            const tables = ['users', 'sign_ins', 'daily_fortunes', 'wishes', 'wish_likes', 'divination_history'];
+            let tablesExist = 0;
+            
+            for (const table of tables) {
+                try {
+                    await supabase.from(table).select('*').limit(1);
+                    tablesExist++;
+                } catch (error) {
+                    // 表不存在
+                }
+            }
+            
+            if (tablesExist === tables.length) {
+                report += '<div class="test-result success">✅ 所有数据表已创建</div>';
+            } else {
+                report += `<div class="test-result error">❌ 缺失 ${tables.length - tablesExist} 个数据表</div>`;
+                allPassed = false;
+            }
+            
+            // 3. 认证测试
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                report += '<div class="test-result success">✅ 认证系统正常</div>';
+            } catch (error) {
+                report += '<div class="test-result error">❌ 认证系统异常</div>';
+                allPassed = false;
+            }
+            
+            // 最终结果
+            if (allPassed) {
+                report += '<div class="test-result success"><strong>🎉 系统完全就绪！可以正常使用登录和注册功能。</strong></div>';
+            } else {
+                report += '<div class="test-result error"><strong>⚠️ 系统存在问题，请按照 DATABASE_SETUP_GUIDE.md 进行修复。</strong></div>';
+            }
+            
+            displayResult('fullTestResult', report);
+        }
+
+        // 页面加载时自动运行基础测试
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

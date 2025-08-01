@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>数据库连接测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>数据库连接测试</h1>
+    <div id="result"></div>
+    
+    <script>
+        const supabaseUrl = 'https://anwwblcjzmykznimqmxu.supabase.co/';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFud3dibGNqem15a3puaW1xbXh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MzUzNzYsImV4cCI6MjA2OTUxMTM3Nn0.Y9tK0G0H3WRdHUSRCv8FhmqwS5sJCJ6CKMUAUQ1vzk8';
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        async function testConnection() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '正在测试连接...';
+            
+            try {
+                // 测试基本连接
+                const { data: session } = await supabase.auth.getSession();
+                console.log('Session:', session);
+                
+                // 测试users表是否存在
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p style="color: red;">数据库错误: ${error.message}</p><pre>${JSON.stringify(error, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: green;">连接成功!</p><p>用户表数据: ${JSON.stringify(data, null, 2)}</p>`;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<p style="color: red;">连接失败: ${err.message}</p>`;
+            }
+        }
+        
+        testConnection();
+    </script>
+</body>
+</html>

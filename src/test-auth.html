@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Auth Test</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Authentication Test</h1>
+    <div id="status">Testing connection...</div>
+    <div id="results"></div>
+    
+    <div style="margin-top: 20px;">
+        <h3>Test Registration</h3>
+        <input type="email" id="testEmail" placeholder="test@example.com" value="test@example.com">
+        <input type="password" id="testPassword" placeholder="password" value="123456">
+        <input type="text" id="testUsername" placeholder="username" value="testuser">
+        <button onclick="testSignUp()">Test Sign Up</button>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <h3>Test Login</h3>
+        <input type="email" id="loginEmail" placeholder="test@example.com" value="test@example.com">
+        <input type="password" id="loginPassword" placeholder="password" value="123456">
+        <button onclick="testSignIn()">Test Sign In</button>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://anwwblcjzmykznimqmxu.supabase.co/';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFud3dibGNqem15a3puaW1xbXh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MzUzNzYsImV4cCI6MjA2OTUxMTM3Nn0.Y9tK0G0H3WRdHUSRCv8FhmqwS5sJCJ6CKMUAUQ1vzk8';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function testConnection() {
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                if (error) {
+                    document.getElementById('status').innerHTML = `<span style="color: red;">Connection Error: ${error.message}</span>`;
+                } else {
+                    document.getElementById('status').innerHTML = `<span style="color: green;">Connection Successful!</span>`;
+                }
+            } catch (err) {
+                document.getElementById('status').innerHTML = `<span style="color: red;">Connection Failed: ${err.message}</span>`;
+            }
+        }
+        
+        async function testSignUp() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const username = document.getElementById('testUsername').value;
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            username: username
+                        }
+                    }
+                });
+                
+                if (error) {
+                    document.getElementById('results').innerHTML += `<div style="color: red;">Sign Up Error: ${error.message}</div>`;
+                } else {
+                    document.getElementById('results').innerHTML += `<div style="color: green;">Sign Up Success: ${JSON.stringify(data)}</div>`;
+                }
+            } catch (err) {
+                document.getElementById('results').innerHTML += `<div style="color: red;">Sign Up Failed: ${err.message}</div>`;
+            }
+        }
+        
+        async function testSignIn() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    document.getElementById('results').innerHTML += `<div style="color: red;">Sign In Error: ${error.message}</div>`;
+                } else {
+                    document.getElementById('results').innerHTML += `<div style="color: green;">Sign In Success: ${JSON.stringify(data)}</div>`;
+                }
+            } catch (err) {
+                document.getElementById('results').innerHTML += `<div style="color: red;">Sign In Failed: ${err.message}</div>`;
+            }
+        }
+        
+        // Test connection on load
+        testConnection();
+    </script>
+</body>
+</html>
