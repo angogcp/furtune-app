@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { networkManager, NetworkState } from '../utils/networkManager'
+import { useState, useEffect } from 'react'
+import { networkManager, type NetworkState } from '../utils/networkManager'
 
 interface NetworkStatusProps {
   onNetworkChange?: (isConnected: boolean) => void

@@ -1,0 +1,377 @@
+[19:26:47.021] Running build in Washington, D.C., USA (East) – iad1
+[19:26:47.022] Build machine configuration: 2 cores, 8 GB
+[19:26:47.037] Cloning github.com/angogcp/furtune-app (Branch: main, Commit: 0f02a8f)
+[19:26:47.047] Skipping build cache, deployment was triggered without cache.
+[19:26:47.291] Cloning completed: 253.000ms
+[19:26:49.229] Running "vercel build"
+[19:26:51.028] Vercel CLI 44.6.4
+[19:26:51.635] Installing dependencies...
+[19:26:59.442] 
+[19:26:59.442] added 286 packages in 8s
+[19:26:59.442] 
+[19:26:59.442] 75 packages are looking for funding
+[19:26:59.442]   run `npm fund` for details
+[19:26:59.514] Running "npm run build"
+[19:26:59.625] 
+[19:26:59.626] > fortune-app@0.0.0 build
+[19:26:59.626] > tsc -b && vite build
+[19:26:59.626] 
+[19:27:05.833] src/App.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.834] src/App.tsx(236,3): error TS1117: An object literal cannot have multiple properties with the same name.
+[19:27:05.834] src/App.tsx(306,12): error TS7006: Parameter 'cards' implicitly has an 'any' type.
+[19:27:05.834] src/App.tsx(306,19): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.834] src/App.tsx(306,29): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.835] src/App.tsx(312,65): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.835] src/App.tsx(312,77): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.835] src/App.tsx(338,12): error TS7006: Parameter 'birthInfo' implicitly has an 'any' type.
+[19:27:05.835] src/App.tsx(338,23): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.835] src/App.tsx(338,33): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.836] src/App.tsx(348,67): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.836] src/App.tsx(348,79): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.836] src/App.tsx(375,12): error TS7006: Parameter 'lottery' implicitly has an 'any' type.
+[19:27:05.836] src/App.tsx(375,21): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.836] src/App.tsx(375,31): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.837] src/App.tsx(386,65): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.837] src/App.tsx(386,77): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.837] src/App.tsx(414,12): error TS7006: Parameter 'jiaobei' implicitly has an 'any' type.
+[19:27:05.837] src/App.tsx(414,21): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.837] src/App.tsx(414,31): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.837] src/App.tsx(422,65): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.837] src/App.tsx(422,77): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.837] src/App.tsx(448,12): error TS7006: Parameter 'personalInfo' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(448,26): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(448,36): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(458,67): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.838] src/App.tsx(458,79): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.838] src/App.tsx(524,12): error TS7006: Parameter 'birthInfo' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(524,23): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(524,33): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(534,67): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.838] src/App.tsx(534,79): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.838] src/App.tsx(573,12): error TS7006: Parameter 'birthInfo' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(573,23): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.838] src/App.tsx(573,33): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.840] src/App.tsx(583,69): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.840] src/App.tsx(583,81): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.841] src/App.tsx(621,12): error TS7006: Parameter 'personalInfo' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(621,26): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(621,36): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(633,68): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.841] src/App.tsx(633,80): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.841] src/App.tsx(675,12): error TS7006: Parameter 'compatibilityInfo' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(675,31): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(675,41): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(704,68): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.841] src/App.tsx(704,80): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.841] src/App.tsx(736,12): error TS7006: Parameter 'personalInfo' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(736,26): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(736,36): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.841] src/App.tsx(750,67): error TS2339: Property 'title' does not exist on type 'never'.
+[19:27:05.842] src/App.tsx(750,79): error TS2339: Property 'snippet' does not exist on type 'never'.
+[19:27:05.842] src/App.tsx(760,15): error TS7006: Parameter 'message' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(763,10): error TS2339: Property 'type' does not exist on type 'FortuneError'.
+[19:27:05.842] src/App.tsx(767,23): error TS7006: Parameter 'error' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(767,30): error TS7006: Parameter 'context' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(767,39): error TS7006: Parameter 't' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(774,19): error TS2339: Property 'type' does not exist on type 'FortuneError'.
+[19:27:05.842] src/App.tsx(786,24): error TS7006: Parameter 'method' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(786,32): error TS7006: Parameter 'data' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(786,38): error TS7006: Parameter 't' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(786,41): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(930,32): error TS7006: Parameter 'cards' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(930,39): error TS6133: 'readingType' is declared but its value is never read.
+[19:27:05.842] src/App.tsx(930,39): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(947,38): error TS7006: Parameter 'card' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(947,46): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 愚者: string; 魔术师: string; 女教皇: string; 皇后: string; 皇帝: string; 教皇: string; 恋人: string; 战车: string; 力量: string; 隐者: string; 命运之轮: string; 正义: string; }'.
+[19:27:05.842] src/App.tsx(952,36): error TS7006: Parameter 'birthInfo' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(952,47): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.842] src/App.tsx(960,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ '03': string; '04': string; '05': string; '06': string; '07': string; '08': string; '09': string; '10': string; '11': string; '12': string; '01': string; '02': string; }'.
+[19:27:05.842] src/App.tsx(969,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ love: string; career: string; wealth: string; health: string; }'.
+[19:27:05.843] src/App.tsx(974,34): error TS7006: Parameter 'lottery' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(974,43): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(984,26): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 上上签: string; 上吉签: string; 中吉签: string; 中平签: string; 下下签: string; }'.
+[19:27:05.843] src/App.tsx(993,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ love: string; career: string; wealth: string; health: string; }'.
+[19:27:05.843] src/App.tsx(998,34): error TS7006: Parameter 'jiaobei' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(998,43): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(1015,22): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 聖筊: { meaning: string; advice: string; }; 笑筊: { meaning: string; advice: string; }; 陰筊: { meaning: string; advice: string; }; }'.
+[19:27:05.843] src/App.tsx(1024,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ love: string; career: string; wealth: string; health: string; }'.
+[19:27:05.843] src/App.tsx(1029,37): error TS7006: Parameter 'personalInfo' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(1029,51): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(1034,67): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(1034,72): error TS7006: Parameter 'digit' implicitly has an 'any' type.
+[19:27:05.843] src/App.tsx(1050,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ love: string; career: string; wealth: string; health: string; }'.
+[19:27:05.843] src/App.tsx(1052,58): error TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ 1: string; 2: string; 3: string; 4: string; 5: string; 6: string; 7: string; 8: string; 9: string; }'.
+[19:27:05.843]   No index signature with a parameter of type 'number' was found on type '{ 1: string; 2: string; 3: string; 4: string; 5: string; 6: string; 7: string; 8: string; 9: string; }'.
+[19:27:05.843] src/App.tsx(1055,31): error TS7006: Parameter 'birthInfo' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1055,42): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1074,19): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ 甲: string; 乙: string; 丙: string; 丁: string; 戊: string; 己: string; 庚: string; 辛: string; 壬: string; 癸: string; }'.
+[19:27:05.845]   No index signature with a parameter of type 'string' was found on type '{ 甲: string; 乙: string; 丙: string; 丁: string; 戊: string; 己: string; 庚: string; 辛: string; 壬: string; 癸: string; }'.
+[19:27:05.845] src/App.tsx(1083,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ love: string; career: string; wealth: string; health: string; }'.
+[19:27:05.845] src/App.tsx(1088,32): error TS7006: Parameter 'birthInfo' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1088,43): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1114,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ love: string; career: string; wealth: string; health: string; }'.
+[19:27:05.845] src/App.tsx(1119,38): error TS7006: Parameter 'personalInfo' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1119,52): error TS6133: 'readingType' is declared but its value is never read.
+[19:27:05.845] src/App.tsx(1119,52): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1141,43): error TS7006: Parameter 'a' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1141,46): error TS7006: Parameter 'b' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1149,40): error TS7006: Parameter 'compatibilityInfo' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1149,59): error TS6133: 'readingType' is declared but its value is never read.
+[19:27:05.845] src/App.tsx(1149,59): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.845] src/App.tsx(1189,17): error TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ 10: string; 9: string; 8: string; 7: string; 6: string; 5: string; 4: string; }'.
+[19:27:05.845]   No index signature with a parameter of type 'number' was found on type '{ 10: string; 9: string; 8: string; 7: string; 6: string; 5: string; 4: string; }'.
+[19:27:05.845] src/App.tsx(1190,21): error TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ 10: string; 9: string; 8: string; 7: string; 6: string; 5: string; 4: string; }'.
+[19:27:05.846]   No index signature with a parameter of type 'number' was found on type '{ 10: string; 9: string; 8: string; 7: string; 6: string; 5: string; 4: string; }'.
+[19:27:05.846] src/App.tsx(1219,27): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ 金木: string; 木土: string; 土水: string; 水火: string; 火金: string; 金金: string; 木木: string; 水水: string; 火火: string; 土土: string; }'.
+[19:27:05.846]   No index signature with a parameter of type 'string' was found on type '{ 金木: string; 木土: string; 土水: string; 水火: string; 火金: string; 金金: string; 木木: string; 水水: string; 火火: string; 土土: string; }'.
+[19:27:05.846] src/App.tsx(1219,59): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ 金木: string; 木土: string; 土水: string; 水火: string; 火金: string; 金金: string; 木木: string; 水水: string; 火火: string; 土土: string; }'.
+[19:27:05.846]   No index signature with a parameter of type 'string' was found on type '{ 金木: string; 木土: string; 土水: string; 水火: string; 火金: string; 金金: string; 木木: string; 水水: string; 火火: string; 土土: string; }'.
+[19:27:05.846] src/App.tsx(1224,36): error TS7006: Parameter 'personalInfo' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1224,50): error TS6133: 'readingType' is declared but its value is never read.
+[19:27:05.846] src/App.tsx(1224,50): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1243,43): error TS7006: Parameter 'a' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1243,46): error TS7006: Parameter 'b' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1254,33): error TS7006: Parameter 'query' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1254,40): error TS7006: Parameter 'apiKey' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1271,42): error TS7006: Parameter 'item' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1283,22): error TS7006: Parameter 'result' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1283,30): error TS7006: Parameter 't' implicitly has an 'any' type.
+[19:27:05.846] src/App.tsx(1318,3): error TS18047: 'printWindow' is possibly 'null'.
+[19:27:05.846] src/App.tsx(1319,3): error TS18047: 'printWindow' is possibly 'null'.
+[19:27:05.846] src/App.tsx(1320,3): error TS18047: 'printWindow' is possibly 'null'.
+[19:27:05.847] src/App.tsx(1322,5): error TS18047: 'printWindow' is possibly 'null'.
+[19:27:05.847] src/App.tsx(1431,39): error TS7006: Parameter 'method' implicitly has an 'any' type.
+[19:27:05.847] src/App.tsx(1431,47): error TS7006: Parameter 'inputData' implicitly has an 'any' type.
+[19:27:05.847] src/App.tsx(1431,58): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.847] src/App.tsx(1431,68): error TS7006: Parameter 'readingType' implicitly has an 'any' type.
+[19:27:05.847] src/App.tsx(1485,45): error TS7006: Parameter 'prompt' implicitly has an 'any' type.
+[19:27:05.847] src/App.tsx(1485,53): error TS6133: 'searchQuery' is declared but its value is never read.
+[19:27:05.847] src/App.tsx(1494,11): error TS7034: Variable 'searchResults' implicitly has type 'any[]' in some locations where its type cannot be determined.
+[19:27:05.847] src/App.tsx(1503,9): error TS7053: Element implicitly has an 'any' type because expression of type '"Authorization"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.847]   Property 'Authorization' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.847] src/App.tsx(1505,9): error TS7053: Element implicitly has an 'any' type because expression of type '"Authorization"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.847]   Property 'Authorization' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.847] src/App.tsx(1507,9): error TS7053: Element implicitly has an 'any' type because expression of type '"Authorization"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.847]   Property 'Authorization' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.847] src/App.tsx(1508,9): error TS7053: Element implicitly has an 'any' type because expression of type '"HTTP-Referer"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.847]   Property 'HTTP-Referer' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.847] src/App.tsx(1509,9): error TS7053: Element implicitly has an 'any' type because expression of type '"X-Title"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.847]   Property 'X-Title' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.847] src/App.tsx(1511,9): error TS7053: Element implicitly has an 'any' type because expression of type '"x-api-key"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.848]   Property 'x-api-key' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.848] src/App.tsx(1512,9): error TS7053: Element implicitly has an 'any' type because expression of type '"anthropic-version"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.854]   Property 'anthropic-version' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.854] src/App.tsx(1514,9): error TS7053: Element implicitly has an 'any' type because expression of type '"Authorization"' can't be used to index type '{ 'Content-Type': string; }'.
+[19:27:05.854]   Property 'Authorization' does not exist on type '{ 'Content-Type': string; }'.
+[19:27:05.854] src/App.tsx(1652,9): error TS7005: Variable 'searchResults' implicitly has an 'any[]' type.
+[19:27:05.854] src/App.tsx(1659,11): error TS18046: 'error' is of type 'unknown'.
+[19:27:05.854] src/App.tsx(1665,11): error TS18046: 'error' is of type 'unknown'.
+[19:27:05.854] src/App.tsx(1666,34): error TS2339: Property 'errorAIUnavailable' does not exist on type '{ title: string; subtitle: string; selectMethod: string; selectType: string; detailInfo: string; question: string; questionPlaceholder: string; startDivination: string; divining: string; result: string; ... 117 more ...; lotteryData: { ...; }; }'.
+[19:27:05.854] src/App.tsx(1671,69): error TS2339: Property 'cards' does not exist on type '{}'.
+[19:27:05.854] src/App.tsx(1672,73): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1673,69): error TS2339: Property 'lottery' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1674,69): error TS2339: Property 'jiaobei' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1675,75): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1676,63): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1677,65): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1678,77): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1679,81): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1680,73): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(1697,42): error TS7006: Parameter 'method' implicitly has an 'any' type.
+[19:27:05.855] src/App.tsx(1697,50): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.855] src/App.tsx(1747,42): error TS7006: Parameter 'text' implicitly has an 'any' type.
+[19:27:05.855] src/App.tsx(1814,36): error TS2339: Property 'errorMissingQuestion' does not exist on type '{ title: string; subtitle: string; selectMethod: string; selectType: string; detailInfo: string; question: string; questionPlaceholder: string; startDivination: string; divining: string; result: string; ... 117 more ...; lotteryData: { ...; }; }'.
+[19:27:05.855] src/App.tsx(1836,11): error TS2353: Object literal may only specify known properties, and 'method' does not exist in type '(prevState: null) => null'.
+[19:27:05.855] src/App.tsx(1846,13): error TS18046: 'error' is of type 'unknown'.
+[19:27:05.855] src/App.tsx(1866,40): error TS7006: Parameter 'key' implicitly has an 'any' type.
+[19:27:05.855] src/App.tsx(1866,45): error TS7006: Parameter 'value' implicitly has an 'any' type.
+[19:27:05.855] src/App.tsx(2080,47): error TS2339: Property 'cards' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(2082,40): error TS7006: Parameter 'c' implicitly has an 'any' type.
+[19:27:05.855] src/App.tsx(2087,34): error TS2339: Property 'cards' does not exist on type '{}'.
+[19:27:05.855] src/App.tsx(2092,22): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ 愚者: string; 魔术师: string; 女教皇: string; 皇后: string; 皇帝: string; 教皇: string; 恋人: string; 战车: string; 力量: string; 隐者: string; 命运之轮: string; 正义: string; 倒吊人: string; 死神: string; 节制: string; 恶魔: string; 塔: string; 星星: string; 月亮: string; 太阳: string; 审判: string; 世界: string; }'.
+[19:27:05.855]   No index signature with a parameter of type 'string' was found on type '{ 愚者: string; 魔术师: string; 女教皇: string; 皇后: string; 皇帝: string; 教皇: string; 恋人: string; 战车: string; 力量: string; 隐者: string; 命运之轮: string; 正义: string; 倒吊人: string; 死神: string; 节制: string; 恶魔: string; 塔: string; 星星: string; 月亮: string; 太阳: string; 审判: string; 世界: string; }'.
+[19:27:05.856] src/App.tsx(2109,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2120,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2132,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2144,29): error TS2339: Property 'lottery' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2149,43): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ '1': { poem: string; meaning: string; interpretation: string; }; '2': { poem: string; meaning: string; interpretation: string; }; '3': { poem: string; meaning: string; interpretation: string; }; '4': { poem: string; meaning: string; interpretation: string; }; ... 15 more ...; '20': { ...; }; }'.
+[19:27:05.856]   No index signature with a parameter of type 'string' was found on type '{ '1': { poem: string; meaning: string; interpretation: string; }; '2': { poem: string; meaning: string; interpretation: string; }; '3': { poem: string; meaning: string; interpretation: string; }; '4': { poem: string; meaning: string; interpretation: string; }; ... 15 more ...; '20': { ...; }; }'.
+[19:27:05.856] src/App.tsx(2164,89): error TS2339: Property 'lottery' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2165,89): error TS2339: Property 'lottery' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2166,86): error TS2339: Property 'lottery' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2184,29): error TS2339: Property 'jiaobei' does not exist on type '{}'.
+[19:27:05.856] src/App.tsx(2192,37): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ holy: string; laughing: string; yin: string; }'.
+[19:27:05.856]   No index signature with a parameter of type 'string' was found on type '{ holy: string; laughing: string; yin: string; }'.
+[19:27:05.856] src/App.tsx(2212,40): error TS2339: Property 'jiaobei' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2213,40): error TS2339: Property 'jiaobei' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2214,40): error TS2339: Property 'jiaobei' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2217,90): error TS2339: Property 'jiaobei' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2247,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2260,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2277,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2290,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2300,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2324,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2340,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2358,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2368,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2392,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2408,34): error TS2339: Property 'birthInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2425,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2437,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2449,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2461,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2472,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.862] src/App.tsx(2492,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2494,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2507,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2509,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2522,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2524,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2535,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2537,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2562,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2564,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2581,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2583,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2596,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2598,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.863] src/App.tsx(2611,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2613,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2632,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2634,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2647,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2649,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2662,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2664,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2675,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.864] src/App.tsx(2677,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.865] src/App.tsx(2702,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2704,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2721,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2723,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2736,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2738,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2751,38): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2753,40): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2768,36): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2787,36): error TS2339: Property 'compatibilityInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2805,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2817,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2829,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2841,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2853,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2865,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2876,34): error TS2339: Property 'personalInfo' does not exist on type '{}'.
+[19:27:05.866] src/App.tsx(2929,42): error TS2339: Property 'method' does not exist on type 'never'.
+[19:27:05.867] src/App.tsx(2933,40): error TS2339: Property 'type' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(2937,27): error TS2339: Property 'isAIGenerated' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(2943,28): error TS2339: Property 'isAIGenerated' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(2954,21): error TS2339: Property 'searchResults' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(2954,45): error TS2339: Property 'searchResults' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(2963,27): error TS2339: Property 'searchResults' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(2963,46): error TS7006: Parameter 'searchResult' implicitly has an 'any' type.
+[19:27:05.875] src/App.tsx(2963,60): error TS7006: Parameter 'index' implicitly has an 'any' type.
+[19:27:05.875] src/App.tsx(2991,96): error TS2339: Property 'question' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(3014,85): error TS2339: Property 'reading' does not exist on type 'never'.
+[19:27:05.875] src/App.tsx(3027,77): error TS2339: Property 'timestamp' does not exist on type 'never'.
+[19:27:05.876] src/App.tsx(3029,31): error TS2339: Property 'reading' does not exist on type 'never'.
+[19:27:05.876] src/App.tsx(3050,95): error TS2339: Property 'question' does not exist on type 'never'.
+[19:27:05.876] src/App.tsx(3050,136): error TS2339: Property 'reading' does not exist on type 'never'.
+[19:27:05.876] src/AppWithAuth.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.876] src/components/DailyCheckin/DailyCheckin.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.876] src/components/DailyCheckin/DailyCheckin.tsx(5,18): error TS6133: 'isToday' is declared but its value is never read.
+[19:27:05.876] src/components/DailyCheckin/DailyCheckin.tsx(5,27): error TS6133: 'parseISO' is declared but its value is never read.
+[19:27:05.876] src/components/Debug/AuthDebug.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.876] src/components/FortuneReminders/FortuneReminders.tsx(2,26): error TS6133: 'Clock' is declared but its value is never read.
+[19:27:05.876] src/components/FortuneReminders/FortuneReminders.tsx(221,9): error TS6133: 'getNextTriggerDate' is declared but its value is never read.
+[19:27:05.876] src/components/GrowthRecord/GrowthRecord.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.876] src/components/GrowthRecord/GrowthRecord.tsx(126,33): error TS2339: Property 'id' does not exist on type '{ id: any; name: any; description: any; icon: any; reward_points: any; }[]'.
+[19:27:05.876] src/components/GrowthRecord/GrowthRecord.tsx(127,35): error TS2339: Property 'name' does not exist on type '{ id: any; name: any; description: any; icon: any; reward_points: any; }[]'.
+[19:27:05.876] src/components/GrowthRecord/GrowthRecord.tsx(128,42): error TS2339: Property 'description' does not exist on type '{ id: any; name: any; description: any; icon: any; reward_points: any; }[]'.
+[19:27:05.876] src/components/GrowthRecord/GrowthRecord.tsx(129,35): error TS2339: Property 'icon' does not exist on type '{ id: any; name: any; description: any; icon: any; reward_points: any; }[]'.
+[19:27:05.876] src/components/GrowthRecord/GrowthRecord.tsx(131,43): error TS2339: Property 'reward_points' does not exist on type '{ id: any; name: any; description: any; icon: any; reward_points: any; }[]'.
+[19:27:05.876] src/components/MasterConsultation/MasterConsultation.tsx(97,15): error TS6133: 'data' is declared but its value is never read.
+[19:27:05.877] src/components/NetworkStatus.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.877] src/components/NetworkStatus.tsx(2,26): error TS1484: 'NetworkState' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(10,50): error TS2339: Property 'username' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(61,36): error TS2339: Property 'username' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(71,70): error TS2339: Property 'username' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(87,64): error TS2339: Property 'sign_in_streak' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(93,64): error TS2339: Property 'total_sign_ins' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(120,15): error TS2551: Property 'last_sign_in' does not exist on type 'User'. Did you mean 'last_sign_in_at'?
+[19:27:05.877] src/components/Profile/UserProfile.tsx(124,42): error TS2551: Property 'last_sign_in' does not exist on type 'User'. Did you mean 'last_sign_in_at'?
+[19:27:05.877] src/components/Profile/UserProfile.tsx(134,17): error TS2339: Property 'total_sign_ins' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(139,17): error TS2339: Property 'sign_in_streak' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(144,17): error TS2339: Property 'sign_in_streak' does not exist on type 'User'.
+[19:27:05.877] src/components/Profile/UserProfile.tsx(149,17): error TS2339: Property 'total_sign_ins' does not exist on type 'User'.
+[19:27:05.877] src/components/Recommendations/Recommendations.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.877] src/components/Recommendations/Recommendations.tsx(2,48): error TS6133: 'ThumbsUp' is declared but its value is never read.
+[19:27:05.878] src/components/Recommendations/Recommendations.tsx(157,26): error TS2345: Argument of type '{ preferredMethods?: string[] | undefined; preferredTypes?: string[] | undefined; notificationSettings?: Record<string, boolean> | undefined; themePreferences?: Record<string, any> | undefined; }' is not assignable to parameter of type 'SetStateAction<UserPreferences | null>'.
+[19:27:05.878]   Type '{ preferredMethods?: string[] | undefined; preferredTypes?: string[] | undefined; notificationSettings?: Record<string, boolean> | undefined; themePreferences?: Record<string, any> | undefined; }' is not assignable to type 'UserPreferences'.
+[19:27:05.878]     Types of property 'preferredMethods' are incompatible.
+[19:27:05.878]       Type 'string[] | undefined' is not assignable to type 'string[]'.
+[19:27:05.878]         Type 'undefined' is not assignable to type 'string[]'.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(42,10): error TS6133: 'selectedResult' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(119,35): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(129,32): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(139,34): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(149,34): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(159,34): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(169,32): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/ReportShare/ReportShare.tsx(181,34): error TS6133: 'result' is declared but its value is never read.
+[19:27:05.878] src/components/WishWall/WishWall.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.878] src/components/WishWall/WishWall.tsx(3,20): error TS1484: 'Wish' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+[19:27:05.878] src/components/WishWall/WishWall.tsx(182,57): error TS2339: Property 'users' does not exist on type 'Wish'.
+[19:27:05.878] src/contexts/AuthContext.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.879] src/contexts/AuthContext.tsx(1,65): error TS1484: 'ReactNode' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+[19:27:05.879] src/contexts/AuthContext.tsx(2,10): error TS1484: 'User' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+[19:27:05.879] src/contexts/AuthContext.tsx(2,16): error TS1484: 'Session' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+[19:27:05.879] src/contexts/AuthContext.tsx(2,16): error TS6133: 'Session' is declared but its value is never read.
+[19:27:05.879] src/contexts/AuthContext.tsx(114,15): error TS2339: Property 'data' does not exist on type 'unknown'.
+[19:27:05.879] src/contexts/AuthContext.tsx(114,21): error TS2339: Property 'error' does not exist on type 'unknown'.
+[19:27:05.879] src/contexts/AuthContext.tsx(115,15): error TS2739: Type 'PostgrestBuilder<any, false>' is missing the following properties from type 'Promise<unknown>': catch, finally, [Symbol.toStringTag]
+[19:27:05.879] src/contexts/AuthContext.tsx(277,15): error TS2339: Property 'error' does not exist on type 'unknown'.
+[19:27:05.879] src/contexts/AuthContext.tsx(278,15): error TS2739: Type 'PostgrestFilterBuilder<any, any, null, "users", unknown>' is missing the following properties from type 'Promise<unknown>': catch, finally, [Symbol.toStringTag]
+[19:27:05.879] src/fortune_telling_website.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[19:27:05.879] src/fortune_telling_website.tsx(1,40): error TS6133: 'useMemo' is declared but its value is never read.
+[19:27:05.879] src/fortune_telling_website.tsx(2,32): error TS6133: 'Zap' is declared but its value is never read.
+[19:27:05.879] src/fortune_telling_website.tsx(2,51): error TS6133: 'Users' is declared but its value is never read.
+[19:27:05.879] src/fortune_telling_website.tsx(2,100): error TS6133: 'Download' is declared but its value is never read.
+[19:27:05.879] src/fortune_telling_website.tsx(2,110): error TS6133: 'Printer' is declared but its value is never read.
+[19:27:05.879] src/fortune_telling_website.tsx(2,119): error TS6133: 'Search' is declared but its value is never read.
+[19:27:05.891] src/fortune_telling_website.tsx(2,127): error TS6133: 'User' is declared but its value is never read.
+[19:27:05.891] src/fortune_telling_website.tsx(2,133): error TS6133: 'UserCheck' is declared but its value is never read.
+[19:27:05.891] src/fortune_telling_website.tsx(236,3): error TS1117: An object literal cannot have multiple properties with the same name.
+[19:27:05.891] src/fortune_telling_website.tsx(352,40): error TS7006: Parameter 'key' implicitly has an 'any' type.
+[19:27:05.891] src/fortune_telling_website.tsx(352,45): error TS7006: Parameter 'value' implicitly has an 'any' type.
+[19:27:05.891] src/fortune_telling_website.tsx(357,33): error TS7006: Parameter 'method' implicitly has an 'any' type.
+[19:27:05.891] src/fortune_telling_website.tsx(357,41): error TS7006: Parameter 'type' implicitly has an 'any' type.
+[19:27:05.891] src/fortune_telling_website.tsx(357,47): error TS7006: Parameter 'question' implicitly has an 'any' type.
+[19:27:05.891] src/fortune_telling_website.tsx(357,57): error TS7006: Parameter 'data' implicitly has an 'any' type.
+[19:27:05.891] src/fortune_telling_website.tsx(388,17): error TS2345: Argument of type '{ method: any; type: any; question: any; reading: string; timestamp: number; isAIGenerated: boolean; }' is not assignable to parameter of type 'SetStateAction<null>'.
+[19:27:05.891]   Type '{ method: any; type: any; question: any; reading: string; timestamp: number; isAIGenerated: boolean; }' provides no match for the signature '(prevState: null): null'.
+[19:27:05.891] src/fortune_telling_website.tsx(402,10): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ '1': { poem: string; meaning: string; interpretation: string; }; '2': { poem: string; meaning: string; interpretation: string; }; '3': { poem: string; meaning: string; interpretation: string; }; '4': { poem: string; meaning: string; interpretation: string; }; ... 15 more ...; '20': { ...; }; }'.
+[19:27:05.891]   No index signature with a parameter of type 'string' was found on type '{ '1': { poem: string; meaning: string; interpretation: string; }; '2': { poem: string; meaning: string; interpretation: string; }; '3': { poem: string; meaning: string; interpretation: string; }; '4': { poem: string; meaning: string; interpretation: string; }; ... 15 more ...; '20': { ...; }; }'.
+[19:27:05.891] src/fortune_telling_website.tsx(418,15): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ holy: string; laughing: string; yin: string; }'.
+[19:27:05.891]   No index signature with a parameter of type 'string' was found on type '{ holy: string; laughing: string; yin: string; }'.
+[19:27:05.891] src/fortune_telling_website.tsx(419,16): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ holy: string; laughing: string; yin: string; }'.
+[19:27:05.891]   No index signature with a parameter of type 'string' was found on type '{ holy: string; laughing: string; yin: string; }'.
+[19:27:05.892] src/fortune_telling_website.tsx(619,83): error TS2339: Property 'number' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(620,80): error TS2339: Property 'poem' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(621,83): error TS2339: Property 'meaning' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(648,98): error TS2339: Property 'result' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(649,74): error TS2339: Property 'meaning' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(710,42): error TS2339: Property 'method' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(714,40): error TS2339: Property 'type' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(730,96): error TS2339: Property 'question' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(746,33): error TS2339: Property 'reading' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(758,81): error TS2339: Property 'timestamp' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(763,99): error TS2339: Property 'question' does not exist on type 'never'.
+[19:27:05.892] src/fortune_telling_website.tsx(763,144): error TS2339: Property 'reading' does not exist on type 'never'.
+[19:27:05.892] src/utils/errorHandler.ts(138,11): error TS6133: 'response' is declared but its value is never read.
+[19:27:05.892] src/utils/networkManager.ts(226,11): error TS2454: Variable 'lastError' is used before being assigned.
+[19:27:06.076] Error: Command "npm run build" exited with 2
+[19:27:06.305] 
+[19:27:09.261] Exiting build container

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { supabase, Wish } from '../../lib/supabase'
+import { supabase, type Wish } from '../../lib/supabase'
 import { Heart, MessageCircle, Send, Star, Sparkles } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
@@ -179,7 +179,7 @@ export default function WishWall() {
                 <div className="flex items-center space-x-2">
                   <MessageCircle className="w-5 h-5 text-purple-300" />
                   <span className="text-sm text-purple-200">
-                    {wish.is_anonymous ? '匿名用户' : (wish.users?.username || '未知用户')}
+                    {wish.is_anonymous ? '匿名用户' : '用户'}
                   </span>
                 </div>
                 <span className="text-xs text-purple-300">

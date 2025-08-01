@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BookOpen, Heart, Bookmark, Star, Eye, ThumbsUp, Filter, Search, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Heart, Bookmark, Star, Eye, Filter, Search, Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -141,7 +141,12 @@ export default function Recommendations() {
     if (!user) return;
     
     try {
-      const updatedPreferences = { ...userPreferences, ...newPreferences };
+      const updatedPreferences: UserPreferences = {
+        preferredMethods: newPreferences.preferredMethods || userPreferences?.preferredMethods || [],
+        preferredTypes: newPreferences.preferredTypes || userPreferences?.preferredTypes || [],
+        notificationSettings: newPreferences.notificationSettings || userPreferences?.notificationSettings || {},
+        themePreferences: newPreferences.themePreferences || userPreferences?.themePreferences || {}
+      };
       
       await supabase
         .from('user_preferences')

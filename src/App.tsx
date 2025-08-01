@@ -5,12 +5,18 @@ import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, Aler
 interface SearchResult {
   title: string;
   snippet: string;
+  link: string;
 }
 
 interface BirthInfo {
   date: string;
   time: string;
   location: string;
+  name?: string;
+  birthDate?: string;
+  birthTime?: string;
+  gender?: string;
+  birthPlace?: string;
 }
 
 interface PersonalInfo {
@@ -20,6 +26,13 @@ interface PersonalInfo {
   selfDescription: string;
   dreamGoals: string;
   lifeExperience: string;
+  age?: string;
+  occupation?: string;
+  hobbies?: string;
+  birthPlace?: string;
+  personality?: string;
+  dreams?: string;
+  luckyNumbers?: string[];
 }
 
 interface CompatibilityInfo {
@@ -31,6 +44,27 @@ interface CompatibilityInfo {
   partnerGender: string;
   relationshipType: string;
   compatibilityScore: string;
+  duration?: string;
+  person1?: {
+    name?: string;
+    age?: string;
+    birthDate?: string;
+    gender?: string;
+    personality?: string;
+    hobbies?: string;
+    birthTime?: string;
+    birthPlace?: string;
+  };
+  person2?: {
+    name?: string;
+    age?: string;
+    birthDate?: string;
+    gender?: string;
+    personality?: string;
+    hobbies?: string;
+    birthTime?: string;
+    birthPlace?: string;
+  };
 }
 
 interface LotteryResult {
@@ -43,10 +77,46 @@ interface LotteryResult {
 interface JiaobeiResult {
   result: string;
   interpretation: string;
+  resultText?: string;
+  meaning?: string;
+}
+
+interface DivinationResultState {
+  method: string;
+  type: string;
+  question: string;
+  reading: string;
+  timestamp: string;
+  isAIGenerated: boolean;
+  searchResults: SearchResult[];
+}
+
+interface InputData {
+  birthInfo?: BirthInfo;
+  personalInfo?: PersonalInfo;
+  compatibilityInfo?: CompatibilityInfo;
+  lottery?: LotteryResult;
+  jiaobei?: JiaobeiResult;
+  cards?: string[];
+}
+
+// 中文文本配置接口
+interface TextsConfig {
+  [key: string]: any;
+  lotteryData: {
+    [key: string]: {
+      poem: string;
+      meaning: string;
+      interpretation: string;
+    };
+  };
+  jiaobeResults: {
+    [key: string]: string;
+  };
 }
 
 // 中文文本配置
-const texts = {
+const texts: TextsConfig = {
   title: '神秘占卜馆',
   subtitle: '探索命运奥秘，指引人生方向',
   selectMethod: '选择占卜方式',
@@ -801,14 +871,16 @@ const getPromptTemplates = () => ({
 
 // Error handling utilities
 class FortuneError extends Error {
-  constructor(message, type = 'GENERAL') {
+  type: string;
+  
+  constructor(message: string, type: string = 'GENERAL') {
     super(message);
     this.name = 'FortuneError';
     this.type = type;
   }
 }
 
-const errorHandler = (error, context, t) => {
+const errorHandler = (error: any, context: string, t: any) => {
   console.error(`Fortune telling error in ${context}:`, error);
   
   if (error instanceof FortuneError) {
@@ -827,7 +899,7 @@ const errorHandler = (error, context, t) => {
 };
 
 // Enhanced validation utilities with detailed checks
-const validateInput = (method, data, t, question) => {
+const validateInput = (method: string, data: any, t: any, question: string) => {
   // 验证问题是否填写
   if (!question || question.trim().length === 0) {
     throw new FortuneError(t.errorEnterQuestion, 'VALIDATION_ERROR');
@@ -971,8 +1043,8 @@ const validateInput = (method, data, t, question) => {
 };
 
 // Enhanced fallback response generators with bilingual support
-const generateTarotFallback = (cards, readingType) => {
-  const cardMeanings = {
+const generateTarotFallback = (cards: string[]) => {
+  const cardMeanings: {[key: string]: string} = {
     '愚者': '新的开始和无限可能',
     '魔术师': '创造力和行动力',
     '女教皇': '直觉和内在智慧',
@@ -993,8 +1065,8 @@ const generateTarotFallback = (cards, readingType) => {
   return `🌟 根据您抽取的塔罗牌：${selectedCards.join('、')}，牌面显示${meanings}的能量正在影响您的生活。当前阶段需要保持开放的心态，相信内在的直觉指引。建议在接下来的时间里，多关注内心的声音，它将为您指明正确的方向。记住，每一次挑战都是成长的机会。`;
 };
 
-const generateAstrologyFallback = (birthInfo, readingType) => {
-  const zodiacSigns = {
+const generateAstrologyFallback = (birthInfo: BirthInfo, readingType: any) => {
+  const zodiacSigns: {[key: string]: string} = {
     '03': '白羊座', '04': '金牛座', '05': '双子座', '06': '巨蟹座',
     '07': '狮子座', '08': '处女座', '09': '天秤座', '10': '天蝎座',
     '11': '射手座', '12': '摩羯座', '01': '水瓶座', '02': '双鱼座'
@@ -1003,7 +1075,7 @@ const generateAstrologyFallback = (birthInfo, readingType) => {
   const month = birthInfo?.date ? birthInfo.date.split('-')[1] : '01';
   const sign = zodiacSigns[month] || '神秘星座';
   
-  const typeMap = {
+  const typeMap: {[key: string]: string} = {
     'love': '感情',
     'career': '事业',
     'wealth': '财运',
@@ -1015,8 +1087,8 @@ const generateAstrologyFallback = (birthInfo, readingType) => {
   return `🌙 根据您的出生信息，${sign}的能量正在您的生命中发挥重要作用。当前星象显示，您正处在一个重要的转折期，特别是在${aspect}方面。建议您保持积极的心态，把握即将到来的机遇。星象提醒您，耐心和坚持将带来意想不到的收获。`;
 };
 
-const generateLotteryFallback = (lottery, readingType) => {
-  const lotteryMeanings = {
+const generateLotteryFallback = (lottery: LotteryResult, readingType: any) => {
+  const lotteryMeanings: {[key: string]: string} = {
     '上上签': '大吉大利，心想事成',
     '上吉签': '吉祥如意，前程光明',
     '中吉签': '渐入佳境，需要耐心',
@@ -1027,7 +1099,7 @@ const generateLotteryFallback = (lottery, readingType) => {
   const meaning = lottery?.meaning || '中吉签';
   const interpretation = lotteryMeanings[meaning] || '因缘际会，随遇而安';
   
-  const typeMap = {
+  const typeMap: {[key: string]: string} = {
     'love': '感情',
     'career': '事业',
     'wealth': '财运',
@@ -1039,8 +1111,8 @@ const generateLotteryFallback = (lottery, readingType) => {
   return `🙏 抽得第${lottery?.number || '1'}签，${meaning}。签文显示${interpretation}。此签提醒您在${aspect}方面要心存善念，积德行善。观音菩萨慈悲护佑，只要诚心向善，必有好报。建议您多行善事，保持内心的平和与慈悲。`;
 };
 
-const generateJiaobeiFallback = (jiaobei, readingType) => {
-  const jiaobeResults = {
+const generateJiaobeiFallback = (jiaobei: JiaobeiResult, readingType: any) => {
+  const jiaobeResults: {[key: string]: {meaning: string; advice: string}} = {
     '聖筊': {
       meaning: '神明同意您的请求',
       advice: '可以放心进行，神明会庇佑您'
@@ -1058,7 +1130,7 @@ const generateJiaobeiFallback = (jiaobei, readingType) => {
   const result = jiaobei?.result || '聖筊';
   const resultInfo = jiaobeResults[result] || jiaobeResults['聖筊'];
   
-  const typeMap = {
+  const typeMap: {[key: string]: string} = {
     'love': '感情',
     'career': '事业',
     'wealth': '财运',
@@ -1070,7 +1142,7 @@ const generateJiaobeiFallback = (jiaobei, readingType) => {
   return `🙏 擲筊结果：${result}。${resultInfo.meaning}。在${aspect}方面，${resultInfo.advice}。请记住，神明的指示都是为了您好，无论结果如何，都要保持虔诚的心，多行善事，积德行善。如果是陰筊，不要灰心，可能是时机未到，或者需要从其他角度思考问题。`;
 };
 
-const generateNumerologyFallback = (personalInfo, readingType) => {
+const generateNumerologyFallback = (personalInfo: PersonalInfo, readingType: any) => {
   const name = personalInfo?.name || '朋友';
   const birthDate = personalInfo?.birthDate || new Date().toISOString().split('T')[0];
   
@@ -1078,13 +1150,13 @@ const generateNumerologyFallback = (personalInfo, readingType) => {
   const dateSum = birthDate.split('-').join('').split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   const lifeNumber = dateSum % 9 + 1;
   
-  const numberMeanings = {
+  const numberMeanings: {[key: number]: string} = {
     1: '领导力和独立性', 2: '合作和平衡', 3: '创造力和表达',
     4: '稳定和实用', 5: '自由和冒险', 6: '责任和关爱',
     7: '智慧和直觉', 8: '成功和物质', 9: '完成和奉献'
   };
   
-  const typeMap = {
+  const typeMap: {[key: string]: string} = {
     'love': '感情',
     'career': '事业',
     'wealth': '财运',
@@ -1096,7 +1168,7 @@ const generateNumerologyFallback = (personalInfo, readingType) => {
   return `🔢 ${name}，根据您的数字能量分析，您的生命数字是${lifeNumber}，代表${numberMeanings[lifeNumber]}。这个数字在${aspect}中将发挥重要作用。建议您发挥这个数字的正面能量，在未来的日子里会有意想不到的收获。`;
 };
 
-const generateBaziFallback = (birthInfo, readingType) => {
+const generateBaziFallback = (birthInfo: BirthInfo, readingType: any) => {
   const name = birthInfo?.name || '缘主';
   const birthDate = birthInfo?.birthDate || new Date().toISOString().split('T')[0];
   const birthTime = birthInfo?.birthTime || '时辰不详';
@@ -1109,7 +1181,7 @@ const generateBaziFallback = (birthInfo, readingType) => {
   
   const yearPillar = stemBranches[year % 10];
   
-  const elements = {
+  const elements: {[key: string]: string} = {
     '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土',
     '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
   };
@@ -1117,7 +1189,7 @@ const generateBaziFallback = (birthInfo, readingType) => {
   const dayMaster = yearPillar.charAt(0);
   const element = elements[dayMaster] || '土';
   
-  const typeMap = {
+  const typeMap: {[key: string]: string} = {
     'love': '感情婚姻',
     'career': '事业发展',
     'wealth': '财富运势',
@@ -1129,7 +1201,7 @@ const generateBaziFallback = (birthInfo, readingType) => {
   return `🏮 ${name}，根据您的出生时间${birthDate} ${birthTime}，初步推算您的年柱为${yearPillar}，日主属${element}。从八字命理角度分析，您在${aspect}方面具有独特的天赋和潜力。建议您顺应五行规律，培养内在品德，把握人生机遇，必能趋吉避凶，获得美好人生。`;
 };
 
-const generateZiweiFallback = (birthInfo, readingType) => {
+const generateZiweiFallback = (birthInfo: BirthInfo, readingType: string) => {
   const birthDate = birthInfo?.birthDate || new Date().toISOString().split('T')[0];
   const birthTime = birthInfo?.birthTime || '时辰不详';
   
@@ -1148,7 +1220,7 @@ const generateZiweiFallback = (birthInfo, readingType) => {
   const palace = palaces[year % 12];
   const mainStar = mainStars[year % 14];
   
-  const typeMap = {
+  const typeMap: {[key: string]: string} = {
     'love': '感情婚姻',
     'career': '事业发展', 
     'wealth': '财富运势',
@@ -1160,7 +1232,7 @@ const generateZiweiFallback = (birthInfo, readingType) => {
   return `⭐ 根据您的出生时间${birthDate} ${birthTime}，初步推算您的命宫位于${palace}，主星为${mainStar}。从紫微斗数角度分析，您在${aspect}方面展现出独特的星象配置。${mainStar}星坐命，赋予您特殊的天赋和使命。建议您善用星曜能量，把握时机，必能开创美好前程。`;
 };
 
-const generatePersonalityFallback = (personalInfo, readingType) => {
+const generatePersonalityFallback = (personalInfo: PersonalInfo) => {
   const name = personalInfo?.name || '朋友';
   const age = personalInfo?.age || '';
   const occupation = personalInfo?.occupation || '';
@@ -1190,7 +1262,7 @@ const generatePersonalityFallback = (personalInfo, readingType) => {
   return `🧠 **核心性格特质：**\n${name}，从您提供的信息来看，您属于${personalityType}的性格特征。${age ? `在${age}岁这个年龄段，` : ''}您展现出成熟稳重的一面。\n\n**优势与天赋：**\n您的主要优势是${strength}，这使您在人际关系和工作中都能表现出色。${occupation ? `从事${occupation}工作` : ''}${hobbies ? `，平时喜欢${hobbies}` : ''}，这些都体现了您多元化的兴趣和能力。\n\n**成长空间：**\n建议您${suggestion}，这将有助于您的个人发展。${selfDescription ? `您对自己"${selfDescription}"的描述很准确，` : ''}继续保持这种自我认知的能力。\n\n**人际关系模式：**\n您在人际交往中表现出真诚和包容的特质，容易获得他人的信任和好感。\n\n**职业发展建议：**\n发挥您的性格优势，在团队合作中承担更多责任，将为您带来更好的发展机会。\n\n**生活建议：**\n保持积极乐观的心态，相信自己的能力，勇敢追求内心的目标。`;
 };
 
-const generateCompatibilityFallback = (compatibilityInfo, readingType) => {
+const generateCompatibilityFallback = (compatibilityInfo: CompatibilityInfo) => {
   const person1 = compatibilityInfo?.person1 || {};
   const person2 = compatibilityInfo?.person2 || {};
   const relationshipType = compatibilityInfo?.relationshipType || '关系';
@@ -1225,7 +1297,7 @@ const generateCompatibilityFallback = (compatibilityInfo, readingType) => {
     if (gender1 && gender2 && gender1 !== gender2) baziScore += 1;
   }
   
-  const compatibilityLevels = {
+  const compatibilityLevels: {[key: number]: string} = {
     10: '完美匹配', 9: '非常和谐', 8: '很好匹配', 7: '较好匹配',
     6: '一般匹配', 5: '需要努力', 4: '存在挑战'
   };
@@ -1245,7 +1317,7 @@ const generateCompatibilityFallback = (compatibilityInfo, readingType) => {
   const element1 = baziElements[(birthDate1 ? new Date(birthDate1).getFullYear() : 2000) % 5];
   const element2 = baziElements[(birthDate2 ? new Date(birthDate2).getFullYear() : 2001) % 5];
   
-  const elementRelations = {
+  const elementRelations: {[key: string]: string} = {
     '金木': '金克木，需要包容理解',
     '木土': '木克土，互补性强',
     '土水': '土克水，需要协调',
@@ -1265,7 +1337,7 @@ const generateCompatibilityFallback = (compatibilityInfo, readingType) => {
   return `💕 **匹配度评分：**\n总体匹配度：${compatibilityScore}/10分（${level}）\n八字姻缘：${baziScore}/10分（${baziLevel}）\n\n**八字姻缘分析：**\n${name1}属${element1}，${name2}属${element2}。${elementAnalysis}。从八字命理角度看，${baziScore >= 7 ? '你们的姻缘缘分较深，五行相配，有利于感情发展' : '你们需要在相处中多加理解，通过后天努力可以增进感情'}。${birthDate1 && birthDate2 ? `出生年份的搭配显示${baziScore >= 8 ? '极佳的命理匹配度' : '良好的发展潜力'}。` : ''}\n\n**性格互补分析：**\n${name1}和${name2}在性格上${compatibilityScore >= 7 ? '展现出良好的互补性' : '存在一定的差异'}。${person1.personality && person2.personality ? `${name1}的"${person1.personality}"与${name2}的"${person2.personality}"` : '你们的性格特点'}${compatibilityScore >= 7 ? '能够很好地相互平衡' : '需要更多的理解和包容'}。\n\n**沟通模式：**\n在${relationshipType}关系中，${duration ? `经过${duration}的相处，` : ''}你们已经建立了${compatibilityScore >= 7 ? '良好' : '基础'}的沟通模式。建议继续加强情感交流。\n\n**共同成长空间：**\n${person1.hobbies && person2.hobbies ? `你们在兴趣爱好方面${person1.hobbies === person2.hobbies ? '非常相似' : '各有特色'}，` : ''}这为关系发展提供了${compatibilityScore >= 7 ? '良好' : '一定'}的基础。\n\n**相处建议：**\n建议你们${selectedAdvice}，这将有助于关系的进一步发展。保持开放和诚实的态度，共同面对生活中的挑战。从八字角度，${baziScore >= 7 ? '你们的缘分较好，要珍惜这份感情' : '可以通过佩戴相应的开运饰品来增强彼此的缘分'}。\n\n**注意事项：**\n任何关系都需要双方的努力和理解。${compatibilityScore < 7 ? '虽然存在一些挑战，但通过共同努力可以克服。' : '继续保持现在的良好状态，'}记住爱情需要经营，友情需要维护。八字只是参考，真正的感情需要用心经营。`;
 };
 
-const generateLifestoryFallback = (personalInfo, readingType) => {
+const generateLifestoryFallback = (personalInfo: PersonalInfo) => {
   const name = personalInfo?.name || '主人公';
   const birthDate = personalInfo?.birthDate || '';
   const birthPlace = personalInfo?.birthPlace || '一个美丽的地方';
@@ -1295,7 +1367,7 @@ const generateLifestoryFallback = (personalInfo, readingType) => {
 };
 
 // Web search function
-const performWebSearch = async (query, apiKey) => {
+const performWebSearch = async (query: string, apiKey: string) => {
   try {
     const response = await fetch('https://google.serper.dev/search', {
       method: 'POST',
@@ -1312,7 +1384,7 @@ const performWebSearch = async (query, apiKey) => {
     if (!response.ok) throw new Error('Search failed');
     
     const data = await response.json();
-    return data.organic?.slice(0, 3).map(item => ({
+    return data.organic?.slice(0, 3).map((item: any) => ({
       title: item.title,
       snippet: item.snippet,
       link: item.link
@@ -1324,8 +1396,13 @@ const performWebSearch = async (query, apiKey) => {
 };
 
 // PDF export function
-const exportToPDF = (result, t) => {
+const exportToPDF = (result: any, t: any) => {
   const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('无法打开打印窗口，请检查浏览器设置');
+    return;
+  }
+  
   const content = `
     <!DOCTYPE html>
     <html>
@@ -1373,9 +1450,9 @@ export default function FortuneWebsite() {
   const [readingType, setReadingType] = useState(READING_TYPES.GENERAL);
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<DivinationResultState | null>(null);
   const [error, setError] = useState(null);
-  const [inputData, setInputData] = useState({});
+  const [inputData, setInputData] = useState<InputData>({});
   // Get current texts
   const t = texts;
 
@@ -1472,7 +1549,7 @@ export default function FortuneWebsite() {
   }), [t]);
 
   // Generate prompt for AI processing with bilingual support
-  const generatePrompt = useCallback((method, inputData, question, readingType, searchResults = []) => {
+  const generatePrompt = useCallback((method: string, inputData: any, question: string, readingType: string, searchResults: SearchResult[] = []) => {
     try {
       validateInput(method, inputData, t, question);
       
@@ -1526,7 +1603,7 @@ export default function FortuneWebsite() {
   }, [typeConfig]);
 
   // LLM API integration for real fortune telling with web search support
-  const processReading = useCallback(async (prompt, searchQuery = '') => {
+  const processReading = useCallback(async (prompt: { system: string; user: string }) => {
     try {
       // LLM API configuration - Fixed for Vite
       const API_ENDPOINT = import.meta.env.VITE_LLM_API_ENDPOINT || '/api/llm/chat';
@@ -1535,10 +1612,10 @@ export default function FortuneWebsite() {
       const API_TEMPERATURE = parseFloat(import.meta.env.VITE_LLM_TEMPERATURE || '0.8');
       const API_MAX_TOKENS = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS || '10000');
       // Web search is now handled before calling this function
-      let searchResults = [];
+      let searchResults: SearchResult[] = [];
       
       // Prepare headers based on API provider
-      const headers = {
+      const headers: { [key: string]: string } = {
         'Content-Type': 'application/json'
       };
       
@@ -1696,7 +1773,7 @@ export default function FortuneWebsite() {
         searchResults
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('LLM API Error:', error);
       
       // Handle specific error types
@@ -1706,22 +1783,22 @@ export default function FortuneWebsite() {
       }
       
       // Fallback to enhanced mock responses with retry logic
-      if (error.message.includes('API Error')) {
+      if (error.message && error.message.includes('API Error')) {
         throw new FortuneError(t.errorAIUnavailable, 'API_ERROR');
       }
       
       // Enhanced fallback responses with bilingual support
       const enhancedMockResponses = {
-        [DIVINATION_METHODS.TAROT]: generateTarotFallback(inputData.cards, readingType),
-    [DIVINATION_METHODS.ASTROLOGY]: generateAstrologyFallback(inputData.birthInfo, readingType),
-    [DIVINATION_METHODS.LOTTERY]: generateLotteryFallback(inputData.lottery, readingType),
-    [DIVINATION_METHODS.JIAOBEI]: generateJiaobeiFallback(inputData.jiaobei, readingType),
-    [DIVINATION_METHODS.NUMEROLOGY]: generateNumerologyFallback(inputData.personalInfo, readingType),
-    [DIVINATION_METHODS.BAZI]: generateBaziFallback(inputData.birthInfo, readingType),
-    [DIVINATION_METHODS.ZIWEI]: generateZiweiFallback(inputData.birthInfo, readingType),
-    [DIVINATION_METHODS.PERSONALITY]: generatePersonalityFallback(inputData.personalInfo, readingType),
-    [DIVINATION_METHODS.COMPATIBILITY]: generateCompatibilityFallback(inputData.compatibilityInfo, readingType),
-    [DIVINATION_METHODS.LIFESTORY]: generateLifestoryFallback(inputData.personalInfo, readingType)
+        [DIVINATION_METHODS.TAROT]: generateTarotFallback(inputData.cards || []),
+    [DIVINATION_METHODS.ASTROLOGY]: generateAstrologyFallback(inputData.birthInfo || {} as BirthInfo, readingType),
+    [DIVINATION_METHODS.LOTTERY]: generateLotteryFallback(inputData.lottery || {} as LotteryResult, readingType),
+    [DIVINATION_METHODS.JIAOBEI]: generateJiaobeiFallback(inputData.jiaobei || {} as JiaobeiResult, readingType),
+    [DIVINATION_METHODS.NUMEROLOGY]: generateNumerologyFallback(inputData.personalInfo || {} as PersonalInfo, readingType),
+    [DIVINATION_METHODS.BAZI]: generateBaziFallback(inputData.birthInfo || {} as BirthInfo, readingType),
+    [DIVINATION_METHODS.ZIWEI]: generateZiweiFallback(inputData.birthInfo || {} as BirthInfo, readingType),
+    [DIVINATION_METHODS.PERSONALITY]: generatePersonalityFallback(inputData.personalInfo || {} as PersonalInfo),
+    [DIVINATION_METHODS.COMPATIBILITY]: generateCompatibilityFallback(inputData.compatibilityInfo || {} as CompatibilityInfo),
+    [DIVINATION_METHODS.LIFESTORY]: generateLifestoryFallback(inputData.personalInfo || {} as PersonalInfo)
       };
       
       const fallback = enhancedMockResponses[selectedMethod] || "占卜结果生成中，请稍候...";
@@ -1738,7 +1815,7 @@ export default function FortuneWebsite() {
   }, [selectedMethod, inputData, readingType]);
   
   // Generate next steps suggestions
-  const generateNextSteps = useCallback((method, type) => {
+  const generateNextSteps = useCallback((method: string, type: string) => {
     const nextSteps = {
       [DIVINATION_METHODS.TAROT]: {
         [READING_TYPES.LOVE]: '建议：多关注内心感受，保持开放心态，适时表达真实想法。',
@@ -1788,7 +1865,7 @@ export default function FortuneWebsite() {
   }, []);
 
   // Enhanced format reading text for PDF-like appearance
-  const formatReadingText = useCallback((text) => {
+  const formatReadingText = useCallback((text: string) => {
     if (!text) return '';
     
     try {
@@ -1874,7 +1951,7 @@ export default function FortuneWebsite() {
         }
         
         const prompt = generatePrompt(selectedMethod, inputData, question, readingType, searchResults);
-        const result = await processReading(prompt, searchQuery);
+        const result = await processReading(prompt);
         
         setResult({
           method: selectedMethod,
@@ -1886,7 +1963,7 @@ export default function FortuneWebsite() {
           searchResults: result.searchResults || []
         });
         
-      } catch (error) {
+      } catch (error: any) {
         if (error.type === 'API_ERROR' && retryCount < maxRetries) {
           retryCount++;
           console.log(`Retrying API call, attempt ${retryCount}/${maxRetries}`);
@@ -1907,7 +1984,7 @@ export default function FortuneWebsite() {
   }, [selectedMethod, inputData, question, readingType, generatePrompt, processReading]);
 
   // Input data handlers
-  const updateInputData = useCallback((key, value) => {
+  const updateInputData = useCallback((key: string, value: any) => {
     setInputData(prev => ({
       ...prev,
       [key]: value

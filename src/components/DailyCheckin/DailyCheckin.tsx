@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { Calendar, Gift, Star, Flame, Trophy } from 'lucide-react'
-import { format, isToday, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 
 interface CheckinData {
   hasCheckedToday: boolean

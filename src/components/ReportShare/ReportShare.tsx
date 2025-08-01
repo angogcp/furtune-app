@@ -39,7 +39,7 @@ interface ReportData {
 const ReportShare: React.FC = () => {
   const { user } = useAuth()
   const [divinationResults, setDivinationResults] = useState<DivinationResult[]>([])
-  const [selectedResult, setSelectedResult] = useState<DivinationResult | null>(null)
+  const [_selectedResult, setSelectedResult] = useState<DivinationResult | null>(null)
   const [reportData, setReportData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
@@ -116,7 +116,7 @@ const ReportShare: React.FC = () => {
     return methodMap[method] || method
   }
 
-  const generateOverallFortune = (result: DivinationResult) => {
+  const generateOverallFortune = (_result: DivinationResult) => {
     const fortunes = [
       '您的整体运势呈现上升趋势，近期将有不错的发展机会。保持积极的心态，勇敢面对挑战。',
       '当前运势平稳，适合稳扎稳打。避免冒险行为，专注于现有的目标和计划。',
@@ -126,7 +126,7 @@ const ReportShare: React.FC = () => {
     return fortunes[Math.floor(Math.random() * fortunes.length)]
   }
 
-  const generateLoveFortune = (result: DivinationResult) => {
+  const generateLoveFortune = (_result: DivinationResult) => {
     const fortunes = [
       '感情运势良好，单身者有望遇到心仪对象。已有伴侣的朋友感情稳定，适合进一步发展。',
       '感情方面需要更多耐心和理解。多关注对方的感受，避免因小事产生矛盾。',
@@ -136,7 +136,7 @@ const ReportShare: React.FC = () => {
     return fortunes[Math.floor(Math.random() * fortunes.length)]
   }
 
-  const generateCareerFortune = (result: DivinationResult) => {
+  const generateCareerFortune = (_result: DivinationResult) => {
     const fortunes = [
       '事业运势强劲，工作中将有重要突破。把握机会，展现自己的能力和才华。',
       '职场运势稳定，适合学习新技能。投资自己，为未来的发展做好准备。',
@@ -146,7 +146,7 @@ const ReportShare: React.FC = () => {
     return fortunes[Math.floor(Math.random() * fortunes.length)]
   }
 
-  const generateHealthFortune = (result: DivinationResult) => {
+  const generateHealthFortune = (_result: DivinationResult) => {
     const fortunes = [
       '健康状况良好，精力充沛。保持规律作息，适量运动，身心都会更加健康。',
       '需要注意休息，避免过度劳累。多关注身体信号，及时调整生活节奏。',
@@ -156,7 +156,7 @@ const ReportShare: React.FC = () => {
     return fortunes[Math.floor(Math.random() * fortunes.length)]
   }
 
-  const generateWealthFortune = (result: DivinationResult) => {
+  const generateWealthFortune = (_result: DivinationResult) => {
     const fortunes = [
       '财运亨通，有意外收入的可能。理性投资，避免盲目跟风。',
       '财务状况稳定，适合储蓄理财。制定合理的财务计划，为未来做准备。',
@@ -166,7 +166,7 @@ const ReportShare: React.FC = () => {
     return fortunes[Math.floor(Math.random() * fortunes.length)]
   }
 
-  const generateSuggestions = (result: DivinationResult) => {
+  const generateSuggestions = (_result: DivinationResult) => {
     const suggestions = [
       '保持积极乐观的心态，相信自己的能力',
       '多与他人交流沟通，扩展人际关系',
@@ -178,7 +178,7 @@ const ReportShare: React.FC = () => {
     return suggestions.slice(0, 3)
   }
 
-  const generateLuckyElements = (result: DivinationResult) => {
+  const generateLuckyElements = (_result: DivinationResult) => {
     const colors = ['红色', '蓝色', '绿色', '紫色', '金色', '银色']
     const numbers = [1, 3, 6, 8, 9, 18, 28, 38]
     const directions = ['东方', '南方', '西方', '北方', '东南', '西南', '东北', '西北']

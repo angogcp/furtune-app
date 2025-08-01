@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
 
 interface DebugInfo {

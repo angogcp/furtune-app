@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Trophy, TrendingUp, Calendar, Star, BookOpen, Target, Award, Clock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -123,12 +123,12 @@ export default function GrowthRecord() {
 
       if (achievementsData) {
         setAchievements(achievementsData.map(item => ({
-          id: item.achievements.id,
-          name: item.achievements.name,
-          description: item.achievements.description,
-          icon: item.achievements.icon,
+          id: (item.achievements as any)?.id || '',
+          name: (item.achievements as any)?.name || '未知成就',
+          description: (item.achievements as any)?.description || '',
+          icon: (item.achievements as any)?.icon || '🏆',
           earnedAt: item.earned_at,
-          rewardPoints: item.achievements.reward_points
+          rewardPoints: (item.achievements as any)?.reward_points || 0
         })));
       }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Calendar, Clock, Plus, Edit, Trash2, AlertCircle, CheckCircle, Moon, Sun } from 'lucide-react';
+import { Bell, Calendar, Plus, Edit, Trash2, AlertCircle, CheckCircle, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -218,22 +218,7 @@ export default function FortuneReminders() {
     return suggestions[type as keyof typeof suggestions] || suggestions.custom;
   };
 
-  const getNextTriggerDate = (type: string, currentDate: string): string => {
-    const date = new Date(currentDate);
-    
-    switch (type) {
-      case 'monthly':
-        date.setMonth(date.getMonth() + 1);
-        break;
-      case 'yearly':
-        date.setFullYear(date.getFullYear() + 1);
-        break;
-      default:
-        date.setMonth(date.getMonth() + 1); // 默认一个月后
-    }
-    
-    return date.toISOString().split('T')[0];
-  };
+
 
   if (loading) {
     return (

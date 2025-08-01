@@ -94,7 +94,7 @@ const MasterConsultation: React.FC = () => {
     try {
       const scheduledDateTime = new Date(`${bookingForm.scheduled_date}T${bookingForm.scheduled_time}`)
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('consultation_sessions')
         .insert({
           master_id: selectedMaster.id,
