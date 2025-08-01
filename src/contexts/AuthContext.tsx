@@ -174,6 +174,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw new Error('用户名已存在，请选择其他用户名')
         }
 
+        // Get the current site URL for redirects
+        const getSiteUrl = () => {
+          // In production, use the actual deployed URL
+          if (import.meta.env.PROD) {
+            return window.location.origin
+          }
+          // In development, use localhost with correct port
+          return 'http://localhost:5173'
+        }
+
         // Create auth user with username in metadata
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
@@ -181,7 +191,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           options: {
             data: {
               username: username
-            }
+            },
+            emailRedirectTo: getSiteUrl()
           }
         })
 

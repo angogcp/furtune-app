@@ -1605,93 +1605,165 @@ export default function FortuneWebsite() {
   // LLM API integration for real fortune telling with web search support
   const processReading = useCallback(async (prompt: { system: string; user: string }) => {
     try {
-      // LLM API configuration - Fixed for Vite
-      const API_ENDPOINT = import.meta.env.VITE_LLM_API_ENDPOINT || '/api/llm/chat';
-      const API_KEY = import.meta.env.VITE_LLM_API_KEY;
-      const API_MODEL = import.meta.env.VITE_LLM_MODEL || 'gpt-3.5-turbo';
+      // Check if we're in development or production
+      const isDevelopment = import.meta.env.DEV;
       const API_TEMPERATURE = parseFloat(import.meta.env.VITE_LLM_TEMPERATURE || '0.8');
-      const API_MAX_TOKENS = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS || '10000');
+      const API_MAX_TOKENS = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS || '800');
+      
       // Web search is now handled before calling this function
       let searchResults: SearchResult[] = [];
       
-      // Prepare headers based on API provider
-      const headers: { [key: string]: string } = {
-        'Content-Type': 'application/json'
-      };
-      
-      // Configure headers for different providers
-      if (API_ENDPOINT.includes('openai.com')) {
-        headers['Authorization'] = `Bearer ${API_KEY}`;
-      } else if (API_ENDPOINT.includes('deepseek.com')) {
-        headers['Authorization'] = `Bearer ${API_KEY}`;
-      } else if (API_ENDPOINT.includes('openrouter.ai')) {
-        headers['Authorization'] = `Bearer ${API_KEY}`;
-        headers['HTTP-Referer'] = window.location.origin;
-        headers['X-Title'] = 'Fortune Telling App';
-      } else if (API_ENDPOINT.includes('anthropic.com')) {
-        headers['x-api-key'] = API_KEY;
-        headers['anthropic-version'] = '2023-06-01';
-      } else if (API_KEY) {
-        headers['Authorization'] = `Bearer ${API_KEY}`;
-      }
-      
-      // Prepare request body based on API provider
-      let requestBody;
-      if (API_ENDPOINT.includes('anthropic.com')) {
-        requestBody = {
-          model: API_MODEL,
-          max_tokens: API_MAX_TOKENS,
-          temperature: API_TEMPERATURE,
-          messages: [
-            { role: 'user', content: `${prompt.system}\n\n${prompt.user}` }
-          ]
+      if (isDevelopment) {
+        // Development: Use direct API calls with environment variables
+        const API_ENDPOINT = import.meta.env.VITE_LLM_API_ENDPOINT;
+        const API_KEY = import.meta.env.VITE_LLM_API_KEY;
+        const API_MODEL = import.meta.env.VITE_LLM_MODEL || 'deepseek-chat';
+        
+        if (!API_ENDPOINT || !API_KEY) {
+          throw new Error('开发环境需要配置 VITE_LLM_API_ENDPOINT 和 VITE_LLM_API_KEY');
+        }
+        
+        // Prepare headers for direct API call
+        const headers: { [key: string]: string } = {
+          'Content-Type': 'application/json'
         };
+        
+        if (API_ENDPOINT.includes('openai.com')) {
+          headers['Authorization'] = `Bearer ${API_KEY}`;
+        } else if (API_ENDPOINT.includes('deepseek.com')) {
+          headers['Authorization'] = `Bearer ${API_KEY}`;
+        } else if (API_ENDPOINT.includes('openrouter.ai')) {
+          headers['Authorization'] = `Bearer ${API_KEY}`;
+          headers['HTTP-Referer'] = window.location.origin;
+          headers['X-Title'] = 'Fortune Telling App';
+        } else if (API_ENDPOINT.includes('anthropic.com')) {
+          headers['x-api-key'] = API_KEY;
+          headers['anthropic-version'] = '2023-06-01';
+        } else {
+          headers['Authorization'] = `Bearer ${API_KEY}`;
+        }
+        
+        // Prepare request body for direct API call
+        let requestBody;
+        if (API_ENDPOINT.includes('anthropic.com')) {
+          requestBody = {
+            model: API_MODEL,
+            max_tokens: API_MAX_TOKENS,
+            temperature: API_TEMPERATURE,
+            messages: [
+              { role: 'user', content: `${prompt.system}\n\n${prompt.user}` }
+            ]
+          };
+        } else {
+          requestBody = {
+            messages: [
+              { role: 'system', content: prompt.system },
+              { role: 'user', content: prompt.user }
+            ],
+            model: API_MODEL,
+            temperature: API_TEMPERATURE,
+            max_tokens: API_MAX_TOKENS
+          };
+        }
+        
+        // Create AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Handle different API response formats
+        let content = '';
+        if (API_ENDPOINT.includes('anthropic.com')) {
+          content = data.content?.[0]?.text;
+        } else if (data.choices && data.choices[0]?.message?.content) {
+          content = data.choices[0].message.content;
+        } else if (data.content) {
+          content = data.content;
+        } else if (data.response) {
+          content = data.response;
+        } else {
+          throw new Error('Unexpected API response format');
+        }
+        
+        return {
+          reading: content?.trim() || '',
+          isAIGenerated: !!content,
+          searchResults
+        };
+        
       } else {
-        requestBody = {
+        // Production: Use secure server-side API route
+        const API_ENDPOINT = '/api/llm/chat';
+        
+        // Prepare request body for secure API route
+        const requestBody = {
           messages: [
             { role: 'system', content: prompt.system },
             { role: 'user', content: prompt.user }
           ],
           temperature: API_TEMPERATURE,
-          max_tokens: API_MAX_TOKENS,
-          model: API_MODEL
+          max_tokens: API_MAX_TOKENS
         };
-      }
-      
-      // Create AbortController for timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-      
-      const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} - ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      // Handle different API response formats
-      let content = '';
-      if (API_ENDPOINT.includes('anthropic.com')) {
-        content = data.content?.[0]?.text;
-      } else if (data.choices && data.choices[0]?.message?.content) {
-        // OpenAI/DeepSeek/OpenRouter format
-        content = data.choices[0].message.content;
-      } else if (data.content) {
-        // Generic content format
-        content = data.content;
-      } else if (data.response) {
-        // Generic response format
-        content = data.response;
-      } else {
-        throw new Error('Unexpected API response format');
+        
+        // Create AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(`API Error: ${response.status} - ${errorData.error || response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Handle different API response formats
+        let content = '';
+        if (data.content?.[0]?.text) {
+          // Anthropic format
+          content = data.content[0].text;
+        } else if (data.choices && data.choices[0]?.message?.content) {
+          // OpenAI/DeepSeek/OpenRouter format
+          content = data.choices[0].message.content;
+        } else if (data.content) {
+          // Generic content format
+          content = data.content;
+        } else if (data.response) {
+          // Generic response format
+          content = data.response;
+        } else {
+          throw new Error('Unexpected API response format');
+        }
+        
+        return {
+          reading: content?.trim() || '',
+          isAIGenerated: !!content,
+          searchResults
+        };
       }
       
       // Debug logging
@@ -1724,28 +1796,41 @@ export default function FortuneWebsite() {
               user: `Please continue the following BaZi analysis and complete all remaining sections:\n\n${content}\n\nPlease continue from the next section and complete all sections up to section 15 (综合建议/Comprehensive Advice).`
             };
             
+            // Use the same API endpoint and method as the main request
+            const continuationRequestBody = {
+              messages: [
+                { role: 'system', content: continuationPrompt.system },
+                { role: 'user', content: continuationPrompt.user }
+              ],
+              temperature: API_TEMPERATURE,
+              max_tokens: API_MAX_TOKENS
+            };
+            
             const continuationResponse = await fetch(API_ENDPOINT, {
               method: 'POST',
-              headers,
-              body: JSON.stringify({
-                messages: [
-                  { role: 'system', content: continuationPrompt.system },
-                  { role: 'user', content: continuationPrompt.user }
-                ],
-                temperature: API_TEMPERATURE,
-                max_tokens: API_MAX_TOKENS,
-                model: API_MODEL
-              })
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(continuationRequestBody)
             });
             
             if (continuationResponse.ok) {
               const continuationData = await continuationResponse.json();
               let continuationContent = '';
               
-              if (API_ENDPOINT.includes('anthropic.com')) {
-                continuationContent = continuationData.content?.[0]?.text;
+              // Handle different API response formats (same as main request)
+              if (continuationData.content?.[0]?.text) {
+                // Anthropic format
+                continuationContent = continuationData.content[0].text;
               } else if (continuationData.choices && continuationData.choices[0]?.message?.content) {
+                // OpenAI/DeepSeek/OpenRouter format
                 continuationContent = continuationData.choices[0].message.content;
+              } else if (continuationData.content) {
+                // Generic content format
+                continuationContent = continuationData.content;
+              } else if (continuationData.response) {
+                // Generic response format
+                continuationContent = continuationData.response;
               }
               
               if (continuationContent) {

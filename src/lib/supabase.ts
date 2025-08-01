@@ -16,7 +16,13 @@ if (!isValidConfig) {
   console.warn('⚠️ Supabase未正确配置。请在.env文件中设置VITE_SUPABASE_URL和VITE_SUPABASE_ANON_KEY')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+})
 export { isValidConfig as isSupabaseConfigured }
 
 // Database types
