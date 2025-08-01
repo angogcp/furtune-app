@@ -1,5 +1,37 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, AlertCircle, Sparkles, Download, Printer, Search, User, UserCheck, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Star, Moon, Sun, Gem, Heart, Coins, Briefcase, Shield, AlertCircle, Sparkles, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle } from 'lucide-react';
+
+// Type definitions
+interface DivinationResult {
+  question: string;
+  reading: string;
+  timestamp: number;
+  method?: string;
+  type?: string;
+}
+
+interface LotteryResult {
+  number: string;
+  poem: string;
+  meaning: string;
+  interpretation: string;
+}
+
+interface JiaobeResult {
+  result: string;
+  meaning: string;
+}
+
+interface InputData {
+  birthInfo: {
+    birthDate: string;
+    birthTime: string;
+    birthPlace: string;
+    gender: string;
+  };
+  lottery: LotteryResult | null;
+  jiaobei: JiaobeResult | null;
+}
 
 // 中文文本配置
 const texts = {
@@ -233,7 +265,7 @@ const texts = {
   wei: '未时(13:00-15:00)',
   shen: '申时(15:00-17:00)',
   you: '酉时(17:00-19:00)',
-  xu: '戌时(19:00-21:00)',
+  xu_time: '戌时(19:00-21:00)',
   hai: '亥时(21:00-23:00)',
   
   // 观音灵签数据（100签）
@@ -341,20 +373,20 @@ export default function FortuneTellingWebsite() {
   const [selectedType, setSelectedType] = useState('');
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<DivinationResult | null>(null);
   const [error, setError] = useState('');
-  const [inputData, setInputData] = useState({
+  const [inputData, setInputData] = useState<InputData>({
     birthInfo: { birthDate: '', birthTime: '', birthPlace: '', gender: '' },
     lottery: null,
     jiaobei: null
   });
 
-  const updateInputData = useCallback((key, value) => {
+  const updateInputData = useCallback((key: keyof InputData, value: any) => {
     setInputData(prev => ({ ...prev, [key]: value }));
   }, []);
 
   // 模拟占卜处理
-  const processReading = async (method, type, question, data) => {
+  const processReading = async (method: string, type: string, question: string, data: any) => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     const mockResponses = {
@@ -397,16 +429,17 @@ export default function FortuneTellingWebsite() {
   const drawLottery = () => {
     const numbers = Object.keys(texts.lotteryData);
     const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
+    const lotteryData = texts.lotteryData[randomNumber as keyof typeof texts.lotteryData];
     const lottery = {
       number: randomNumber,
-      ...texts.lotteryData[randomNumber]
+      ...lotteryData
     };
     updateInputData('lottery', lottery);
   };
 
   // 擲筊功能
   const throwJiaobei = () => {
-    const results = ['holy', 'laughing', 'yin'];
+    const results = ['holy', 'laughing', 'yin'] as const;
     const randomResult = results[Math.floor(Math.random() * results.length)];
     const meanings = {
       'holy': texts.shengJiaoMeaning,
@@ -706,13 +739,19 @@ export default function FortuneTellingWebsite() {
                   {texts.result}
                 </h2>
                 <div className="flex items-center justify-center space-x-3 mb-3">
-                  <span className="px-4 py-2 bg-purple-600/30 rounded-full text-purple-200 text-sm font-medium">
-                    {methodConfig[result.method].title}
-                  </span>
-                  <span className="text-purple-400">·</span>
-                  <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-200 text-sm font-medium">
-                    {typeConfig[result.type].title}
-                  </span>
+                  {result.method && methodConfig[result.method] && (
+                    <span className="px-4 py-2 bg-purple-600/30 rounded-full text-purple-200 text-sm font-medium">
+                      {methodConfig[result.method].title}
+                    </span>
+                  )}
+                  {result.method && result.type && methodConfig[result.method] && typeConfig[result.type] && (
+                    <span className="text-purple-400">·</span>
+                  )}
+                  {result.type && typeConfig[result.type] && (
+                    <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-200 text-sm font-medium">
+                      {typeConfig[result.type].title}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

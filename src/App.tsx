@@ -1,5 +1,49 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, AlertCircle, Sparkles, Download, Printer, Search, User, UserCheck, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle } from 'lucide-react';
+
+// 类型定义
+interface SearchResult {
+  title: string;
+  snippet: string;
+}
+
+interface BirthInfo {
+  date: string;
+  time: string;
+  location: string;
+}
+
+interface PersonalInfo {
+  name: string;
+  birthDate: string;
+  gender: string;
+  selfDescription: string;
+  dreamGoals: string;
+  lifeExperience: string;
+}
+
+interface CompatibilityInfo {
+  yourName: string;
+  yourBirthDate: string;
+  yourGender: string;
+  partnerName: string;
+  partnerBirthDate: string;
+  partnerGender: string;
+  relationshipType: string;
+  compatibilityScore: string;
+}
+
+interface LotteryResult {
+  number: string;
+  poem: string;
+  meaning: string;
+  interpretation: string;
+}
+
+interface JiaobeiResult {
+  result: string;
+  interpretation: string;
+}
 
 // 中文文本配置
 const texts = {
@@ -233,7 +277,7 @@ const texts = {
   wei: '未时(13:00-15:00)',
   shen: '申时(15:00-17:00)',
   you: '酉时(17:00-19:00)',
-  xu: '戌时(19:00-21:00)',
+  xu_time: '戌时(19:00-21:00)',
   hai: '亥时(21:00-23:00)',
   
   // 观音灵签数据（100签）
@@ -303,7 +347,7 @@ const getPromptTemplates = () => ({
 - 不涉及生死、疾病诊断等敏感话题
 - 强调占卜仅供参考，重要决定需理性思考`,
     
-    user: (cards, question, type, searchResults = []) => {
+    user: (cards: string[], question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我抽取了以下塔罗牌：${cards.join('、')}
 问题类型：${type}
 具体问题：${question}`;
@@ -335,7 +379,7 @@ const getPromptTemplates = () => ({
 - 重要时间节点
 - 下一步具体行动建议`,
     
-    user: (birthInfo, question, type, searchResults = []) => {
+    user: (birthInfo: BirthInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的出生信息：
 出生日期：${birthInfo.date}
 出生时间：${birthInfo.time}
@@ -372,7 +416,7 @@ const getPromptTemplates = () => ({
 - 修心养性指导
 - 下一步具体建议`,
     
-    user: (lottery, question, type, searchResults = []) => {
+    user: (lottery: LotteryResult, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我抽到的灵签是：
 签号：第${lottery.number}签
 签文：${lottery.poem}
@@ -411,7 +455,7 @@ const getPromptTemplates = () => ({
 - 注意事项
 - 后续建议`,
     
-    user: (jiaobei, question, type, searchResults = []) => {
+    user: (jiaobei: JiaobeiResult, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的擲筊结果是：${jiaobei.result}
 结果含义：${jiaobei.meaning}
 
@@ -445,7 +489,7 @@ const getPromptTemplates = () => ({
 - 幸运数字和颜色推荐
 - 下一步行动建议`,
     
-    user: (personalInfo, question, type, searchResults = []) => {
+    user: (personalInfo: PersonalInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的个人信息：
 姓名：${personalInfo.name}
 出生日期：${personalInfo.birthDate}
@@ -521,7 +565,7 @@ const getPromptTemplates = () => ({
 15. **综合建议：**
 （开运方法、生活指导、修身养性建议等）`,
     
-    user: (birthInfo, question, type, searchResults = []) => {
+    user: (birthInfo: BirthInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的出生信息：
 出生时间：${birthInfo.birthDate} ${birthInfo.birthTime || '时辰不详'}
 性别：${birthInfo.gender || '未提供'}
@@ -570,7 +614,7 @@ const getPromptTemplates = () => ({
 **开运建议：**
 （改运方法、生活指导、具体建议）`,
     
-    user: (birthInfo, question, type, searchResults = []) => {
+    user: (birthInfo: BirthInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的出生信息：
 出生时间：${birthInfo.birthDate} ${birthInfo.birthTime || '时辰不详'}
 性别：${birthInfo.gender || '未提供'}
@@ -618,7 +662,7 @@ const getPromptTemplates = () => ({
 **生活建议：**
 （日常生活中的实用建议）`,
     
-    user: (personalInfo, question, type, searchResults = []) => {
+    user: (personalInfo: PersonalInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的个人信息：
 姓名：${personalInfo.name || '未提供'}
 年龄：${personalInfo.age || '未提供'}
@@ -672,7 +716,7 @@ const getPromptTemplates = () => ({
 **注意事项：**
 （需要特别关注的问题和解决方案）`,
     
-    user: (compatibilityInfo, question, type, searchResults = []) => {
+    user: (compatibilityInfo: CompatibilityInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `配对信息：
 我的信息：
 - 姓名：${compatibilityInfo.person1?.name || '未提供'}
@@ -733,7 +777,7 @@ const getPromptTemplates = () => ({
 **未来展望：**
 （对未来发展的美好愿景）`,
     
-    user: (personalInfo, question, type, searchResults = []) => {
+    user: (personalInfo: PersonalInfo, question: string, type: string, searchResults: SearchResult[] = []) => {
       let prompt = `我的个人信息：
 姓名：${personalInfo.name || '未提供'}
 出生日期：${personalInfo.birthDate || '未提供'}

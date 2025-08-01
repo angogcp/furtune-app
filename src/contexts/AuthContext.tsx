@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
+import { createContext, useContext, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { networkManager } from '../utils/networkManager'
 
@@ -13,7 +14,7 @@ interface UserProfile {
 }
 
 interface AuthContextType {
-  user: User | null
+  user: SupabaseUser | null
   userProfile: UserProfile | null
   loading: boolean
   isSupabaseConfigured: boolean
@@ -27,7 +28,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<SupabaseUser | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [isSupabaseConfigured, setIsSupabaseConfigured] = useState(false)
@@ -112,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     try {
       const { data, error } = await networkManager.executeWithRetry(
-        () => supabase
+        async () => await supabase
           .from('users')
           .select('*')
           .eq('id', userId)
@@ -275,7 +276,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const { error } = await networkManager.executeWithRetry(
-        () => supabase
+        async () => await supabase
           .from('users')
           .update(updates)
           .eq('id', user.id),

@@ -135,7 +135,7 @@ export async function checkNetworkConnection(): Promise<boolean> {
   
   try {
     // Try to fetch a small resource to test actual connectivity
-    const response = await fetch('https://www.google.com/favicon.ico', {
+    await fetch('https://www.google.com/favicon.ico', {
       method: 'HEAD',
       mode: 'no-cors',
       cache: 'no-cache'
