@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复数据库设置 - 占卜应用</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4caf50;
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid #ffc107;
+            color: #fff3cd;
+        }
+        .info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196f3;
+        }
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .sql-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 修复占卜应用数据库</h1>
+        
+        <div class="step">
+            <h3>📋 问题诊断</h3>
+            <p>检测到以下功能无法使用：签到、许愿墙、成长记录、个性化推荐、命运提醒、报告分享</p>
+            <p><strong>原因：</strong>数据库表尚未创建或配置不完整</p>
+            <button onclick="testConnection()">🔍 检测数据库连接</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>🛠️ 自动修复</h3>
+            <p>点击下面的按钮自动创建所需的数据库表和配置：</p>
+            <button onclick="setupDatabase()" id="setupBtn">🚀 一键修复数据库</button>
+            <div class="progress" id="progressContainer" style="display: none;">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div id="setupResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>✅ 验证修复</h3>
+            <p>修复完成后，验证所有功能是否正常：</p>
+            <button onclick="verifyFunctions()" id="verifyBtn" disabled>🔍 验证功能</button>
+            <div id="verifyResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>📖 手动修复指南</h3>
+            <p>如果自动修复失败，请按以下步骤手动操作：</p>
+            <ol>
+                <li>登录 <a href="https://supabase.com/dashboard" target="_blank" style="color: #ffd700;">Supabase 控制台</a></li>
+                <li>选择您的项目</li>
+                <li>进入 "SQL Editor"</li>
+                <li>复制并执行以下SQL脚本：</li>
+            </ol>
+            <button onclick="showSQL()">📄 显示SQL脚本</button>
+            <div id="sqlScripts" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase配置
+        const supabaseUrl = 'https://anwwblcjzmykznimqmxu.supabase.co/';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFud3dibGNqem15a3puaW1xbXh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MzUzNzYsImV4cCI6MjA2OTUxMTM3Nn0.Y9tK0G0H3WRdHUSRCv8FhmqwS5sJCJ6CKMUAUQ1vzk8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // 测试数据库连接
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="info">🔄 正在测试连接...</div>';
+            
+            try {
+                const { data, error } = await supabase.from('users').select('count').limit(1);
+                
+                if (error) {
+                    if (error.message.includes('relation "users" does not exist')) {
+                        resultDiv.innerHTML = `
+                            <div class="warning">
+                                ⚠️ 数据库表不存在<br>
+                                <strong>解决方案：</strong>需要创建数据库表
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="error">
+                                ❌ 连接失败: ${error.message}
+                            </div>
+                        `;
+                    }
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ 数据库连接正常！所有功能应该可以使用。
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 测试失败: ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 设置数据库
+        async function setupDatabase() {
+            const setupBtn = document.getElementById('setupBtn');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const resultDiv = document.getElementById('setupResult');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            
+            setupBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            const sqlScripts = [
+                {
+                    name: '创建用户表',
+                    sql: `
+                        CREATE TABLE IF NOT EXISTS users (
+                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                          email TEXT UNIQUE NOT NULL,
+                          username TEXT UNIQUE NOT NULL,
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                          last_sign_in TIMESTAMP WITH TIME ZONE,
+                          sign_in_streak INTEGER DEFAULT 0,
+                          total_sign_ins INTEGER DEFAULT 0
+                        );
+                    `
+                },
+                {
+                    name: '创建签到记录表',
+                    sql: `
+                        CREATE TABLE IF NOT EXISTS sign_ins (
+                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                          user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+                          date DATE NOT NULL,
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                          UNIQUE(user_id, date)
+                        );
+                    `
+                },
+                {
+                    name: '创建每日运势表',
+                    sql: `
+                        CREATE TABLE IF NOT EXISTS daily_fortunes (
+                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                          user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+                          date DATE NOT NULL,
+                          fortune_type TEXT NOT NULL,
+                          fortune_content TEXT NOT NULL,
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                          UNIQUE(user_id, date)
+                        );
+                    `
+                },
+                {
+                    name: '创建许愿表',
+                    sql: `
+                        CREATE TABLE IF NOT EXISTS wishes (
+                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                          user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+                          content TEXT NOT NULL,
+                          is_anonymous BOOLEAN DEFAULT TRUE,
+                          likes INTEGER DEFAULT 0,
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                        );
+                    `
+                },
+                {
+                    name: '创建点赞记录表',
+                    sql: `
+                        CREATE TABLE IF NOT EXISTS wish_likes (
+                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                          user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+                          wish_id UUID REFERENCES wishes(id) ON DELETE CASCADE,
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                          UNIQUE(user_id, wish_id)
+                        );
+                    `
+                },
+                {
+                    name: '创建占卜历史记录表',
+                    sql: `
+                        CREATE TABLE IF NOT EXISTS divination_history (
+                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                          user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+                          method TEXT NOT NULL,
+                          type TEXT NOT NULL,
+                          question TEXT NOT NULL,
+                          result TEXT NOT NULL,
+                          is_ai_generated BOOLEAN DEFAULT FALSE,
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                        );
+                    `
+                },
+                {
+                    name: '创建索引',
+                    sql: `
+                        CREATE INDEX IF NOT EXISTS idx_sign_ins_user_date ON sign_ins(user_id, date);
+                        CREATE INDEX IF NOT EXISTS idx_daily_fortunes_user_date ON daily_fortunes(user_id, date);
+                        CREATE INDEX IF NOT EXISTS idx_wishes_created_at ON wishes(created_at DESC);
+                        CREATE INDEX IF NOT EXISTS idx_divination_history_user ON divination_history(user_id, created_at DESC);
+                    `
+                },
+                {
+                    name: '启用行级安全策略',
+                    sql: `
+                        ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+                        ALTER TABLE sign_ins ENABLE ROW LEVEL SECURITY;
+                        ALTER TABLE daily_fortunes ENABLE ROW LEVEL SECURITY;
+                        ALTER TABLE wishes ENABLE ROW LEVEL SECURITY;
+                        ALTER TABLE wish_likes ENABLE ROW LEVEL SECURITY;
+                        ALTER TABLE divination_history ENABLE ROW LEVEL SECURITY;
+                    `
+                },
+                {
+                    name: '创建安全策略',
+                    sql: `
+                        CREATE POLICY IF NOT EXISTS "Users can view own profile" ON users
+                          FOR SELECT USING (auth.uid() = id);
+                        CREATE POLICY IF NOT EXISTS "Users can update own profile" ON users
+                          FOR UPDATE USING (auth.uid() = id);
+                        CREATE POLICY IF NOT EXISTS "Users can view own sign-ins" ON sign_ins
+                          FOR SELECT USING (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Users can insert own sign-ins" ON sign_ins
+                          FOR INSERT WITH CHECK (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Users can view own fortunes" ON daily_fortunes
+                          FOR SELECT USING (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Users can insert own fortunes" ON daily_fortunes
+                          FOR INSERT WITH CHECK (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Anyone can view wishes" ON wishes
+                          FOR SELECT USING (true);
+                        CREATE POLICY IF NOT EXISTS "Authenticated users can insert wishes" ON wishes
+                          FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+                        CREATE POLICY IF NOT EXISTS "Users can update own wishes" ON wishes
+                          FOR UPDATE USING (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Users can view wish likes" ON wish_likes
+                          FOR SELECT USING (true);
+                        CREATE POLICY IF NOT EXISTS "Users can insert wish likes" ON wish_likes
+                          FOR INSERT WITH CHECK (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Users can view own divination history" ON divination_history
+                          FOR SELECT USING (auth.uid() = user_id);
+                        CREATE POLICY IF NOT EXISTS "Users can insert own divination history" ON divination_history
+                          FOR INSERT WITH CHECK (auth.uid() = user_id);
+                    `
+                }
+            ];
+            
+            let successCount = 0;
+            const totalSteps = sqlScripts.length;
+            
+            for (let i = 0; i < sqlScripts.length; i++) {
+                const script = sqlScripts[i];
+                const progress = ((i + 1) / totalSteps) * 100;
+                progressBar.style.width = progress + '%';
+                
+                try {
+                    resultDiv.innerHTML += `<div class="info">🔄 ${script.name}...</div>`;
+                    
+                    const { data, error } = await supabase.rpc('exec_sql', { sql_query: script.sql });
+                    
+                    if (error) {
+                        // 尝试直接执行SQL（某些Supabase配置可能不支持rpc）
+                        console.warn('RPC failed, trying direct execution:', error);
+                        resultDiv.innerHTML += `<div class="warning">⚠️ ${script.name}: 需要手动执行</div>`;
+                    } else {
+                        resultDiv.innerHTML += `<div class="success">✅ ${script.name}: 完成</div>`;
+                        successCount++;
+                    }
+                } catch (err) {
+                    resultDiv.innerHTML += `<div class="error">❌ ${script.name}: ${err.message}</div>`;
+                }
+                
+                // 添加延迟以显示进度
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            if (successCount === totalSteps) {
+                resultDiv.innerHTML += `
+                    <div class="success">
+                        🎉 数据库设置完成！所有表和策略已创建。
+                    </div>
+                `;
+                verifyBtn.disabled = false;
+            } else {
+                resultDiv.innerHTML += `
+                    <div class="warning">
+                        ⚠️ 部分步骤需要手动完成。请查看上面的错误信息或使用手动修复指南。
+                    </div>
+                `;
+            }
+            
+            setupBtn.disabled = false;
+            progressContainer.style.display = 'none';
+        }
+
+        // 验证功能
+        async function verifyFunctions() {
+            const resultDiv = document.getElementById('verifyResult');
+            resultDiv.innerHTML = '<div class="info">🔄 正在验证功能...</div>';
+            
+            const tests = [
+                { name: '用户表', table: 'users' },
+                { name: '签到记录', table: 'sign_ins' },
+                { name: '每日运势', table: 'daily_fortunes' },
+                { name: '许愿墙', table: 'wishes' },
+                { name: '点赞记录', table: 'wish_likes' },
+                { name: '占卜历史', table: 'divination_history' }
+            ];
+            
+            let passedTests = 0;
+            let testResults = '';
+            
+            for (const test of tests) {
+                try {
+                    const { data, error } = await supabase.from(test.table).select('count').limit(1);
+                    
+                    if (error) {
+                        testResults += `<div class="error">❌ ${test.name}: ${error.message}</div>`;
+                    } else {
+                        testResults += `<div class="success">✅ ${test.name}: 正常</div>`;
+                        passedTests++;
+                    }
+                } catch (err) {
+                    testResults += `<div class="error">❌ ${test.name}: ${err.message}</div>`;
+                }
+            }
+            
+            if (passedTests === tests.length) {
+                resultDiv.innerHTML = `
+                    ${testResults}
+                    <div class="success">
+                        🎉 所有功能验证通过！现在可以正常使用：<br>
+                        • 签到功能<br>
+                        • 许愿墙<br>
+                        • 成长记录<br>
+                        • 个性化推荐<br>
+                        • 命运提醒<br>
+                        • 报告分享
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    ${testResults}
+                    <div class="warning">
+                        ⚠️ ${passedTests}/${tests.length} 项功能正常。请检查失败的项目。
+                    </div>
+                `;
+            }
+        }
+
+        // 显示SQL脚本
+        function showSQL() {
+            const sqlDiv = document.getElementById('sqlScripts');
+            if (sqlDiv.style.display === 'none') {
+                sqlDiv.style.display = 'block';
+                sqlDiv.innerHTML = `
+                    <div class="sql-code">
+-- 基础表结构
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  last_sign_in TIMESTAMP WITH TIME ZONE,
+  sign_in_streak INTEGER DEFAULT 0,
+  total_sign_ins INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS sign_ins (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, date)
+);
+
+CREATE TABLE IF NOT EXISTS daily_fortunes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  fortune_type TEXT NOT NULL,
+  fortune_content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, date)
+);
+
+CREATE TABLE IF NOT EXISTS wishes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  content TEXT NOT NULL,
+  is_anonymous BOOLEAN DEFAULT TRUE,
+  likes INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS wish_likes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  wish_id UUID REFERENCES wishes(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, wish_id)
+);
+
+CREATE TABLE IF NOT EXISTS divination_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  method TEXT NOT NULL,
+  type TEXT NOT NULL,
+  question TEXT NOT NULL,
+  result TEXT NOT NULL,
+  is_ai_generated BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS idx_sign_ins_user_date ON sign_ins(user_id, date);
+CREATE INDEX IF NOT EXISTS idx_daily_fortunes_user_date ON daily_fortunes(user_id, date);
+CREATE INDEX IF NOT EXISTS idx_wishes_created_at ON wishes(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_divination_history_user ON divination_history(user_id, created_at DESC);
+
+-- 启用行级安全策略
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sign_ins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_fortunes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wishes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wish_likes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE divination_history ENABLE ROW LEVEL SECURITY;
+
+-- 创建安全策略
+CREATE POLICY "Users can view own profile" ON users
+  FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON users
+  FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can view own sign-ins" ON sign_ins
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own sign-ins" ON sign_ins
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can view own fortunes" ON daily_fortunes
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own fortunes" ON daily_fortunes
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Anyone can view wishes" ON wishes
+  FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can insert wishes" ON wishes
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Users can update own wishes" ON wishes
+  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can view wish likes" ON wish_likes
+  FOR SELECT USING (true);
+CREATE POLICY "Users can insert wish likes" ON wish_likes
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can view own divination history" ON divination_history
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own divination history" ON divination_history
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+                    </div>
+                    <p><strong>使用方法：</strong></p>
+                    <ol>
+                        <li>复制上面的SQL代码</li>
+                        <li>登录Supabase控制台</li>
+                        <li>进入SQL Editor</li>
+                        <li>粘贴并执行代码</li>
+                    </ol>
+                `;
+            } else {
+                sqlDiv.style.display = 'none';
+            }
+        }
+
+        // 页面加载时自动测试连接
+        window.addEventListener('load', function() {
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html>

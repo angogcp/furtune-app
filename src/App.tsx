@@ -806,10 +806,10 @@ const validateInput = (method, data, t, question) => {
       if (isNaN(birthDate.getTime()) || birthDate > new Date()) {
         throw new FortuneError(t.errorValidDate, 'VALIDATION_ERROR');
       }
-      // 验证年份为4位数
+      // 验证年份范围为1920-2030
       const astrologyYear = birthDate.getFullYear();
-      if (astrologyYear < 1000 || astrologyYear > 9999) {
-        throw new FortuneError('请输入有效的年份（4位数）', 'VALIDATION_ERROR');
+      if (astrologyYear < 1920 || astrologyYear > 2030) {
+        throw new FortuneError('请输入1920-2030年范围内的有效年份', 'VALIDATION_ERROR');
       }
       if (data.birthInfo.location.trim().length < 2) {
         throw new FortuneError('请输入有效的出生地点', 'VALIDATION_ERROR');
@@ -880,6 +880,10 @@ const validateInput = (method, data, t, question) => {
       if (data.personalInfo.name.trim().length < 2) {
         throw new FortuneError('请输入有效的姓名（至少2个字符）', 'VALIDATION_ERROR');
       }
+      // 验证性格自我描述为必填
+      if (!data.personalInfo?.selfDescription || data.personalInfo.selfDescription.trim().length === 0) {
+        throw new FortuneError('请填写性格自我描述', 'VALIDATION_ERROR');
+      }
       break;
     case DIVINATION_METHODS.COMPATIBILITY:
       if (!data.compatibilityInfo?.person1?.name || !data.compatibilityInfo?.person2?.name) {
@@ -888,6 +892,19 @@ const validateInput = (method, data, t, question) => {
       if (data.compatibilityInfo.person1.name.trim().length < 2 || data.compatibilityInfo.person2.name.trim().length < 2) {
         throw new FortuneError('请输入有效的姓名（至少2个字符）', 'VALIDATION_ERROR');
       }
+      // 验证八字相关必填字段
+      if (!data.compatibilityInfo?.person1?.birthDate || !data.compatibilityInfo?.person2?.birthDate) {
+        throw new FortuneError('请填写双方的出生日期', 'VALIDATION_ERROR');
+      }
+      if (!data.compatibilityInfo?.person1?.birthTime || !data.compatibilityInfo?.person2?.birthTime) {
+        throw new FortuneError('请选择双方的出生时辰', 'VALIDATION_ERROR');
+      }
+      if (!data.compatibilityInfo?.person1?.gender || !data.compatibilityInfo?.person2?.gender) {
+        throw new FortuneError('请选择双方的性别', 'VALIDATION_ERROR');
+      }
+      if (!data.compatibilityInfo?.relationshipType) {
+        throw new FortuneError('请选择关系类型', 'VALIDATION_ERROR');
+      }
       break;
     case DIVINATION_METHODS.LIFESTORY:
       if (!data.personalInfo?.name) {
@@ -895,6 +912,13 @@ const validateInput = (method, data, t, question) => {
       }
       if (data.personalInfo.name.trim().length < 2) {
         throw new FortuneError('请输入有效的姓名（至少2个字符）', 'VALIDATION_ERROR');
+      }
+      // 验证人生经历和梦想目标为必填
+      if (!data.personalInfo?.lifeExperience || data.personalInfo.lifeExperience.trim().length === 0) {
+        throw new FortuneError('请填写人生经历', 'VALIDATION_ERROR');
+      }
+      if (!data.personalInfo?.dreams || data.personalInfo.dreams.trim().length === 0) {
+        throw new FortuneError('请填写梦想目标', 'VALIDATION_ERROR');
       }
       break;
     default:
@@ -1870,13 +1894,26 @@ export default function FortuneWebsite() {
 
       <div className="max-w-6xl mx-auto px-4 pb-8">
         {/* Method Selection */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center">{t.selectMethod}</h2>
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+              {t.selectMethod}
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-pink-400 mx-auto rounded-full"></div>
+          </div>
           
           {/* Western Divination Methods */}
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-4 text-center text-blue-300">🌟 西方占卜</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mb-10">
+            <div className="flex items-center justify-center mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-blue-400"></div>
+              <h3 className="text-2xl font-bold mx-6 text-blue-300 flex items-center">
+                <span className="text-3xl mr-2">🌟</span>
+                西方占卜
+                <span className="text-3xl ml-2">🌟</span>
+              </h3>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent to-blue-400"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[DIVINATION_METHODS.TAROT, DIVINATION_METHODS.ASTROLOGY, DIVINATION_METHODS.NUMEROLOGY].map((method) => {
                 const config = methodConfig[method];
                 const IconComponent = config.icon;
@@ -1887,17 +1924,23 @@ export default function FortuneWebsite() {
                       setSelectedMethod(method);
                       resetForm();
                     }}
-                    className={`p-6 rounded-lg border-2 transition-all duration-300 ${
+                    className={`group relative p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-105 ${
                       selectedMethod === method
-                        ? 'border-yellow-400 bg-yellow-400/20 shadow-lg shadow-yellow-400/50'
-                        : 'border-blue-400/30 bg-blue-900/30 hover:border-blue-400/60'
+                        ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/20 via-blue-400/10 to-purple-400/20 shadow-2xl shadow-yellow-400/30'
+                        : 'border-blue-400/40 bg-gradient-to-br from-blue-900/40 via-blue-800/30 to-indigo-900/40 hover:border-blue-300/70 hover:shadow-xl hover:shadow-blue-400/20'
                     }`}
                   >
-                    <IconComponent className={`w-12 h-12 mx-auto mb-3 ${
-                      selectedMethod === method ? 'text-yellow-400' : 'text-blue-300'
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <IconComponent className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                      selectedMethod === method ? 'text-yellow-400 drop-shadow-lg' : 'text-blue-300 group-hover:text-blue-200'
                     }`} />
-                    <h3 className="text-lg font-semibold mb-2">{config.title}</h3>
-                    <p className="text-sm text-gray-300">{config.description}</p>
+                    <h3 className="text-xl font-bold mb-3 transition-colors duration-300">{config.title}</h3>
+                    <p className="text-sm text-gray-300 leading-relaxed">{config.description}</p>
+                    {selectedMethod === method && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-purple-900 text-sm font-bold">✓</span>
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -1905,9 +1948,17 @@ export default function FortuneWebsite() {
           </div>
           
           {/* Eastern Divination Methods */}
-          <div>
-            <h3 className="text-xl font-semibold mb-4 text-center text-orange-300">🏮 东方占卜</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mb-10">
+            <div className="flex items-center justify-center mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-orange-400"></div>
+              <h3 className="text-2xl font-bold mx-6 text-orange-300 flex items-center">
+                <span className="text-3xl mr-2">🏮</span>
+                东方占卜
+                <span className="text-3xl ml-2">🏮</span>
+              </h3>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent to-orange-400"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[DIVINATION_METHODS.LOTTERY, DIVINATION_METHODS.JIAOBEI, DIVINATION_METHODS.BAZI, DIVINATION_METHODS.ZIWEI].map((method) => {
                 const config = methodConfig[method];
                 const IconComponent = config.icon;
@@ -1918,17 +1969,23 @@ export default function FortuneWebsite() {
                       setSelectedMethod(method);
                       resetForm();
                     }}
-                    className={`p-6 rounded-lg border-2 transition-all duration-300 ${
+                    className={`group relative p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-105 ${
                       selectedMethod === method
-                        ? 'border-yellow-400 bg-yellow-400/20 shadow-lg shadow-yellow-400/50'
-                        : 'border-orange-400/30 bg-orange-900/30 hover:border-orange-400/60'
+                        ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/20 via-orange-400/10 to-red-400/20 shadow-2xl shadow-yellow-400/30'
+                        : 'border-orange-400/40 bg-gradient-to-br from-orange-900/40 via-red-800/30 to-pink-900/40 hover:border-orange-300/70 hover:shadow-xl hover:shadow-orange-400/20'
                     }`}
                   >
-                    <IconComponent className={`w-12 h-12 mx-auto mb-3 ${
-                      selectedMethod === method ? 'text-yellow-400' : 'text-orange-300'
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <IconComponent className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                      selectedMethod === method ? 'text-yellow-400 drop-shadow-lg' : 'text-orange-300 group-hover:text-orange-200'
                     }`} />
-                    <h3 className="text-lg font-semibold mb-2">{config.title}</h3>
-                    <p className="text-sm text-gray-300">{config.description}</p>
+                    <h3 className="text-xl font-bold mb-3 transition-colors duration-300">{config.title}</h3>
+                    <p className="text-sm text-gray-300 leading-relaxed">{config.description}</p>
+                    {selectedMethod === method && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-purple-900 text-sm font-bold">✓</span>
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -1936,9 +1993,17 @@ export default function FortuneWebsite() {
           </div>
           
           {/* Psychological Tests */}
-          <div className="mt-6">
-            <h3 className="text-xl font-semibold mb-4 text-center text-purple-300">🧠 心理测试</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <div className="flex items-center justify-center mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-purple-400"></div>
+              <h3 className="text-2xl font-bold mx-6 text-purple-300 flex items-center">
+                <span className="text-3xl mr-2">🧠</span>
+                心理测试
+                <span className="text-3xl ml-2">💫</span>
+              </h3>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent to-purple-400"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[DIVINATION_METHODS.PERSONALITY, DIVINATION_METHODS.COMPATIBILITY, DIVINATION_METHODS.LIFESTORY].map((method) => {
                 const config = methodConfig[method];
                 const IconComponent = config.icon;
@@ -1949,17 +2014,23 @@ export default function FortuneWebsite() {
                       setSelectedMethod(method);
                       resetForm();
                     }}
-                    className={`p-6 rounded-lg border-2 transition-all duration-300 ${
+                    className={`group relative p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-105 ${
                       selectedMethod === method
-                        ? 'border-yellow-400 bg-yellow-400/20 shadow-lg shadow-yellow-400/50'
-                        : 'border-purple-400/30 bg-purple-900/30 hover:border-purple-400/60'
+                        ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/20 via-purple-400/10 to-pink-400/20 shadow-2xl shadow-yellow-400/30'
+                        : 'border-purple-400/40 bg-gradient-to-br from-purple-900/40 via-indigo-800/30 to-blue-900/40 hover:border-purple-300/70 hover:shadow-xl hover:shadow-purple-400/20'
                     }`}
                   >
-                    <IconComponent className={`w-12 h-12 mx-auto mb-3 ${
-                      selectedMethod === method ? 'text-yellow-400' : 'text-purple-300'
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <IconComponent className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                      selectedMethod === method ? 'text-yellow-400 drop-shadow-lg' : 'text-purple-300 group-hover:text-purple-200'
                     }`} />
-                    <h3 className="text-lg font-semibold mb-2">{config.title}</h3>
-                    <p className="text-sm text-gray-300">{config.description}</p>
+                    <h3 className="text-xl font-bold mb-3 transition-colors duration-300">{config.title}</h3>
+                    <p className="text-sm text-gray-300 leading-relaxed">{config.description}</p>
+                    {selectedMethod === method && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-purple-900 text-sm font-bold">✓</span>
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -2031,8 +2102,8 @@ export default function FortuneWebsite() {
                 <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
                 <input
                   type="date"
-                  min="1000-01-01"
-                  max="9999-12-31"
+                  min="1920-01-01"
+                  max="2030-12-31"
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
@@ -2182,8 +2253,8 @@ export default function FortuneWebsite() {
                 <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
                 <input
                   type="date"
-                  min="1000-01-01"
-                  max="9999-12-31"
+                  min="1920-01-01"
+                  max="2030-12-31"
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
@@ -2212,8 +2283,8 @@ export default function FortuneWebsite() {
                 <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
                 <input
                   type="date"
-                  min="1000-01-01"
-                  max="9999-12-31"
+                  min="1920-01-01"
+                  max="2030-12-31"
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
@@ -2280,8 +2351,8 @@ export default function FortuneWebsite() {
                 <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
                 <input
                   type="date"
-                  min="1000-01-01"
-                  max="9999-12-31"
+                  min="1920-01-01"
+                  max="2030-12-31"
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
@@ -2393,7 +2464,7 @@ export default function FortuneWebsite() {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2">性格自我描述</label>
+                <label className="block text-sm font-medium mb-2">性格自我描述 <span className="text-red-400">*</span></label>
                 <textarea
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 h-20 resize-none"
                   placeholder="请简单描述一下您的性格特点"
@@ -2442,7 +2513,7 @@ export default function FortuneWebsite() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">出生日期</label>
+                    <label className="block text-sm font-medium mb-2">出生日期 <span className="text-red-400">*</span></label>
                     <input
                       type="text"
                       placeholder="如：1990-01-01"
@@ -2457,7 +2528,7 @@ export default function FortuneWebsite() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">出生时辰</label>
+                    <label className="block text-sm font-medium mb-2">出生时辰 <span className="text-red-400">*</span></label>
                     <select
                       className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                       onChange={(e) => updateInputData('compatibilityInfo', {
@@ -2484,7 +2555,7 @@ export default function FortuneWebsite() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">性别</label>
+                    <label className="block text-sm font-medium mb-2">性别 <span className="text-red-400">*</span></label>
                     <select
                       className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                       onChange={(e) => updateInputData('compatibilityInfo', {
@@ -2582,7 +2653,7 @@ export default function FortuneWebsite() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">出生日期</label>
+                    <label className="block text-sm font-medium mb-2">出生日期 <span className="text-red-400">*</span></label>
                     <input
                       type="text"
                       placeholder="如：1992-05-15"
@@ -2597,7 +2668,7 @@ export default function FortuneWebsite() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">出生时辰</label>
+                    <label className="block text-sm font-medium mb-2">出生时辰 <span className="text-red-400">*</span></label>
                     <select
                       className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                       onChange={(e) => updateInputData('compatibilityInfo', {
@@ -2624,7 +2695,7 @@ export default function FortuneWebsite() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">性别</label>
+                    <label className="block text-sm font-medium mb-2">性别 <span className="text-red-400">*</span></label>
                     <select
                       className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                       onChange={(e) => updateInputData('compatibilityInfo', {
@@ -2690,7 +2761,7 @@ export default function FortuneWebsite() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">关系类型</label>
+                  <label className="block text-sm font-medium mb-2">关系类型 <span className="text-red-400">*</span></label>
                   <select
                     className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
                     onChange={(e) => updateInputData('compatibilityInfo', {
@@ -2785,7 +2856,7 @@ export default function FortuneWebsite() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">梦想目标</label>
+                <label className="block text-sm font-medium mb-2">梦想目标 <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   placeholder="请输入您的梦想或目标"
@@ -2797,7 +2868,7 @@ export default function FortuneWebsite() {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2">人生经历</label>
+                <label className="block text-sm font-medium mb-2">人生经历 <span className="text-red-400">*</span></label>
                 <textarea
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 h-20 resize-none"
                   placeholder="请简单描述一些重要的人生经历"
