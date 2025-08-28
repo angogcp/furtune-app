@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
 // Network status types
@@ -22,7 +22,7 @@ export interface ConnectionTestResult {
 class NetworkManager {
   private state: NetworkState = {
     isOnline: navigator.onLine,
-    isSupabaseConnected: true,
+    isSupabaseConnected: isSupabaseConfigured, // 基于配置状态设置初始值
     lastConnectionTest: null,
     connectionAttempts: 0,
     isRetrying: false
@@ -36,7 +36,12 @@ class NetworkManager {
 
   constructor() {
     this.initializeListeners()
-    this.startPeriodicTests()
+    // 只有在Supabase配置正确时才启动定期测试
+    if (isSupabaseConfigured) {
+      this.startPeriodicTests()
+    } else {
+      console.log('Supabase未配置，跳过连接测试')
+    }
   }
 
   private initializeListeners() {
@@ -44,17 +49,20 @@ class NetworkManager {
     window.addEventListener('online', this.handleOnline.bind(this))
     window.addEventListener('offline', this.handleOffline.bind(this))
 
-    // Supabase auth state changes
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'TOKEN_REFRESHED' && !session) {
-        console.warn('Token refresh failed - network issue detected')
-        this.handleConnectionIssue('Token refresh failed')
-      }
-    })
+    // 只有在Supabase配置正确时才监听auth事件
+    if (isSupabaseConfigured) {
+      // Supabase auth state changes
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          console.warn('Token refresh failed - network issue detected')
+          this.handleConnectionIssue('Token refresh failed')
+        }
+      })
+    }
 
     // Page visibility changes (to test connection when page becomes visible)
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && this.state.connectionAttempts > 0) {
+      if (!document.hidden && this.state.connectionAttempts > 0 && isSupabaseConfigured) {
         this.testConnection()
       }
     })
@@ -93,6 +101,24 @@ class NetworkManager {
   }
 
   public async testConnection(): Promise<ConnectionTestResult> {
+    // 如果Supabase未配置，返回模拟的成功连接
+    if (!isSupabaseConfigured) {
+      this.updateState({
+        isSupabaseConnected: true, // 设为true，因为不需要连接
+        lastConnectionTest: new Date(),
+        connectionAttempts: 0
+      })
+
+      this.notifyListeners()
+
+      return {
+        success: true,
+        latency: 0,
+        error: undefined,
+        timestamp: new Date()
+      }
+    }
+
     const startTime = Date.now()
     
     try {
@@ -205,7 +231,7 @@ class NetworkManager {
       } catch (error: any) {
         lastError = error
         
-        if (this.isNetworkError(error) && attempt < maxAttempts) {
+        if (this.isNetworkError(error) && attempt < maxAttempts && isSupabaseConfigured) {
           const delay = this.baseRetryDelay * Math.pow(2, attempt - 1)
           console.log(`Network operation failed (attempt ${attempt}/${maxAttempts}). Retrying in ${delay}ms...`)
           
@@ -257,11 +283,14 @@ class NetworkManager {
       this.retryTimeout = null
     }
     
-    // Force refresh auth session
-    try {
-      await supabase.auth.refreshSession()
-    } catch (error) {
-      console.warn('Failed to refresh session during reconnect:', error)
+    // 只有在Supabase配置正确时才尝试刷新会话
+    if (isSupabaseConfigured) {
+      // Force refresh auth session
+      try {
+        await supabase.auth.refreshSession()
+      } catch (error) {
+        console.warn('Failed to refresh session during reconnect:', error)
+      }
     }
     
     // Test connection

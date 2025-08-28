@@ -40,16 +40,16 @@ function AuthWrapper() {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <NetworkStatus />
         {/* Navigation */}
-        <nav className="bg-purple-900/50 border-b border-purple-400/30 p-4">
+        <nav className="bg-purple-900/50 border-b border-purple-400/30 p-3 sm:p-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Sparkles className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
+              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
                 神秘占卜馆
               </h1>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
               {user ? (
                 <>
                   <NavButton to="/" icon={Home} label="占卜" />
@@ -66,9 +66,9 @@ function AuthWrapper() {
               ) : (
                 <button
                   onClick={() => setShowAuth(true)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium text-white transition-all duration-300"
+                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium text-white transition-all duration-300 text-sm sm:text-base touch-target"
                 >
-                  <LogIn className="w-5 h-5" />
+                  <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>登录</span>
                 </button>
               )}
@@ -128,91 +128,91 @@ function NavButton({ to, icon: Icon, label }: { to: string; icon: any; label: st
   return (
     <a
       href={to}
-      className="flex items-center space-x-2 px-3 py-2 text-purple-200 hover:text-white hover:bg-purple-700/50 rounded-lg transition-all duration-300"
+      className="flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 text-purple-200 hover:text-white hover:bg-purple-700/50 rounded-lg transition-all duration-300 touch-target min-w-[44px] text-xs sm:text-sm"
       onClick={(e) => {
         e.preventDefault()
         window.history.pushState({}, '', to)
         window.dispatchEvent(new PopStateEvent('popstate'))
       }}
     >
-      <Icon className="w-5 h-5" />
-      <span className="hidden md:inline">{label}</span>
+      <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+      <span className="hidden sm:inline truncate">{label}</span>
     </a>
   )
 }
 
 function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-3 sm:px-4">
       <NetworkStatus />
       {/* Debug Info */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <AuthDebug />
       </div>
       
-      <div className="text-center py-16">
-        <Sparkles className="w-24 h-24 mx-auto mb-8 text-yellow-400" />
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent mb-6">
+      <div className="text-center py-8 sm:py-12 lg:py-16">
+        <Sparkles className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-6 sm:mb-8 text-yellow-400" />
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent mb-4 sm:mb-6">
           欢迎来到神秘占卜馆
         </h1>
-        <p className="text-xl text-purple-200 mb-8 leading-relaxed">
-          探索命运奥秘，指引人生方向<br />
+        <p className="text-lg sm:text-xl text-purple-200 mb-6 sm:mb-8 leading-relaxed px-4">
+          探索命运奥秘，指引人生方向<br className="hidden sm:block" />
           加入我们，开启您的神秘之旅
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <Sparkles className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">多种占卜方式</h3>
-          <p className="text-purple-200">塔罗、星座、易经、八字等多种占卜方式，满足不同需求</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-yellow-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">多种占卜方式</h3>
+          <p className="text-sm sm:text-base text-purple-200">塔罗、星座、易经、八字等多种占卜方式，满足不同需求</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <Calendar className="w-12 h-12 mx-auto mb-4 text-blue-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">每日签到</h3>
-          <p className="text-purple-200">每天签到获取专属运势，连续签到获得更多奖励</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <Calendar className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-blue-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">每日签到</h3>
+          <p className="text-sm sm:text-base text-purple-200">每天签到获取专属运势，连续签到获得更多奖励</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <Heart className="w-12 h-12 mx-auto mb-4 text-pink-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">许愿墙</h3>
-          <p className="text-purple-200">在许愿墙上写下心愿，与其他用户分享美好期待</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <Heart className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-pink-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">许愿墙</h3>
+          <p className="text-sm sm:text-base text-purple-200">在许愿墙上写下心愿，与其他用户分享美好期待</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <TrendingUp className="w-12 h-12 mx-auto mb-4 text-green-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">成长记录</h3>
-          <p className="text-purple-200">记录每次占卜历程，追踪个人成长轨迹和命运变化</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-green-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">成长记录</h3>
+          <p className="text-sm sm:text-base text-purple-200">记录每次占卜历程，追踪个人成长轨迹和命运变化</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <BookOpen className="w-12 h-12 mx-auto mb-4 text-indigo-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">个性化推荐</h3>
-          <p className="text-purple-200">基于占卜历史智能推荐相关内容，提升占卜体验</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-indigo-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">个性化推荐</h3>
+          <p className="text-sm sm:text-base text-purple-200">基于占卜历史智能推荐相关内容，提升占卜体验</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <Bell className="w-12 h-12 mx-auto mb-4 text-orange-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">命运提醒</h3>
-          <p className="text-purple-200">设置定期提醒，回顾占卜结果，感受命运的变化轨迹</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <Bell className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-orange-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">命运提醒</h3>
+          <p className="text-sm sm:text-base text-purple-200">设置定期提醒，回顾占卜结果，感受命运的变化轨迹</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <Crown className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">大师解读</h3>
-          <p className="text-purple-200">专业命理师一对一深度解读，获得更精准的人生指导</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <Crown className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-yellow-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">大师解读</h3>
+          <p className="text-sm sm:text-base text-purple-200">专业命理师一对一深度解读，获得更精准的人生指导</p>
         </div>
         
-        <div className="bg-purple-900/50 rounded-lg p-6 border border-purple-400/30">
-          <Share2 className="w-12 h-12 mx-auto mb-4 text-green-400" />
-          <h3 className="text-xl font-semibold text-white mb-2">报告分享</h3>
-          <p className="text-purple-200">生成精美运势分析报告，一键分享到社交平台</p>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
+          <Share2 className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-3 sm:mb-4 text-green-400" />
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">报告分享</h3>
+          <p className="text-sm sm:text-base text-purple-200">生成精美运势分析报告，一键分享到社交平台</p>
         </div>
         </div>
         
         <button
           onClick={onShowAuth}
-          className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold text-white text-lg transition-all duration-300 transform hover:scale-105"
+          className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold text-white text-base sm:text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 touch-target"
         >
           立即开始占卜之旅
          </button>

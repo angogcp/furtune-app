@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, AlertCircle, Sparkles, Download, Printer, Search, User, UserCheck, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle } from 'lucide-react';
+import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, AlertCircle, Sparkles, Download, Printer, Search, User, UserCheck, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle, ArrowLeft, Lightbulb } from 'lucide-react';
 
 // 类型定义
 interface SearchResult {
@@ -133,6 +133,19 @@ const texts: TextsConfig = {
   disclaimer: '✨ 占卜结果仅供参考，重要决定请结合理性思考 ✨',
   copyResult: '复制结果',
   clearResult: '清除结果',
+  plainLanguageInterpretation: '大白话解读',
+  plainLanguageTitle: '大白话解读版本',
+  plainLanguageSubtitle: '简单易懂的解读说明',
+  generating: '正在生成大白话解读...',
+  backToOriginal: '返回原解读',
+  exportOptions: '导出选项',
+  exportSelectContent: '请选择要导出的内容',
+  onlyOriginal: '仅原始解读',
+  onlyPlainLanguage: '仅大白话解读',
+  bothContent: '原始解读 + 大白话解读',
+  confirmExport: '确认导出',
+  cancelExport: '取消',
+  selectExportType: '选择导出方式',
   exportPDF: '导出PDF',
   print: '打印',
   aiGenerated: 'AI生成',
@@ -1396,11 +1409,47 @@ const performWebSearch = async (query: string, apiKey: string) => {
 };
 
 // PDF export function
-const exportToPDF = (result: any, t: any) => {
+const exportToPDF = (result: any, t: any, contentType: 'original' | 'plain' | 'both' = 'original', plainLanguageResult?: string | null) => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     alert('无法打开打印窗口，请检查浏览器设置');
     return;
+  }
+  
+  let contentHtml = '';
+  
+  // 构建不同类型的内容
+  const questionHtml = `
+    <div class="question">
+      <h3>${t.yourQuestion}</h3>
+      <p>${result.question}</p>
+    </div>
+  `;
+  
+  const originalReadingHtml = `
+    <div class="reading">
+      <h3>${t.interpretation}</h3>
+      <div>${result.reading.replace(/\n/g, '<br>')}</div>
+    </div>
+  `;
+  
+  const plainReadingHtml = plainLanguageResult ? `
+    <div class="reading">
+      <h3>${t.plainLanguageTitle}</h3>
+      <div>${plainLanguageResult.replace(/\n/g, '<br>')}</div>
+    </div>
+  ` : '';
+  
+  switch (contentType) {
+    case 'original':
+      contentHtml = questionHtml + originalReadingHtml;
+      break;
+    case 'plain':
+      contentHtml = questionHtml + plainReadingHtml;
+      break;
+    case 'both':
+      contentHtml = questionHtml + originalReadingHtml + plainReadingHtml;
+      break;
   }
   
   const content = `
@@ -1409,28 +1458,26 @@ const exportToPDF = (result: any, t: any) => {
     <head>
       <title>${t.result}</title>
       <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .question { background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px; }
-        .reading { margin: 20px 0; }
-        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .question { background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+        .reading { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .reading h3 { color: #333; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .timestamp { color: #666; font-size: 14px; margin-top: 30px; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        h2 { color: #666; margin-top: 5px; }
+        h3 { color: #555; }
+        @media print { body { margin: 20px; } }
       </style>
     </head>
     <body>
       <div class="header">
-        <h1>${t.result}</h1>
-        <p>${new Date(result.timestamp).toLocaleString()}</p>
+        <h1>${t.title}</h1>
+        <h2>${t.result}</h2>
       </div>
-      <div class="question">
-        <h3>${t.yourQuestion}</h3>
-        <p>${result.question}</p>
-      </div>
-      <div class="reading">
-        <h3>${t.interpretation}</h3>
-        <div>${result.reading.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="footer">
-        <p>${t.disclaimer}</p>
+      ${contentHtml}
+      <div class="timestamp">
+        ${t.timestamp}${new Date(result.timestamp).toLocaleString('zh-CN')}
       </div>
     </body>
     </html>
@@ -1453,6 +1500,12 @@ export default function FortuneWebsite() {
   const [result, setResult] = useState<DivinationResultState | null>(null);
   const [error, setError] = useState(null);
   const [inputData, setInputData] = useState<InputData>({});
+  const [plainLanguageResult, setPlainLanguageResult] = useState<string | null>(null);
+  const [isGeneratingPlainLanguage, setIsGeneratingPlainLanguage] = useState(false);
+  const [showPlainLanguage, setShowPlainLanguage] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportType, setExportType] = useState<'pdf' | 'print' | 'copy'>('pdf');
+  const [exportContent, setExportContent] = useState<'original' | 'plain' | 'both'>('original');
   // Get current texts
   const t = texts;
 
@@ -1766,98 +1819,6 @@ export default function FortuneWebsite() {
         };
       }
       
-      // Debug logging
-      console.log('API Response data:', data);
-      console.log('Extracted content length:', content?.length || 0);
-      console.log('Content preview:', content?.substring(0, 200) + '...');
-      console.log('Content ending:', content?.substring(content.length - 200) || 'No content');
-
-      // Ensure minimum length based on method with retry for incomplete content
-      const minLengthRequirements = {
-        [DIVINATION_METHODS.BAZI]: 2500,  // 八字算命需要更长的内容
-        [DIVINATION_METHODS.TAROT]: 400,
-        [DIVINATION_METHODS.ASTROLOGY]: 400,
-        [DIVINATION_METHODS.LOTTERY]: 400,
-        [DIVINATION_METHODS.JIAOBEI]: 400,
-        [DIVINATION_METHODS.NUMEROLOGY]: 400
-      };
-      
-      const minLength = minLengthRequirements[selectedMethod] || 400;
-      
-      // For BaZi analysis, if content is incomplete, try to request continuation
-      if (selectedMethod === DIVINATION_METHODS.BAZI && content && content.length < minLength) {
-        console.log('BaZi content too short, attempting to get continuation...');
-        
-        // Check if content ends abruptly (doesn't contain section 15)
-        if (!content.includes('15.') && !content.includes('15、') && !content.includes('综合建议') && !content.includes('Comprehensive Advice')) {
-          try {
-            const continuationPrompt = {
-              system: 'You are continuing a BaZi analysis. Please continue from where the previous response left off and complete all remaining sections up to section 15.',
-              user: `Please continue the following BaZi analysis and complete all remaining sections:\n\n${content}\n\nPlease continue from the next section and complete all sections up to section 15 (综合建议/Comprehensive Advice).`
-            };
-            
-            // Use the same API endpoint and method as the main request
-            const continuationRequestBody = {
-              messages: [
-                { role: 'system', content: continuationPrompt.system },
-                { role: 'user', content: continuationPrompt.user }
-              ],
-              temperature: API_TEMPERATURE,
-              max_tokens: API_MAX_TOKENS
-            };
-            
-            const continuationResponse = await fetch(API_ENDPOINT, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(continuationRequestBody)
-            });
-            
-            if (continuationResponse.ok) {
-              const continuationData = await continuationResponse.json();
-              let continuationContent = '';
-              
-              // Handle different API response formats (same as main request)
-              if (continuationData.content?.[0]?.text) {
-                // Anthropic format
-                continuationContent = continuationData.content[0].text;
-              } else if (continuationData.choices && continuationData.choices[0]?.message?.content) {
-                // OpenAI/DeepSeek/OpenRouter format
-                continuationContent = continuationData.choices[0].message.content;
-              } else if (continuationData.content) {
-                // Generic content format
-                continuationContent = continuationData.content;
-              } else if (continuationData.response) {
-                // Generic response format
-                continuationContent = continuationData.response;
-              }
-              
-              if (continuationContent) {
-                content += '\n\n' + continuationContent;
-                console.log('Successfully got continuation. New length:', content.length);
-              }
-            }
-          } catch (continuationError) {
-            console.log('Failed to get continuation:', continuationError);
-          }
-        }
-      }
-      
-      if (content && content.length < minLength) {
-        content += '\n\n' + generateNextSteps(selectedMethod, readingType);
-      }
-
-      const finalContent = content?.trim() || '';
-      console.log('Final content length before return:', finalContent.length);
-      console.log('Final content ending:', finalContent.substring(finalContent.length - 300) || 'No final content');
-      
-      return {
-        reading: finalContent,
-        isAIGenerated: !!content,
-        searchResults
-      };
-      
     } catch (error: any) {
       console.error('LLM API Error:', error);
       
@@ -2068,6 +2029,194 @@ export default function FortuneWebsite() {
     return attemptReading();
   }, [selectedMethod, inputData, question, readingType, generatePrompt, processReading]);
 
+  // Generate plain language interpretation
+  const generatePlainLanguageInterpretation = useCallback(async () => {
+    if (!result) return;
+    
+    setIsGeneratingPlainLanguage(true);
+    
+    try {
+      const plainLanguagePrompt = {
+        system: `你是一位亲切友善的朋友，擅长用简单易懂的话语解释复杂的占卜结果。你的任务是将专业的占卜解读转换成大白话版本。
+
+要求：
+1. 使用通俗易懂的语言，避免专业术语
+2. 保持原意不变，但表达更加直白
+3. 结构清晰，分点说明
+4. 语气亲切、正面、鼓励
+5. 不超过400字
+6. 以“简单来说”开头`,
+        user: `请将以下占卜解读转换成大白话版本：
+
+原解读：
+${result.reading}
+
+请用亲切、直白的语言重新表达这个占卜结果。`
+      };
+      
+      const plainLanguageResponse = await processReading(plainLanguagePrompt);
+      setPlainLanguageResult(plainLanguageResponse.reading);
+      setShowPlainLanguage(true);
+      
+    } catch (error) {
+      console.error('生成大白话解读失败:', error);
+      
+      // 如果AI失败，使用本地简化逻辑
+      const simplifiedReading = generateSimplifiedReading(result.reading, selectedMethod, readingType);
+      setPlainLanguageResult(simplifiedReading);
+      setShowPlainLanguage(true);
+    } finally {
+      setIsGeneratingPlainLanguage(false);
+    }
+  }, [result, processReading, selectedMethod, readingType]);
+  
+  // 导出选择处理函数
+  const handleExportOption = useCallback((type: 'pdf' | 'print' | 'copy') => {
+    setExportType(type);
+    setShowExportModal(true);
+  }, []);
+
+  // 确认导出函数
+  const confirmExport = useCallback(() => {
+    if (!result) return;
+    
+    let content = '';
+    const question = `${t.yourQuestion}${result.question}`;
+    const originalReading = `${t.interpretation}${result.reading}`;
+    const plainReading = plainLanguageResult ? `${t.plainLanguageTitle}\n${plainLanguageResult}` : '';
+    
+    switch (exportContent) {
+      case 'original':
+        content = `${question}\n\n${originalReading}`;
+        break;
+      case 'plain':
+        if (plainLanguageResult) {
+          content = `${question}\n\n${plainReading}`;
+        } else {
+          alert('请先生成大白话解读');
+          setShowExportModal(false);
+          return;
+        }
+        break;
+      case 'both':
+        if (plainLanguageResult) {
+          content = `${question}\n\n${originalReading}\n\n${plainReading}`;
+        } else {
+          content = `${question}\n\n${originalReading}`;
+        }
+        break;
+    }
+    
+    switch (exportType) {
+      case 'pdf':
+        exportToPDF(result, t, exportContent, plainLanguageResult);
+        break;
+      case 'print':
+        printContent(content);
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(content).then(() => {
+          alert('已复制到剪贴板');
+        });
+        break;
+    }
+    
+    setShowExportModal(false);
+  }, [result, exportType, exportContent, plainLanguageResult, t]);
+
+  // 打印内容函数
+  const printContent = useCallback((content: string) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('无法打开打印窗口，请检查浏览器设置');
+      return;
+    }
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${t.result}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .question { background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px; }
+          .reading { margin: 20px 0; }
+          .timestamp { color: #666; font-size: 14px; margin-top: 20px; }
+          @media print { body { margin: 20px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>${t.title}</h1>
+          <h2>${t.result}</h2>
+        </div>
+        <div class="content">
+          ${content.replace(/\n/g, '<br>')}
+        </div>
+        <div class="timestamp">
+          ${t.timestamp}${new Date(result?.timestamp || Date.now()).toLocaleString('zh-CN')}
+        </div>
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  }, [result, t]);
+
+  // 本地简化解读生成器（备用）
+  const generateSimplifiedReading = (originalReading: string, method: string, type: string) => {
+    const methodNames = {
+      [DIVINATION_METHODS.TAROT]: '塔罗牌',
+      [DIVINATION_METHODS.ASTROLOGY]: '星座',
+      [DIVINATION_METHODS.LOTTERY]: '灵签',
+      [DIVINATION_METHODS.JIAOBEI]: '擲箊',
+      [DIVINATION_METHODS.NUMEROLOGY]: '数字命理',
+      [DIVINATION_METHODS.BAZI]: '八字',
+      [DIVINATION_METHODS.ZIWEI]: '紫微斗数',
+      [DIVINATION_METHODS.PERSONALITY]: '性格测试',
+      [DIVINATION_METHODS.COMPATIBILITY]: '配对分数',
+      [DIVINATION_METHODS.LIFESTORY]: '命格故事'
+    };
+    
+    const typeNames = {
+      [READING_TYPES.LOVE]: '感情运势',
+      [READING_TYPES.CAREER]: '事业发展', 
+      [READING_TYPES.WEALTH]: '财运',
+      [READING_TYPES.HEALTH]: '健康',
+      [READING_TYPES.GENERAL]: '综合运势'
+    };
+    
+    const positive = ['不错', '很好', '相当不错', '挺好的', '还可以'];
+    const suggestions = [
+      '保持乐观的心态，好运气会找上你。',
+      '多和朋友交流，说不定会有意外收获。',
+      '耐心等待，好事情需要时间来酿酿。',
+      '相信自己，你比想象中更有能力。',
+      '放松心情，有时候不努力反而更有效果。'
+    ];
+    
+    const randomPositive = positive[Math.floor(Math.random() * positive.length)];
+    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+    
+    return `简单来说，你的${typeNames[type] || '运势'}看起来${randomPositive}！
+
+根据${methodNames[method] || '占卜'}的结果，主要情况是这样的：
+
+• 目前的情况还可以，不用太担心
+• 接下来一段时间需要多注意一些细节
+• 有机会出现新的转机，要把握好
+
+建议你：${randomSuggestion}
+
+记住，占卜只是参考，最重要的还是你自己的努力和选择。加油！😊`;
+  };
+
   // Input data handlers
   const updateInputData = useCallback((key: string, value: any) => {
     setInputData(prev => ({
@@ -2081,28 +2230,30 @@ export default function FortuneWebsite() {
     setInputData({});
     setResult(null);
     setError(null);
+    setPlainLanguageResult(null);
+    setShowPlainLanguage(false);
   }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
       {/* Header */}
-      <header className="text-center py-8 px-4 relative">
+      <header className="text-center py-6 px-4 sm:py-8 relative">
 
         <div className="flex justify-center items-center mb-4">
-          <Sparkles className="w-8 h-8 mr-2 text-yellow-400" />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
+          <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 mr-2 text-yellow-400" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
             {t.title}
           </h1>
-          <Sparkles className="w-8 h-8 ml-2 text-yellow-400" />
+          <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 ml-2 text-yellow-400" />
         </div>
-        <p className="text-xl text-purple-200">{t.subtitle}</p>
+        <p className="text-lg sm:text-xl text-purple-200">{t.subtitle}</p>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 pb-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 pb-6 sm:pb-8">
         {/* Method Selection */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+        <div className="mb-8 sm:mb-12">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
               {t.selectMethod}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-pink-400 mx-auto rounded-full"></div>
@@ -2119,7 +2270,7 @@ export default function FortuneWebsite() {
               </h3>
               <div className="flex-1 h-px bg-gradient-to-l from-transparent to-blue-400"></div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {[DIVINATION_METHODS.TAROT, DIVINATION_METHODS.ASTROLOGY, DIVINATION_METHODS.NUMEROLOGY].map((method) => {
                 const config = methodConfig[method];
                 const IconComponent = config.icon;
@@ -2130,21 +2281,21 @@ export default function FortuneWebsite() {
                       setSelectedMethod(method);
                       resetForm();
                     }}
-                    className={`group relative p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-105 ${
+                    className={`group relative p-4 sm:p-6 lg:p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] active:scale-95 touch-target ${
                       selectedMethod === method
                         ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/20 via-blue-400/10 to-purple-400/20 shadow-2xl shadow-yellow-400/30'
                         : 'border-blue-400/40 bg-gradient-to-br from-blue-900/40 via-blue-800/30 to-indigo-900/40 hover:border-blue-300/70 hover:shadow-xl hover:shadow-blue-400/20'
                     }`}
                   >
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <IconComponent className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                    <IconComponent className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 mx-auto mb-3 sm:mb-4 transition-all duration-300 ${
                       selectedMethod === method ? 'text-yellow-400 drop-shadow-lg' : 'text-blue-300 group-hover:text-blue-200'
                     }`} />
-                    <h3 className="text-xl font-bold mb-3 transition-colors duration-300">{config.title}</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">{config.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 transition-colors duration-300">{config.title}</h3>
+                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{config.description}</p>
                     {selectedMethod === method && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                        <span className="text-purple-900 text-sm font-bold">✓</span>
+                      <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-purple-900 text-xs sm:text-sm font-bold">✓</span>
                       </div>
                     )}
                   </button>
@@ -2164,7 +2315,7 @@ export default function FortuneWebsite() {
               </h3>
               <div className="flex-1 h-px bg-gradient-to-l from-transparent to-orange-400"></div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[DIVINATION_METHODS.LOTTERY, DIVINATION_METHODS.JIAOBEI, DIVINATION_METHODS.BAZI, DIVINATION_METHODS.ZIWEI].map((method) => {
                 const config = methodConfig[method];
                 const IconComponent = config.icon;
@@ -2175,21 +2326,21 @@ export default function FortuneWebsite() {
                       setSelectedMethod(method);
                       resetForm();
                     }}
-                    className={`group relative p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-105 ${
+                    className={`group relative p-3 sm:p-4 lg:p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] active:scale-95 touch-target ${
                       selectedMethod === method
                         ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/20 via-orange-400/10 to-red-400/20 shadow-2xl shadow-yellow-400/30'
                         : 'border-orange-400/40 bg-gradient-to-br from-orange-900/40 via-red-800/30 to-pink-900/40 hover:border-orange-300/70 hover:shadow-xl hover:shadow-orange-400/20'
                     }`}
                   >
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <IconComponent className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                    <IconComponent className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 mx-auto mb-2 sm:mb-3 lg:mb-4 transition-all duration-300 ${
                       selectedMethod === method ? 'text-yellow-400 drop-shadow-lg' : 'text-orange-300 group-hover:text-orange-200'
                     }`} />
-                    <h3 className="text-xl font-bold mb-3 transition-colors duration-300">{config.title}</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">{config.description}</p>
+                    <h3 className="text-sm sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 lg:mb-3 transition-colors duration-300">{config.title}</h3>
+                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed hidden sm:block">{config.description}</p>
                     {selectedMethod === method && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                        <span className="text-purple-900 text-sm font-bold">✓</span>
+                      <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-purple-900 text-xs sm:text-sm font-bold">✓</span>
                       </div>
                     )}
                   </button>
@@ -2209,7 +2360,7 @@ export default function FortuneWebsite() {
               </h3>
               <div className="flex-1 h-px bg-gradient-to-l from-transparent to-purple-400"></div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {[DIVINATION_METHODS.PERSONALITY, DIVINATION_METHODS.COMPATIBILITY, DIVINATION_METHODS.LIFESTORY].map((method) => {
                 const config = methodConfig[method];
                 const IconComponent = config.icon;
@@ -2220,21 +2371,21 @@ export default function FortuneWebsite() {
                       setSelectedMethod(method);
                       resetForm();
                     }}
-                    className={`group relative p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-105 ${
+                    className={`group relative p-4 sm:p-6 lg:p-8 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] active:scale-95 touch-target ${
                       selectedMethod === method
                         ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/20 via-purple-400/10 to-pink-400/20 shadow-2xl shadow-yellow-400/30'
                         : 'border-purple-400/40 bg-gradient-to-br from-purple-900/40 via-indigo-800/30 to-blue-900/40 hover:border-purple-300/70 hover:shadow-xl hover:shadow-purple-400/20'
                     }`}
                   >
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <IconComponent className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                    <IconComponent className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 mx-auto mb-3 sm:mb-4 transition-all duration-300 ${
                       selectedMethod === method ? 'text-yellow-400 drop-shadow-lg' : 'text-purple-300 group-hover:text-purple-200'
                     }`} />
-                    <h3 className="text-xl font-bold mb-3 transition-colors duration-300">{config.title}</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">{config.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 transition-colors duration-300">{config.title}</h3>
+                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{config.description}</p>
                     {selectedMethod === method && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                        <span className="text-purple-900 text-sm font-bold">✓</span>
+                      <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-purple-900 text-xs sm:text-sm font-bold">✓</span>
                       </div>
                     )}
                   </button>
@@ -2245,25 +2396,25 @@ export default function FortuneWebsite() {
         </div>
 
         {/* Reading Type Selection */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center">{t.selectType}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center">{t.selectType}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {Object.entries(typeConfig).map(([type, config]) => {
               const IconComponent = config.icon;
               return (
                 <button
                   key={type}
                   onClick={() => setReadingType(type)}
-                  className={`p-4 rounded-lg border-2 transition-all duration-300 ${
+                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-300 touch-target ${
                     readingType === type
                       ? 'border-pink-400 bg-pink-400/20 shadow-lg shadow-pink-400/50'
-                      : 'border-purple-400/30 bg-purple-900/30 hover:border-purple-400/60'
+                      : 'border-purple-400/30 bg-purple-900/30 hover:border-purple-400/60 active:scale-95'
                   }`}
                 >
-                  <IconComponent className={`w-8 h-8 mx-auto mb-2 ${
+                  <IconComponent className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 ${
                     readingType === type ? 'text-pink-400' : 'text-purple-300'
                   }`} />
-                  <span className="text-sm font-medium">{config.title}</span>
+                  <span className="text-xs sm:text-sm font-medium">{config.title}</span>
                 </button>
               );
             })}
@@ -2271,14 +2422,14 @@ export default function FortuneWebsite() {
         </div>
 
         {/* Input Form */}
-        <div className="bg-purple-900/50 rounded-lg p-6 mb-8 border border-purple-400/30">
-          <h2 className="text-2xl font-semibold mb-6">{t.detailInfo}</h2>
+        <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-purple-400/30">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">{t.detailInfo}</h2>
           
           {/* Method-specific inputs */}
           {selectedMethod === DIVINATION_METHODS.TAROT && (
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <label className="block text-sm font-medium mb-2">{texts.selectTarotCards} <span className="text-red-400">*</span></label>
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {Object.keys(texts.tarotCards).map((card) => (
                   <button
                     key={card}
@@ -2289,10 +2440,10 @@ export default function FortuneWebsite() {
                         : [...cards, card];
                       updateInputData('cards', newCards);
                     }}
-                    className={`p-2 text-sm rounded border ${
+                    className={`p-2 sm:p-3 text-xs sm:text-sm rounded border touch-target transition-all duration-200 ${
                       (inputData.cards || []).includes(card)
-                        ? 'bg-yellow-400/20 border-yellow-400 text-yellow-300'
-                        : 'bg-purple-800/50 border-purple-600 text-purple-200 hover:border-purple-400'
+                        ? 'bg-yellow-400/20 border-yellow-400 text-yellow-300 transform scale-[1.02]'
+                        : 'bg-purple-800/50 border-purple-600 text-purple-200 hover:border-purple-400 active:scale-95'
                     }`}
                   >
                     {t.tarotCards[card]}
@@ -2303,14 +2454,14 @@ export default function FortuneWebsite() {
           )}
 
           {selectedMethod === DIVINATION_METHODS.ASTROLOGY && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div>
                 <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
                 <input
                   type="date"
                   min="1920-01-01"
                   max="2030-12-31"
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base" 
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
                     date: e.target.value
@@ -2321,19 +2472,19 @@ export default function FortuneWebsite() {
                 <label className="block text-sm font-medium mb-2">{t.birthTime} <span className="text-red-400">*</span></label>
                 <input
                   type="time"
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
                     time: e.target.value
                   })}
                 />
               </div>
-              <div>
+              <div className="sm:col-span-2 lg:col-span-1">
                 <label className="block text-sm font-medium mb-2">{t.birthPlace} <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   placeholder={t.cityName}
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 text-base"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
                     location: e.target.value
@@ -2344,7 +2495,7 @@ export default function FortuneWebsite() {
           )}
 
           {selectedMethod === DIVINATION_METHODS.LOTTERY && (
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <div className="text-center">
                 <p className="text-sm text-gray-300 mb-4">{t.prayFirst}</p>
                 {!inputData.lottery ? (
@@ -2360,7 +2511,7 @@ export default function FortuneWebsite() {
                         interpretation: lotteryData.interpretation
                       });
                     }}
-                    className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white rounded-lg font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white rounded-lg font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg touch-target text-sm sm:text-base"
                   >
                     🙏 {t.drawLot}
                   </button>
@@ -2398,7 +2549,7 @@ export default function FortuneWebsite() {
                         resultText: t.jiaobeResults[randomResult]
                       });
                     }}
-                    className="px-8 py-4 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg font-semibold hover:from-red-700 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg font-semibold hover:from-red-700 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg touch-target text-sm sm:text-base"
                   >
                     🪙 {t.throwJiaobei}
                   </button>
@@ -2442,13 +2593,13 @@ export default function FortuneWebsite() {
           )}
 
           {selectedMethod === DIVINATION_METHODS.NUMEROLOGY && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div>
                 <label className="block text-sm font-medium mb-2">{t.name} <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   placeholder={t.enterName}
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 text-base"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
                     name: e.target.value
@@ -2461,7 +2612,7 @@ export default function FortuneWebsite() {
                   type="date"
                   min="1920-01-01"
                   max="2030-12-31"
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
                     birthDate: e.target.value
@@ -2472,13 +2623,13 @@ export default function FortuneWebsite() {
           )}
 
           {selectedMethod === DIVINATION_METHODS.BAZI && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div>
                 <label className="block text-sm font-medium mb-2">{t.name} <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   placeholder={t.enterName}
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 text-base"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
                     name: e.target.value
@@ -2491,7 +2642,7 @@ export default function FortuneWebsite() {
                   type="date"
                   min="1920-01-01"
                   max="2030-12-31"
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
                     birthDate: e.target.value
@@ -2501,7 +2652,7 @@ export default function FortuneWebsite() {
               <div>
                 <label className="block text-sm font-medium mb-2">{t.birthHour} <span className="text-red-400">*</span></label>
                 <select
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white"
+                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base"
                   onChange={(e) => updateInputData('birthInfo', {
                     ...inputData.birthInfo,
                     birthTime: e.target.value
@@ -3088,10 +3239,10 @@ export default function FortuneWebsite() {
           )}
 
           {/* Question Input */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <label className="block text-sm font-medium mb-2">{t.question} <span className="text-red-400">*</span></label>
             <textarea
-              className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 h-24 resize-none"
+              className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 h-20 sm:h-24 resize-none text-base"
               placeholder={t.questionPlaceholder}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -3102,7 +3253,7 @@ export default function FortuneWebsite() {
           <button
             onClick={handleSubmitReading}
             disabled={isLoading}
-            className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-semibold transition-all duration-300 disabled:cursor-not-allowed"
+            className="w-full py-3 sm:py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-semibold transition-all duration-300 disabled:cursor-not-allowed touch-target text-base sm:text-lg active:scale-[0.98]"
           >
             {isLoading ? t.divining : t.startDivination}
           </button>
@@ -3122,32 +3273,32 @@ export default function FortuneWebsite() {
         {result && (
           <div className="max-w-4xl mx-auto">
             {/* 结果标题卡片 */}
-            <div className="bg-gradient-to-r from-indigo-900/80 to-purple-900/80 backdrop-blur-sm rounded-2xl p-8 mb-6 border border-purple-400/20 shadow-2xl">
+            <div className="bg-gradient-to-r from-indigo-900/80 to-purple-900/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6 border border-purple-400/20 shadow-2xl">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full mb-4 shadow-lg">
-                  <Sparkles className="w-8 h-8 text-white" />
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full mb-3 sm:mb-4 shadow-lg">
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent mb-2">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent mb-2">
                   {t.result}
                 </h2>
-                <div className="flex items-center justify-center space-x-3 mb-3">
-                  <span className="px-4 py-2 bg-purple-600/30 rounded-full text-purple-200 text-sm font-medium">
+                <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-3 mb-3">
+                  <span className="px-3 sm:px-4 py-1 sm:py-2 bg-purple-600/30 rounded-full text-purple-200 text-xs sm:text-sm font-medium">
                     {methodConfig[result.method].title}
                   </span>
-                  <span className="text-purple-400">·</span>
-                  <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-200 text-sm font-medium">
+                  <span className="text-purple-400 hidden sm:block">·</span>
+                  <span className="px-3 sm:px-4 py-1 sm:py-2 bg-blue-600/30 rounded-full text-blue-200 text-xs sm:text-sm font-medium">
                     {typeConfig[result.type].title}
                   </span>
                 </div>
-                <div className="flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center flex-wrap gap-2">
                   {result.isAIGenerated && (
-                    <span className="px-3 py-1 bg-green-500/20 border border-green-400/30 rounded-full text-xs text-green-300 flex items-center space-x-1">
+                    <span className="px-2 sm:px-3 py-1 bg-green-500/20 border border-green-400/30 rounded-full text-xs text-green-300 flex items-center space-x-1">
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                       <span>{t.aiGenerated}</span>
                     </span>
                   )}
                   {!result.isAIGenerated && (
-                    <span className="px-3 py-1 bg-orange-500/20 border border-orange-400/30 rounded-full text-xs text-orange-300 flex items-center space-x-1">
+                    <span className="px-2 sm:px-3 py-1 bg-orange-500/20 border border-orange-400/30 rounded-full text-xs text-orange-300 flex items-center space-x-1">
                       <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
                       <span>{t.offlineMode}</span>
                     </span>
@@ -3158,25 +3309,25 @@ export default function FortuneWebsite() {
 
             {/* Web Search Results */}
             {result.searchResults && result.searchResults.length > 0 && (
-              <div className="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-400/20 shadow-xl">
-                <h4 className="text-xl font-bold mb-4 text-blue-300 flex items-center">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3">
-                    <Search className="w-5 h-5" />
+              <div className="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-blue-400/20 shadow-xl">
+                <h4 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-blue-300 flex items-center">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
+                    <Search className="w-3 h-3 sm:w-5 sm:h-5" />
                   </div>
                   {t.webSearch}
                 </h4>
-                <div className="grid gap-4">
+                <div className="grid gap-3 sm:gap-4">
                   {result.searchResults.map((searchResult, index) => (
-                    <div key={index} className="bg-blue-800/20 rounded-lg p-4 border border-blue-600/20 hover:border-blue-500/40 transition-colors">
+                    <div key={index} className="bg-blue-800/20 rounded-lg p-3 sm:p-4 border border-blue-600/20 hover:border-blue-500/40 transition-colors">
                       <a 
                         href={searchResult.link} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="font-semibold hover:underline text-blue-300 text-base block mb-2"
+                        className="font-semibold hover:underline text-blue-300 text-sm sm:text-base block mb-2 break-words"
                       >
                         {searchResult.title}
                       </a>
-                      <p className="text-blue-100 text-sm leading-relaxed">{searchResult.snippet}</p>
+                      <p className="text-blue-100 text-xs sm:text-sm leading-relaxed break-words">{searchResult.snippet}</p>
                     </div>
                   ))}
                 </div>
@@ -3186,33 +3337,33 @@ export default function FortuneWebsite() {
             {/* 主要内容区域 */}
             <div className="bg-gradient-to-br from-purple-900/60 to-indigo-900/60 backdrop-blur-sm rounded-2xl border border-purple-400/20 shadow-2xl overflow-hidden">
               {/* 问题部分 */}
-              <div className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 p-6 border-b border-purple-400/20">
-                <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <MessageCircle className="w-5 h-5 text-yellow-400" />
+              <div className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 p-4 sm:p-6 border-b border-purple-400/20">
+                <div className="flex items-start space-x-3 sm:space-x-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-yellow-400 mb-3">{t.yourQuestion}</h3>
-                    <div className="bg-purple-700/30 rounded-xl p-4 border-l-4 border-yellow-400">
-                      <p className="text-purple-100 text-base leading-relaxed italic">"{result.question}"</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-bold text-yellow-400 mb-2 sm:mb-3">{t.yourQuestion}</h3>
+                    <div className="bg-purple-700/30 rounded-xl p-3 sm:p-4 border-l-4 border-yellow-400">
+                      <p className="text-purple-100 text-sm sm:text-base leading-relaxed italic break-words">"{result.question}"</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 解读部分 */}
-              <div className="p-6">
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <BookOpen className="w-5 h-5 text-orange-400" />
+              <div className="p-4 sm:p-6">
+                <div className="flex items-start space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-orange-400 mb-4">{t.interpretation}</h3>
-                    <div className="bg-gradient-to-br from-slate-800/40 via-purple-800/30 to-blue-800/40 rounded-xl p-8 border border-purple-400/30 shadow-2xl backdrop-blur-sm">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-bold text-orange-400 mb-3 sm:mb-4">{t.interpretation}</h3>
+                    <div className="bg-gradient-to-br from-slate-800/40 via-purple-800/30 to-blue-800/40 rounded-xl p-4 sm:p-6 lg:p-8 border border-purple-400/30 shadow-2xl backdrop-blur-sm">
                       <div 
-                        className="text-purple-50 text-base max-w-none prose prose-invert"
+                        className="text-purple-50 text-sm sm:text-base max-w-none prose prose-invert"
                         style={{ 
-                          lineHeight: '1.9',
+                          lineHeight: '1.7',
                           letterSpacing: '0.02em',
                           textRendering: 'optimizeLegibility',
                           fontFeatureSettings: '"liga" 1, "kern" 1'
@@ -3225,58 +3376,269 @@ export default function FortuneWebsite() {
               </div>
 
               {/* 底部信息和操作区域 */}
-              <div className="bg-gradient-to-r from-purple-800/30 to-indigo-800/30 p-6 border-t border-purple-400/20">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <div className="bg-gradient-to-r from-purple-800/30 to-indigo-800/30 p-4 sm:p-6 border-t border-purple-400/20">
+                <div className="flex flex-col space-y-4">
                   {/* 时间信息 */}
-                  <div className="flex items-center space-x-2 text-purple-300">
+                  <div className="flex items-center justify-center sm:justify-start space-x-2 text-purple-300">
                     <Clock className="w-4 h-4" />
-                    <span className="text-sm">{t.timestamp}{new Date(result.timestamp).toLocaleString('zh-CN')}</span>
+                    <span className="text-xs sm:text-sm">{t.timestamp}{new Date(result.timestamp).toLocaleString('zh-CN')}</span>
                     <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">
                       {result.reading?.length || 0} 字符
                     </span>
                   </div>
                   
                   {/* 操作按钮 */}
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
                     <button 
-                      onClick={() => exportToPDF(result, t)}
-                      className="px-4 py-2 bg-blue-600/30 hover:bg-blue-600/50 rounded-lg text-sm transition-all duration-200 flex items-center space-x-2 border border-blue-500/30 hover:border-blue-400/50"
+                      onClick={generatePlainLanguageInterpretation}
+                      disabled={isGeneratingPlainLanguage}
+                      className="px-3 sm:px-4 py-2 bg-yellow-600/30 hover:bg-yellow-600/50 disabled:bg-gray-600/30 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-yellow-500/30 hover:border-yellow-400/50 disabled:border-gray-500/30 touch-target active:scale-95 disabled:cursor-not-allowed"
                     >
-                      <Download className="w-4 h-4" />
+                      {isGeneratingPlainLanguage ? (
+                        <>
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                          <span>生成中...</span>
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span>{t.plainLanguageInterpretation}</span>
+                        </>
+                      )}
+                    </button>
+                    <button 
+                      onClick={() => handleExportOption('pdf')}
+                      className="px-3 sm:px-4 py-2 bg-blue-600/30 hover:bg-blue-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-blue-500/30 hover:border-blue-400/50 touch-target active:scale-95"
+                    >
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{t.exportPDF}</span>
                     </button>
                     <button 
-                      onClick={() => exportToPDF(result, t)}
-                      className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-sm transition-all duration-200 flex items-center space-x-2 border border-green-500/30 hover:border-green-400/50"
+                      onClick={() => handleExportOption('print')}
+                      className="px-3 sm:px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-green-500/30 hover:border-green-400/50 touch-target active:scale-95"
                     >
-                      <Printer className="w-4 h-4" />
+                      <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{t.print}</span>
                     </button>
                     <button 
-                      onClick={() => navigator.clipboard.writeText(`${t.yourQuestion}${result.question}\n\n${t.interpretation}${result.reading}`)}
-                      className="px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 rounded-lg text-sm transition-all duration-200 flex items-center space-x-2 border border-purple-500/30 hover:border-purple-400/50"
+                      onClick={() => handleExportOption('copy')}
+                      className="px-3 sm:px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-purple-500/30 hover:border-purple-400/50 touch-target active:scale-95"
                     >
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{t.copyResult}</span>
                     </button>
                     <button 
                       onClick={() => setResult(null)}
-                      className="px-4 py-2 bg-gray-600/30 hover:bg-gray-600/50 rounded-lg text-sm transition-all duration-200 flex items-center space-x-2 border border-gray-500/30 hover:border-gray-400/50"
+                      className="px-3 sm:px-4 py-2 bg-gray-600/30 hover:bg-gray-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-gray-500/30 hover:border-gray-400/50 touch-target active:scale-95"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{t.clearResult}</span>
                     </button>
                   </div>
                 </div>
                 
                 {/* 免责声明 */}
-                <div className="mt-6 pt-4 border-t border-purple-400/20">
-                  <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-400/20">
-                    <p className="text-yellow-300 text-sm text-center flex items-center justify-center space-x-2">
-                      <AlertTriangle className="w-4 h-4" />
+                <div className="mt-4 sm:mt-6 pt-4 border-t border-purple-400/20">
+                  <div className="bg-yellow-500/10 rounded-lg p-3 sm:p-4 border border-yellow-400/20">
+                    <p className="text-yellow-300 text-xs sm:text-sm text-center flex items-center justify-center flex-wrap gap-1 sm:gap-2">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                       <span>{t.disclaimer}</span>
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* 大白话解读页面 */}
+        {showPlainLanguage && plainLanguageResult && (
+          <div className="max-w-4xl mx-auto mt-6">
+            <div className="bg-gradient-to-br from-green-900/60 to-emerald-900/60 backdrop-blur-sm rounded-2xl border border-green-400/20 shadow-2xl overflow-hidden">
+              {/* 大白话解读标题 */}
+              <div className="bg-gradient-to-r from-green-800/40 to-emerald-800/40 p-4 sm:p-6 border-b border-green-400/20">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full mb-3 sm:mb-4 shadow-lg">
+                    <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2">
+                    {t.plainLanguageTitle}
+                  </h2>
+                  <p className="text-green-200 text-sm sm:text-base">{t.plainLanguageSubtitle}</p>
+                </div>
+              </div>
+              
+              {/* 大白话解读内容 */}
+              <div className="p-4 sm:p-6">
+                <div className="bg-gradient-to-br from-slate-800/40 via-green-800/30 to-emerald-800/40 rounded-xl p-4 sm:p-6 lg:p-8 border border-green-400/30 shadow-2xl backdrop-blur-sm">
+                  <div 
+                    className="text-green-50 text-sm sm:text-base max-w-none prose prose-invert"
+                    style={{ 
+                      lineHeight: '1.8',
+                      letterSpacing: '0.02em',
+                      textRendering: 'optimizeLegibility',
+                      fontFeatureSettings: '"liga" 1, "kern" 1'
+                    }}
+                    dangerouslySetInnerHTML={{ __html: formatReadingText(plainLanguageResult) }}
+                  />
+                </div>
+              </div>
+              
+              {/* 大白话解读底部操作 */}
+              <div className="bg-gradient-to-r from-green-800/30 to-emerald-800/30 p-4 sm:p-6 border-t border-green-400/20">
+                <div className="flex flex-col space-y-4">
+                  {/* 操作按钮 */}
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+                    <button 
+                      onClick={() => setShowPlainLanguage(false)}
+                      className="px-3 sm:px-4 py-2 bg-blue-600/30 hover:bg-blue-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-blue-500/30 hover:border-blue-400/50 touch-target active:scale-95"
+                    >
+                      <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>{t.backToOriginal}</span>
+                    </button>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText(plainLanguageResult)}
+                      className="px-3 sm:px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-green-500/30 hover:border-green-400/50 touch-target active:scale-95"
+                    >
+                      <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>{t.copyResult}</span>
+                    </button>
+                  </div>
+                  
+                  {/* 说明文字 */}
+                  <div className="bg-green-500/10 rounded-lg p-3 sm:p-4 border border-green-400/20">
+                    <p className="text-green-300 text-xs sm:text-sm text-center flex items-center justify-center flex-wrap gap-1 sm:gap-2">
+                      <Lightbulb className="w-4 h-4 flex-shrink-0" />
+                      <span>这是将原始解读用更直白的语言重新表达，内容与原解读一致。</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* 导出选择弹窗 */}
+        {showExportModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-gradient-to-br from-purple-900/95 to-indigo-900/95 backdrop-blur-sm rounded-2xl border border-purple-400/20 shadow-2xl max-w-md w-full">
+              {/* 弹窗标题 */}
+              <div className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 p-4 sm:p-6 border-b border-purple-400/20 rounded-t-2xl">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full mb-3 shadow-lg">
+                    <Download className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent mb-2">
+                    {t.exportOptions}
+                  </h3>
+                  <p className="text-purple-200 text-sm">{t.exportSelectContent}</p>
+                </div>
+              </div>
+              
+              {/* 弹窗内容 */}
+              <div className="p-4 sm:p-6">
+                {/* 导出方式显示 */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-center space-x-2 mb-4">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      exportType === 'pdf' ? 'bg-blue-500/20' : 
+                      exportType === 'print' ? 'bg-green-500/20' : 'bg-purple-500/20'
+                    }`}>
+                      {exportType === 'pdf' && <Download className="w-5 h-5 text-blue-400" />}
+                      {exportType === 'print' && <Printer className="w-5 h-5 text-green-400" />}
+                      {exportType === 'copy' && <Copy className="w-5 h-5 text-purple-400" />}
+                    </div>
+                    <span className="text-white font-medium">
+                      {exportType === 'pdf' && t.exportPDF}
+                      {exportType === 'print' && t.print}
+                      {exportType === 'copy' && t.copyResult}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* 内容选择选项 */}
+                <div className="space-y-3 mb-6">
+                  <div 
+                    onClick={() => setExportContent('original')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                      exportContent === 'original' 
+                        ? 'border-purple-400 bg-purple-400/20 shadow-lg' 
+                        : 'border-purple-600/30 bg-purple-800/30 hover:border-purple-500/50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        exportContent === 'original' ? 'border-purple-400 bg-purple-400' : 'border-purple-500'
+                      }`}>
+                        {exportContent === 'original' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{t.onlyOriginal}</p>
+                        <p className="text-purple-300 text-sm">包含问题和原始占卜解读</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setExportContent('plain')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                      exportContent === 'plain' 
+                        ? 'border-green-400 bg-green-400/20 shadow-lg' 
+                        : 'border-green-600/30 bg-green-800/30 hover:border-green-500/50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        exportContent === 'plain' ? 'border-green-400 bg-green-400' : 'border-green-500'
+                      }`}>
+                        {exportContent === 'plain' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{t.onlyPlainLanguage}</p>
+                        <p className="text-green-300 text-sm">包含问题和大白话解读</p>
+                        {!plainLanguageResult && (
+                          <p className="text-red-400 text-xs mt-1">需要先生成大白话解读</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setExportContent('both')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                      exportContent === 'both' 
+                        ? 'border-yellow-400 bg-yellow-400/20 shadow-lg' 
+                        : 'border-yellow-600/30 bg-yellow-800/30 hover:border-yellow-500/50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        exportContent === 'both' ? 'border-yellow-400 bg-yellow-400' : 'border-yellow-500'
+                      }`}>
+                        {exportContent === 'both' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{t.bothContent}</p>
+                        <p className="text-yellow-300 text-sm">包含问题、原始解读和大白话解读</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 操作按钮 */}
+                <div className="flex space-x-3">
+                  <button 
+                    onClick={() => setShowExportModal(false)}
+                    className="flex-1 px-4 py-3 bg-gray-600/30 hover:bg-gray-600/50 rounded-lg text-sm font-medium text-gray-300 hover:text-gray-200 transition-all duration-200 border border-gray-500/30 hover:border-gray-400/50"
+                  >
+                    {t.cancelExport}
+                  </button>
+                  <button 
+                    onClick={confirmExport}
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg text-sm font-medium text-white transition-all duration-200 shadow-lg"
+                  >
+                    {t.confirmExport}
+                  </button>
                 </div>
               </div>
             </div>
