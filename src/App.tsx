@@ -1658,23 +1658,21 @@ export default function FortuneWebsite() {
   // LLM API integration for real fortune telling with web search support
   const processReading = useCallback(async (prompt: { system: string; user: string }) => {
     try {
-      // Check if we're in development or production
-      const isDevelopment = import.meta.env.DEV;
+      // Always use direct API calls with environment variables for simplicity
       const API_TEMPERATURE = parseFloat(import.meta.env.VITE_LLM_TEMPERATURE || '0.8');
       const API_MAX_TOKENS = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS || '800');
       
       // Web search is now handled before calling this function
       let searchResults: SearchResult[] = [];
       
-      if (isDevelopment) {
-        // Development: Use direct API calls with environment variables
-        const API_ENDPOINT = import.meta.env.VITE_LLM_API_ENDPOINT;
-        const API_KEY = import.meta.env.VITE_LLM_API_KEY;
-        const API_MODEL = import.meta.env.VITE_LLM_MODEL || 'deepseek-chat';
-        
-        if (!API_ENDPOINT || !API_KEY) {
-          throw new Error('开发环境需要配置 VITE_LLM_API_ENDPOINT 和 VITE_LLM_API_KEY');
-        }
+      // Use direct API calls with environment variables
+      const API_ENDPOINT = import.meta.env.VITE_LLM_API_ENDPOINT;
+      const API_KEY = import.meta.env.VITE_LLM_API_KEY;
+      const API_MODEL = import.meta.env.VITE_LLM_MODEL || 'deepseek-chat';
+      
+      if (!API_ENDPOINT || !API_KEY) {
+        throw new Error('需要配置 VITE_LLM_API_ENDPOINT 和 VITE_LLM_API_KEY 环境变量');
+      }
         
         // Prepare headers for direct API call
         const headers: { [key: string]: string } = {
@@ -1757,67 +1755,6 @@ export default function FortuneWebsite() {
           isAIGenerated: !!content,
           searchResults
         };
-        
-      } else {
-        // Production: Use secure server-side API route
-        const API_ENDPOINT = '/api/llm/chat';
-        
-        // Prepare request body for secure API route
-        const requestBody = {
-          messages: [
-            { role: 'system', content: prompt.system },
-            { role: 'user', content: prompt.user }
-          ],
-          temperature: API_TEMPERATURE,
-          max_tokens: API_MAX_TOKENS
-        };
-        
-        // Create AbortController for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
-        
-        const response = await fetch(API_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-          throw new Error(`API Error: ${response.status} - ${errorData.error || response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        // Handle different API response formats
-        let content = '';
-        if (data.content?.[0]?.text) {
-          // Anthropic format
-          content = data.content[0].text;
-        } else if (data.choices && data.choices[0]?.message?.content) {
-          // OpenAI/DeepSeek/OpenRouter format
-          content = data.choices[0].message.content;
-        } else if (data.content) {
-          // Generic content format
-          content = data.content;
-        } else if (data.response) {
-          // Generic response format
-          content = data.response;
-        } else {
-          throw new Error('Unexpected API response format');
-        }
-        
-        return {
-          reading: content?.trim() || '',
-          isAIGenerated: !!content,
-          searchResults
-        };
-      }
       
     } catch (error: any) {
       console.error('LLM API Error:', error);
