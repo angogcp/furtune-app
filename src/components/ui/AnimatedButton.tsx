@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { cn } from '../../utils/cn';
 import { Button, type ButtonProps } from './Button';
 
@@ -10,7 +10,7 @@ export interface AnimatedButtonProps extends ButtonProps {
   animationDuration?: number;
 }
 
-const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
+const AnimatedButton = memo(React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
   ({
     className,
     animationType = 'bounce',
@@ -96,7 +96,7 @@ const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
       </Button>
     );
   }
-);
+));
 
 AnimatedButton.displayName = 'AnimatedButton';
 

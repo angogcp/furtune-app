@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { isSupabaseConfigured } from './lib/supabase'
@@ -10,17 +10,19 @@ import UserProfile from './components/Profile/UserProfile'
 import GrowthRecord from './components/GrowthRecord/GrowthRecord'
 import Recommendations from './components/Recommendations/Recommendations'
 import FortuneReminders from './components/FortuneReminders/FortuneReminders'
+import PrintPage from './components/PrintPage'
 
 
 import FAQ from './components/FAQ/FAQ'
 import ContactForm from './components/Contact/ContactForm'
 import AuthDebug from './components/Debug/AuthDebug'
 import { NetworkStatus } from './components/NetworkStatus'
+import { NetworkErrorBoundary } from './components/NetworkErrorBoundary'
 import { Button, Card, Loading } from './components/ui'
 
 import App from './App' // Original fortune telling app
 import FortuneWebsite from './fortune_telling_website' // Web version
-import { User, Calendar, Heart, Sparkles, Home, LogIn, TrendingUp, BookOpen, Bell, Globe, HelpCircle, Mail, Menu, X } from 'lucide-react'
+import { User, Calendar, Heart, Sparkles, Home, LogIn, TrendingUp, BookOpen, Bell, Globe, HelpCircle, Mail, Menu, X, Star, Crown, Share2 } from 'lucide-react'
 
 function AuthWrapper() {
   const { user, loading } = useAuth()
@@ -43,9 +45,9 @@ function AuthWrapper() {
   }
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-secondary-900 to-accent-900">
-        <NetworkStatus />
+    <NetworkErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-primary-900 via-secondary-900 to-accent-900">
         {/* Enhanced Navigation */}
         <nav className="bg-primary-900/80 backdrop-blur-md border-b border-primary-400/30 sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,11 +152,13 @@ function AuthWrapper() {
 
         {/* Main Content */}
         <main className="min-h-[calc(100vh-4rem)]">
+          <NetworkStatus />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {user ? (
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route path="/web" element={<FortuneWebsite />} />
+                <Route path="/print" element={<PrintPageWrapper />} />
                 <Route path="/checkin" element={<DailyCheckin />} />
                 <Route path="/wishes" element={<WishWall />} />
                 <Route path="/growth" element={<GrowthRecord />} />
@@ -168,6 +172,7 @@ function AuthWrapper() {
             ) : (
               <Routes>
                 <Route path="/" element={<GuestHome onShowAuth={() => setShowAuth(true)} />} />
+                <Route path="/print" element={<PrintPageWrapper />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<ContactForm />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
@@ -200,6 +205,7 @@ function AuthWrapper() {
         )}
       </div>
     </Router>
+    </NetworkErrorBoundary>
   )
 }
 
@@ -241,7 +247,6 @@ function MobileNavButton({ to, icon: Icon, label, onClick }: { to: string; icon:
 function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
   return (
     <div className="animate-fade-in">
-      <NetworkStatus />
       {/* Debug Info - Only show in development */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mb-8">
@@ -250,20 +255,21 @@ function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
       )}
       
       <div className="text-center py-12 lg:py-20">
-        <div className="animate-float mb-8">
-          <Sparkles className="w-20 h-20 lg:w-24 lg:h-24 mx-auto text-accent-400 drop-shadow-lg" />
-        </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-accent-400 via-primary-400 to-secondary-400 bg-clip-text text-transparent mb-6 animate-slide-up">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-6 animate-slide-up">
           欢迎来到神秘占卜馆
         </h1>
-        <p className="text-lg sm:text-xl text-primary-200 mb-12 leading-relaxed max-w-2xl mx-auto animate-slide-up" style={{animationDelay: '0.2s'}}>
-          探索命运奥秘，指引人生方向<br />
-          加入我们，开启您的神秘之旅
-        </p>
+        <div className="space-y-2 mb-12">
+          <p className="text-lg sm:text-xl text-white leading-relaxed animate-slide-up" style={{animationDelay: '0.1s'}}>
+            探索命运奥秘，指引人生方向
+          </p>
+          <p className="text-lg sm:text-xl text-white leading-relaxed animate-slide-up" style={{animationDelay: '0.2s'}}>
+            加入我们，开启您的神秘之旅
+          </p>
+        </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-12 max-w-6xl mx-auto">
           <FeatureCard 
-            icon={<Sparkles className="w-8 h-8" />} 
+            icon={<Star className="w-8 h-8" />} 
             title="多种占卜方式" 
             description="塔罗、星座、易经、八字等多种占卜方式，满足不同需求"
           />
@@ -293,14 +299,14 @@ function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
             description="设置定期提醒，回顾占卜结果，感受命运的变化轨迹"
           />
           <FeatureCard 
-            icon={<HelpCircle className="w-8 h-8" />} 
-            title="常见问题" 
-            description="快速找到使用指南和常见问题解答，轻松上手占卜功能"
+            icon={<Crown className="w-8 h-8" />} 
+            title="大师解读" 
+            description="专业命理师一对一深度解读，获得更精准的人生指导"
           />
           <FeatureCard 
-            icon={<Mail className="w-8 h-8" />} 
-            title="联系我们" 
-            description="遇到问题或有建议？通过联系表单与我们沟通，我们会及时回复"
+            icon={<Share2 className="w-8 h-8" />} 
+            title="报告分享" 
+            description="生成精美运势分析报告，一键分享到社交平台"
           />
         </div>
         
@@ -343,6 +349,45 @@ function FeatureCard({ icon, title, description }: {
       </p>
     </Card>
   )
+}
+
+// 打印页面包装器组件
+function PrintPageWrapper() {
+  React.useEffect(() => {
+    const printData = sessionStorage.getItem('printData');
+    if (!printData) {
+      // 如果没有打印数据，重定向到首页
+      window.location.href = '/';
+    }
+  }, []);
+
+  const printData = sessionStorage.getItem('printData');
+  
+  if (!printData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">没有找到打印数据</h1>
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg"
+          >
+            返回首页
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const data = JSON.parse(printData);
+  
+  return (
+    <PrintPage 
+      userInput={data.userInput}
+      result={data.result}
+      plainLanguageResult={data.plainLanguageResult}
+    />
+  );
 }
 
 export default function AppWithAuth() {

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
+import { offlineManager } from './offlineManager'
 
 // Network status types
 export interface NetworkState {
@@ -8,6 +9,7 @@ export interface NetworkState {
   lastConnectionTest: Date | null
   connectionAttempts: number
   isRetrying: boolean
+  isOfflineMode: boolean
 }
 
 // Connection test result
@@ -25,7 +27,8 @@ class NetworkManager {
     isSupabaseConnected: true,
     lastConnectionTest: null,
     connectionAttempts: 0,
-    isRetrying: false
+    isRetrying: false,
+    isOfflineMode: false
   }
 
   private listeners: Array<(state: NetworkState) => void> = []
@@ -154,7 +157,12 @@ class NetworkManager {
       'ERR_NETWORK',
       'ERR_INTERNET_DISCONNECTED',
       'ERR_NETWORK_CHANGED',
-      'Failed to fetch'
+      'ERR_NAME_NOT_RESOLVED',
+      'ERR_CONNECTION_REFUSED',
+      'ERR_CONNECTION_TIMED_OUT',
+      'Failed to fetch',
+      'DNS resolution failed',
+      'getaddrinfo ENOTFOUND'
     ]
 
     const errorMessage = error.message || error.toString() || ''
@@ -163,12 +171,45 @@ class NetworkManager {
     )
   }
 
+  private isDNSError(error: any): boolean {
+    if (!error) return false
+    
+    const dnsErrorPatterns = [
+      'ERR_NAME_NOT_RESOLVED',
+      'DNS resolution failed',
+      'getaddrinfo ENOTFOUND',
+      'ENOTFOUND'
+    ]
+
+    const errorMessage = error.message || error.toString() || ''
+    return dnsErrorPatterns.some(pattern => 
+      errorMessage.toLowerCase().includes(pattern.toLowerCase())
+    )
+  }
+
+  private getErrorMessage(error: any): string {
+    if (this.isDNSError(error)) {
+      return '无法解析服务器地址，请检查网络连接或稍后重试'
+    }
+    
+    if (this.isNetworkError(error)) {
+      return '网络连接失败，请检查网络设置'
+    }
+    
+    return error?.message || '未知错误'
+  }
+
   private handleConnectionIssue(errorMessage: string) {
     if (this.state.isRetrying || this.state.connectionAttempts >= this.maxRetries) {
       return
     }
 
     this.updateState({ isRetrying: true })
+    
+    // 如果连续失败次数过多，切换到离线模式
+    if (this.state.connectionAttempts >= 3 && !this.state.isOfflineMode) {
+      this.updateState({ isOfflineMode: true })
+    }
     
     const retryDelay = this.baseRetryDelay * Math.pow(2, this.state.connectionAttempts)
     
@@ -215,7 +256,7 @@ class NetworkManager {
           await this.testConnection()
           
           if (!this.state.isSupabaseConnected) {
-            throw new Error('无法连接到服务器，请检查网络连接')
+            throw new Error(this.getErrorMessage(lastError))
           }
         } else {
           break
@@ -248,7 +289,8 @@ class NetworkManager {
   public async forceReconnect(): Promise<void> {
     this.updateState({ 
       connectionAttempts: 0, 
-      isRetrying: false 
+      isRetrying: false,
+      isOfflineMode: false
     })
     
     // Clear any existing timeouts
@@ -266,6 +308,34 @@ class NetworkManager {
     
     // Test connection
     await this.testConnection()
+    
+    // 如果重新连接成功，尝试同步离线数据
+    if (this.state.isSupabaseConnected && offlineManager.hasPendingSync()) {
+      try {
+        await offlineManager.syncToServer(supabase)
+        this.showNetworkSuccess('离线数据已同步')
+      } catch (error) {
+        console.error('Failed to sync offline data:', error)
+      }
+    }
+  }
+
+  // 启用离线模式
+  public enableOfflineMode(): void {
+    this.updateState({ isOfflineMode: true })
+    this.notifyListeners()
+    this.showNetworkError('已切换到离线模式')
+  }
+
+  // 禁用离线模式
+  public disableOfflineMode(): void {
+    this.updateState({ isOfflineMode: false })
+    this.notifyListeners()
+  }
+
+  // 检查是否处于离线模式
+  public isOfflineMode(): boolean {
+    return this.state.isOfflineMode
   }
 
   public showNetworkError(error: string) {

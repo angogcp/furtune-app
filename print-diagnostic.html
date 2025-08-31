@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>打印诊断页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: black;
+            background: white;
+        }
+        
+        .test-section {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        
+        .tailwind-test {
+            color: purple;
+            background: yellow;
+        }
+        
+        @media print {
+            .test-section {
+                border: 1px solid black;
+                background: white;
+                margin: 5px 0;
+                padding: 5px;
+            }
+            
+            .tailwind-test {
+                color: red;
+                background: white;
+            }
+            
+            /* 测试Tailwind打印类 */
+            .print\\:text-black {
+                color: black !important;
+            }
+            
+            .print\\:bg-white {
+                background: white !important;
+            }
+            
+            .print\\:hidden {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>打印诊断测试</h1>
+    
+    <div class="test-section">
+        <h2>基础HTML测试</h2>
+        <p>这是基础的HTML内容，应该在打印时可见。</p>
+        <ul>
+            <li>列表项目1</li>
+            <li>列表项目2</li>
+        </ul>
+    </div>
+    
+    <div class="test-section tailwind-test">
+        <h2>CSS样式测试</h2>
+        <p>这个区域在屏幕上是紫色文字黄色背景，打印时应该是红色文字白色背景。</p>
+    </div>
+    
+    <div class="test-section print:text-black print:bg-white">
+        <h2>Tailwind类测试</h2>
+        <p>这个区域使用了print:text-black和print:bg-white类。</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>隐藏元素测试</h2>
+        <p>下面这行文字在打印时应该隐藏：</p>
+        <p class="print:hidden">【这行文字在打印时应该看不到】</p>
+        <p>上面那行在打印时应该消失。</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>占卜内容模拟</h2>
+        <h3>🔮 占卜结果</h3>
+        <h4>您的问题</h4>
+        <p>"我的事业发展如何？"</p>
+        <h4>塔罗牌解读</h4>
+        <p>您的事业正处于上升期，现在是展示才华的好时机。建议保持积极心态，抓住机遇。</p>
+    </div>
+    
+    <button onclick="window.print()" style="background: #007bff; color: white; border: none; padding: 10px 20px; margin: 20px 0;">
+        🖨️ 打印这个诊断页面
+    </button>
+    
+    <div style="background: #f0f0f0; padding: 15px; margin: 20px 0; border-left: 4px solid #007bff;">
+        <h3>🔍 诊断说明</h3>
+        <p><strong>如果打印后看到：</strong></p>
+        <ul>
+            <li>✅ 所有内容都可见 → CSS基础功能正常</li>
+            <li>❌ 完全空白 → 浏览器打印设置问题</li>
+            <li>⚠️ 部分内容缺失 → Tailwind类或CSS选择器问题</li>
+            <li>🎯 "【这行文字在打印时应该看不到】"消失了 → print:hidden生效</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface AnimatedTextProps {
@@ -12,7 +12,7 @@ export interface AnimatedTextProps {
   glowColor?: string;
 }
 
-const AnimatedText: React.FC<AnimatedTextProps> = ({
+const AnimatedText = memo<AnimatedTextProps>(({
   text,
   className,
   animationType = 'typewriter',
@@ -146,6 +146,8 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       )}
     </span>
   );
-};
+});
+
+AnimatedText.displayName = 'AnimatedText';
 
 export { AnimatedText };

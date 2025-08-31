@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 自定义打印样式 - 必须在Tailwind utilities之后 */
+@import './styles/print.css';

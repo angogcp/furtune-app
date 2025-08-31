@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface LoadingProps {
@@ -9,7 +9,7 @@ export interface LoadingProps {
   text?: string;
 }
 
-const Loading: React.FC<LoadingProps> = ({
+const Loading = memo<LoadingProps>(({
   variant = 'spinner',
   size = 'md',
   color = 'primary',
@@ -123,6 +123,8 @@ const Loading: React.FC<LoadingProps> = ({
       )}
     </div>
   );
-};
+});
+
+Loading.displayName = 'Loading';
 
 export { Loading };

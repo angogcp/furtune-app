@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>超简单打印测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: black;
+            background: white;
+        }
+        
+        @media print {
+            html, body {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                color: black !important;
+                background: white !important;
+                margin: 0 !important;
+                padding: 10mm !important;
+                font-family: Arial, sans-serif !important;
+            }
+            
+            body * {
+                visibility: visible !important;
+                opacity: 1 !important;
+                color: black !important;
+                background: white !important;
+            }
+            
+            div, p, h1, h2, h3, ul, li {
+                display: block !important;
+                visibility: visible !important;
+                color: black !important;
+                background: white !important;
+                margin: 2px 0 !important;
+                padding: 1px !important;
+            }
+            
+            li {
+                display: list-item !important;
+            }
+            
+            button {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 占卜结果打印测试</h1>
+    
+    <div>
+        <h2>您的问题</h2>
+        <p>我的事业发展如何？</p>
+    </div>
+    
+    <div>
+        <h2>塔罗牌解读</h2>
+        <p>通过塔罗牌的指引，您的事业正处于上升期。现在是展示才华和承担更多责任的绝佳时机。</p>
+        
+        <h3>建议</h3>
+        <ul>
+            <li>保持积极的心态</li>
+            <li>抓住机遇</li>
+            <li>与团队协作</li>
+            <li>持续学习提升</li>
+        </ul>
+    </div>
+    
+    <div>
+        <h2>大白话解读</h2>
+        <p>简单来说，你的工作运势很不错！现在正是努力拼搏的好时候，老板和同事都会认可你的能力。</p>
+        <p>记住要把握机会，不要太保守，适当展现自己的才华。</p>
+    </div>
+    
+    <button onclick="window.print()" style="background: #007bff; color: white; border: none; padding: 10px 20px; margin: 20px 0;">
+        🖨️ 打印这个测试页面
+    </button>
+    
+    <div style="background: #e3f2fd; padding: 10px; margin: 20px 0; border-left: 4px solid #2196f3;">
+        <p><strong>测试说明：</strong>如果这个页面能正常打印出完整内容，说明基础打印功能没问题。然后我们再调试主应用。</p>
+    </div>
+</body>
+</html>

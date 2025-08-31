@@ -1,0 +1,190 @@
+/* 超强制打印样式 - 确保内容绝对可见 */
+@media print {
+  /* 强制重置所有元素的基础样式 */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* 页面设置 */
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+  
+  /* 强制显示根元素 */
+  html, body, #root {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: black !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: "Microsoft YaHei", Arial, sans-serif !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* 强制显示所有可见内容 */
+  body *:not(script):not(style):not(meta):not(link):not(title) {
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: black !important;
+    background: white !important;
+    background-image: none !important;
+    background-color: white !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    filter: none !important;
+    position: static !important;
+    z-index: auto !important;
+    overflow: visible !important;
+  }
+  
+  /* 强制显示块级元素 */
+  div:not(.no-print):not(button),
+  section:not(.no-print),
+  article:not(.no-print),
+  main:not(.no-print),
+  aside:not(.no-print):not(.print\:hidden),
+  header:not(.no-print):not(.print\:hidden),
+  footer:not(.no-print):not(.print\:hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin: 2px 0 !important;
+    padding: 2px !important;
+  }
+  
+  /* 强制显示文本元素 */
+  p, h1, h2, h3, h4, h5, h6, span:not(.print\:hidden), a, strong, em, b, i {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: black !important;
+    background: white !important;
+    margin: 1px 0 !important;
+    padding: 1px !important;
+  }
+  
+  /* 行内元素保持行内显示 */
+  span:not(.print\:hidden), a, strong, em, b, i, code {
+    display: inline !important;
+  }
+  
+  /* 标题特殊处理 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: bold !important;
+    margin: 4px 0 2px 0 !important;
+    page-break-after: avoid !important;
+  }
+  
+  h1 { font-size: 18pt !important; }
+  h2 { font-size: 16pt !important; }
+  h3 { font-size: 14pt !important; }
+  h4 { font-size: 13pt !important; }
+  h5 { font-size: 12pt !important; }
+  h6 { font-size: 11pt !important; }
+  
+  /* 列表处理 */
+  ul, ol {
+    display: block !important;
+    visibility: visible !important;
+    margin: 2px 0 !important;
+    padding-left: 15px !important;
+  }
+  
+  li {
+    display: list-item !important;
+    visibility: visible !important;
+    color: black !important;
+    margin: 1px 0 !important;
+  }
+  
+  /* 隐藏不需要的元素 */
+  button,
+  nav,
+  .no-print,
+  .print\:hidden,
+  script,
+  style,
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Tailwind 打印类强制实现 */
+  .print\:bg-white { background: white !important; background-color: white !important; }
+  .print\:bg-gray-50 { background: #f9fafb !important; background-color: #f9fafb !important; }
+  .print\:bg-gray-100 { background: #f3f4f6 !important; background-color: #f3f4f6 !important; }
+  
+  .print\:text-black { color: black !important; }
+  .print\:text-gray-600 { color: #4b5563 !important; }
+  .print\:text-gray-700 { color: #374151 !important; }
+  .print\:text-gray-800 { color: #1f2937 !important; }
+  
+  .print\:border-gray-300 { border-color: #d1d5db !important; }
+  .print\:border-gray-400 { border-color: #9ca3af !important; }
+  
+  .print\:rounded-none { border-radius: 0 !important; }
+  
+  .print\:p-1 { padding: 0.25rem !important; }
+  .print\:p-2 { padding: 0.5rem !important; }
+  
+  .print\:m-1 { margin: 0.25rem !important; }
+  .print\:m-2 { margin: 0.5rem !important; }
+  .print\:mb-1 { margin-bottom: 0.25rem !important; }
+  .print\:mb-2 { margin-bottom: 0.5rem !important; }
+  .print\:mt-1 { margin-top: 0.25rem !important; }
+  
+  .print\:space-y-1 > * + * { margin-top: 0.25rem !important; }
+  .print\:space-x-1 > * + * { margin-left: 0.25rem !important; }
+  .print\:gap-1 { gap: 0.25rem !important; }
+  
+  .print\:text-xs { font-size: 0.75rem !important; }
+  .print\:text-sm { font-size: 0.875rem !important; }
+  .print\:text-base { font-size: 1rem !important; }
+  .print\:text-lg { font-size: 1.125rem !important; }
+  
+  .print\:font-bold { font-weight: bold !important; }
+  .print\:not-italic { font-style: normal !important; }
+  .print\:leading-tight { line-height: 1.25 !important; }
+  
+  .print\:shadow-none { box-shadow: none !important; }
+  .print\:bg-none { background-image: none !important; }
+  .print\:pb-0 { padding-bottom: 0 !important; }
+  
+  /* 避免分页断裂 */
+  .avoid-break {
+    page-break-inside: avoid !important;
+  }
+  
+  /* 强制显示常用布局类 */
+  .space-y-8, .space-y-4, .space-y-1,
+  .bg-gradient-to-br, .bg-gradient-to-r,
+  .backdrop-blur-sm, .border,
+  .rounded-2xl, .rounded-xl, .rounded-lg,
+  .p-8, .p-6, .p-4, .p-2,
+  .shadow-2xl, .shadow-lg, .shadow-md,
+  .mb-8, .mb-6, .mb-4, .mb-2,
+  .mt-8, .mt-6, .mt-4, .mt-2 {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* 确保容器内容可见 */
+  [class*="space-y-"] > *,
+  [class*="grid"] > *,
+  [class*="flex"] > * {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}

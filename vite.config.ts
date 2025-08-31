@@ -7,25 +7,22 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3002',
+        target: 'http://localhost:3003',
         changeOrigin: true,
 
         configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
             console.log('Proxying request:', req.method, req.url, 'to', proxyReq.path);
           });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
+          proxy.on('proxyRes', (proxyRes, req) => {
             console.log('Received response from proxy for:', req.method, req.url, 'Status:', proxyRes.statusCode);
           });
-          proxy.on('error', (err, req, res) => {
+          proxy.on('error', (err, _req, _res) => {
             console.error('Proxy error:', err);
-          });
-          // Fallback for local development - handle API requests directly
-          proxy.on('error', () => {
+            // Fallback for local development - handle API requests directly
             console.log('API proxy error, using fallback');
           });
-        },
-        logLevel: 'debug'
+        }
       }
     }
   }

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打印测试页面</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 20px;
+            color: black;
+            background: white;
+        }
+        
+        @media print {
+            @page { 
+                size: A4; 
+                margin: 12mm; 
+            }
+            
+            button {
+                display: none !important;
+            }
+            
+            * {
+                color: black !important;
+                background: white !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 神秘占卜馆</h1>
+    
+    <h2>占卜结果</h2>
+    
+    <h3>您的问题</h3>
+    <p>"我的事业发展如何？"</p>
+    
+    <h3>塔罗牌解读</h3>
+    <p>通过塔罗牌的指引，您的事业正处于上升期。现在是展示才华和承担更多责任的绝佳时机。</p>
+    
+    <ul>
+        <li>保持积极的心态</li>
+        <li>抓住机遇</li>
+        <li>与团队协作</li>
+    </ul>
+    
+    <h3>大白话解读</h3>
+    <p>简单来说，你的工作运势很不错！现在正是努力拼博的好时候，老板和同事都会认可你的能力。</p>
+    
+    <button onclick="window.print()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 20px 0;">
+        🖨️ 打印测试
+    </button>
+    
+    <p style="color: #666; font-size: 14px;">
+        点击上方按钮测试打印功能。
+    </p>
+</body>
+</html>

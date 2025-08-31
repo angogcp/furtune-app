@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { cn } from '../../utils/cn';
 import { Card, type CardProps } from './Card';
 
@@ -11,7 +11,7 @@ export interface AnimatedCardProps extends CardProps {
   glowColor?: string;
 }
 
-const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
+const AnimatedCard = memo(React.forwardRef<HTMLDivElement, AnimatedCardProps>(
   ({
     className,
     animationType = 'fade',
@@ -102,7 +102,7 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
       </Card>
     );
   }
-);
+));
 
 AnimatedCard.displayName = 'AnimatedCard';
 

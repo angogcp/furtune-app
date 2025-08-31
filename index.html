@@ -5,6 +5,41 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
+    <style>
+      @media print {
+        /* 最高优先级的强制打印样式 */
+        html, body, #root {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          color: black !important;
+          background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          font-family: Arial, sans-serif !important;
+        }
+        
+        body * {
+          visibility: visible !important;
+          opacity: 1 !important;
+          color: black !important;
+          background: white !important;
+        }
+        
+        button, nav, .no-print, .print\:hidden {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        
+        div:not(.no-print):not(button), 
+        p, h1, h2, h3, h4, h5, h6 {
+          display: block !important;
+          visibility: visible !important;
+          color: black !important;
+          background: white !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

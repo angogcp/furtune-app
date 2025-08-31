@@ -23,8 +23,9 @@ export type { InputProps } from './Input';
 
 export { InteractiveBackground } from './InteractiveBackground';
 
-export { default as Toast, ToastContainer, useToast } from './Toast';
-export type { ToastProps, ToastContainerProps } from './Toast';
+export { ToastContainer } from './ToastContainer';
+export { useToast } from './useToast';
+export type { Toast } from './useToast';
 export type { ErrorInfo } from '../../utils/errorHandler';
 
 export { AnimatedCard } from './AnimatedCard';

@@ -1,7 +1,7 @@
 // Vercel serverless function to handle LLM API requests securely
 // This keeps the API key on the server side and prevents client-side exposure
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -121,5 +121,5 @@ export default async function handler(req, res) {
   }
 }
 
-// Export the handler for Vercel
-export { handler as default };
+// Export the handler for Node.js
+export default handler;

@@ -1,0 +1,1 @@
+export { DivinationResult } from './DivinationResult';
