@@ -151,29 +151,9 @@ export function showErrorToast(error: any, customMessage?: string) {
   const errorInfo = parseSupabaseError(error)
   const message = customMessage || errorInfo.userMessage
   
-  // You can integrate with your preferred toast library here
-  console.error('Error:', errorInfo.message)
-  console.log('User message:', message)
-  
-  // For now, we'll use a simple alert, but you can replace this with a proper toast
-  if (typeof window !== 'undefined') {
-    // Create a simple toast-like notification
-    const toast = document.createElement('div')
-    toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-sm'
-    toast.innerHTML = `
-      <div class="flex items-center gap-2">
-        <div class="w-2 h-2 bg-white rounded-full"></div>
-        <span class="text-sm">${message}</span>
-      </div>
-    `
-    
-    document.body.appendChild(toast)
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast)
-      }
-    }, 5000)
+  return {
+    type: errorInfo.type === 'network' ? 'warning' : 'error',
+    title: '操作失败',
+    description: message
   }
 }

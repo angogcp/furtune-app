@@ -38,11 +38,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
     
-    if (supabaseUrl && supabaseAnonKey) {
+    // Check if Supabase is properly configured (not using placeholder values)
+    const isValidConfig = supabaseUrl && 
+                         supabaseAnonKey && 
+                         supabaseUrl !== 'https://placeholder.supabase.co' && 
+                         supabaseUrl !== 'https://your-project.supabase.co' &&
+                         supabaseAnonKey !== 'placeholder_anon_key' &&
+                         supabaseAnonKey !== 'your-anon-key-here' &&
+                         supabaseUrl.includes('.supabase.co') &&
+                         !supabaseUrl.includes('placeholder')
+    
+    if (isValidConfig) {
       setIsSupabaseConfigured(true)
       initializeAuth()
     } else {
-      console.warn('Supabase environment variables not configured')
+      console.warn('Supabase not configured or using placeholder values')
+      setIsSupabaseConfigured(false)
       setLoading(false)
     }
   }, [])

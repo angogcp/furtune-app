@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Trophy, TrendingUp, Calendar, Star, BookOpen, Target, Award, Clock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { Loading } from '../ui';
 
 interface GrowthStats {
   totalDivinations: number;
@@ -243,7 +244,13 @@ export default function GrowthRecord() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        <Loading 
+          variant="spinner" 
+          size="lg" 
+          color="primary" 
+          text="加载成长记录中..." 
+          className="animate-fade-in"
+        />
       </div>
     );
   }

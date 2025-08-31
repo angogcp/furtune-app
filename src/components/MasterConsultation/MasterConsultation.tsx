@@ -132,15 +132,7 @@ const MasterConsultation: React.FC = () => {
     return statusMap[status as keyof typeof statusMap] || status
   }
 
-  const getStatusColor = (status: string) => {
-    const colorMap = {
-      pending: 'text-yellow-600 bg-yellow-100',
-      active: 'text-green-600 bg-green-100',
-      completed: 'text-blue-600 bg-blue-100',
-      cancelled: 'text-red-600 bg-red-100'
-    }
-    return colorMap[status as keyof typeof colorMap] || 'text-gray-600 bg-gray-100'
-  }
+
 
   if (loading) {
     return (
@@ -242,7 +234,7 @@ const MasterConsultation: React.FC = () => {
                       <User className="w-5 h-5 text-gray-400 mr-2" />
                       <span className="font-medium">{(session as any).masters?.name}</span>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(session.status)}`}>
+                    <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
                       {getStatusText(session.status)}
                     </span>
                   </div>

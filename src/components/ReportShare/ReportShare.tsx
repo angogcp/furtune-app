@@ -286,14 +286,14 @@ ${reportData.analysis_sections.suggestions.map(s => `• ${s}`).join('\n')}
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">运势分析报告</h1>
-          <p className="text-gray-600">生成精美的运势分析报告，一键分享到社交平台</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">运势分析报告</h1>
+          <p className="text-gray-600 text-sm sm:text-base px-4">生成精美的运势分析报告，一键分享到社交平台</p>
         </div>
 
         {/* 占卜记录列表 */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">选择占卜记录</h2>
+        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">选择占卜记录</h2>
           {divinationResults.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Wand2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -301,29 +301,29 @@ ${reportData.analysis_sections.suggestions.map(s => `• ${s}`).join('\n')}
               <p className="text-sm">请先进行占卜，然后回来生成报告</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {divinationResults.map((result) => (
-                <div key={result.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div key={result.id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-gray-800 text-sm sm:text-base">
                       {getMethodName(result.method)}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs sm:text-sm text-gray-500">
                       {new Date(result.created_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                  <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
                     {result.question || '未记录问题'}
                   </p>
                   <button
                     onClick={() => generateReport(result)}
                     disabled={generating}
-                    className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-sm sm:text-base"
                   >
                     {generating ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-3 h-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2"></div>
                     ) : (
-                      <Share2 className="w-4 h-4 mr-2" />
+                      <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                     )}
                     生成报告
                   </button>
@@ -336,35 +336,35 @@ ${reportData.analysis_sections.suggestions.map(s => `• ${s}`).join('\n')}
 
       {/* 分享弹窗 */}
       {showShareModal && reportData && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-              <h3 className="text-xl font-semibold">运势分析报告</h3>
-              <div className="flex gap-2">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+              <h3 className="text-lg sm:text-xl font-semibold">运势分析报告</h3>
+              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <button
                   onClick={downloadAsPDF}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                  className="px-2 sm:px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-xs sm:text-sm"
                 >
-                  <Download className="w-4 h-4 mr-1" />
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   PDF
                 </button>
                 <button
                   onClick={downloadAsImage}
-                  className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                  className="px-2 sm:px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-xs sm:text-sm"
                 >
-                  <Download className="w-4 h-4 mr-1" />
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   图片
                 </button>
                 <button
                   onClick={copyShareText}
-                  className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+                  className="px-2 sm:px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center text-xs sm:text-sm"
                 >
-                  <Copy className="w-4 h-4 mr-1" />
+                  <Copy className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   复制
                 </button>
                 <button
                   onClick={() => setShowShareModal(false)}
-                  className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-2 sm:px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm"
                 >
                   关闭
                 </button>
@@ -372,14 +372,14 @@ ${reportData.analysis_sections.suggestions.map(s => `• ${s}`).join('\n')}
             </div>
 
             {/* 报告内容 */}
-            <div ref={reportRef} className="p-8 bg-gradient-to-br from-purple-50 to-pink-50">
+            <div ref={reportRef} className="p-4 sm:p-8 bg-gradient-to-br from-purple-50 to-pink-50">
               {/* 报告头部 */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-600 text-white rounded-full mb-4">
-                  <Star className="w-8 h-8" />
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-purple-600 text-white rounded-full mb-4">
+                  <Star className="w-6 h-6 sm:w-8 sm:h-8" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">{reportData.title}</h1>
-                <p className="text-lg text-gray-600">{reportData.subtitle}</p>
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">{reportData.title}</h1>
+                <p className="text-base sm:text-lg text-gray-600">{reportData.subtitle}</p>
               </div>
 
               {/* 占卜结果概览 */}

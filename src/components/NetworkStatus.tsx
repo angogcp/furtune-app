@@ -52,34 +52,18 @@ export function NetworkStatus({ onNetworkChange }: NetworkStatusProps) {
     return '连接正常'
   }
 
-  const getStatusColor = () => {
-    if (!networkState.isOnline) {
-      return 'bg-red-600'
-    }
-    
-    if (!networkState.isSupabaseConnected) {
-      return networkState.isRetrying ? 'bg-yellow-600' : 'bg-orange-600'
-    }
-    
-    return 'bg-green-600'
-  }
+
 
   if (!isVisible) {
     return null
   }
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 ${getStatusColor()} text-white px-4 py-2 text-center text-sm transition-all duration-300`}>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-red-600 text-white px-4 py-2 text-center text-sm transition-all duration-300">
       <div className="flex items-center justify-center gap-3 max-w-4xl mx-auto">
         {/* Status indicator */}
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${
-            networkState.isRetrying 
-              ? 'bg-white animate-pulse' 
-              : networkState.isOnline && networkState.isSupabaseConnected
-                ? 'bg-green-300'
-                : 'bg-red-300'
-          }`}></div>
+          <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
           <span className="font-medium">{getStatusMessage()}</span>
         </div>
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react'
+import { Button, Input, Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui'
 
 interface LoginFormProps {
   onSwitchToRegister: () => void
@@ -28,81 +29,98 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   }
 
   return (
-    <div className="bg-purple-900/50 rounded-lg p-8 border border-purple-400/30 max-w-md mx-auto">
-      <div className="text-center mb-6">
-        <LogIn className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
-        <h2 className="text-2xl font-bold text-white mb-2">欢迎回来</h2>
-        <p className="text-purple-200">登录您的占卜账户</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">
-            邮箱地址
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-purple-800/50 border border-purple-600 rounded-lg text-white placeholder-purple-400 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400"
-              placeholder="请输入邮箱地址"
-              required
-            />
+    <div className="animate-scale-in">
+      <Card variant="glass" padding="lg" className="max-w-md mx-auto shadow-strong border-primary-400/30">
+        <CardHeader className="text-center">
+          <div className="animate-bounce-gentle mb-4">
+            <div className="w-16 h-16 mx-auto bg-gradient-to-r from-accent-500 to-primary-500 rounded-2xl flex items-center justify-center shadow-glow">
+              <LogIn className="w-8 h-8 text-white" />
+            </div>
           </div>
-        </div>
+          <CardTitle className="text-2xl font-bold text-white mb-2 animate-slide-up">
+            欢迎回来
+          </CardTitle>
+          <p className="text-primary-200 animate-slide-up" style={{animationDelay: '0.1s'}}>
+            登录您的占卜账户
+          </p>
+        </CardHeader>
 
-        <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">
-            密码
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 pr-12 py-3 bg-purple-800/50 border border-purple-600 rounded-lg text-white placeholder-purple-400 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400"
-              placeholder="请输入密码"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-200"
-            >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
+              <Input
+                type="email"
+                label="邮箱地址"
+                placeholder="请输入邮箱地址"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                leftIcon={<Mail className="w-4 h-4" />}
+                variant="filled"
+                inputSize="lg"
+                required
+                className="bg-primary-800/30 border-primary-600/50 focus:border-accent-400 focus:ring-accent-400/20"
+              />
+            </div>
+
+            <div className="animate-slide-up" style={{animationDelay: '0.3s'}}>
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                label="密码"
+                placeholder="请输入密码"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                leftIcon={<Lock className="w-4 h-4" />}
+                rightIcon={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-primary-400 hover:text-primary-200 transition-colors duration-200"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                }
+                variant="filled"
+                inputSize="lg"
+                required
+                className="bg-primary-800/30 border-primary-600/50 focus:border-accent-400 focus:ring-accent-400/20"
+              />
+            </div>
+
+            {error && (
+              <div className="animate-slide-down bg-error-900/50 border border-error-500/50 rounded-xl p-4 backdrop-blur-sm">
+                <p className="text-error-200 text-sm font-medium">{error}</p>
+              </div>
+            )}
+
+            <div className="animate-slide-up" style={{animationDelay: '0.4s'}}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                fullWidth
+                loading={loading}
+                className="bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 shadow-glow hover:shadow-glow-accent transform hover:scale-[1.02] transition-all duration-300"
+              >
+                {loading ? '登录中...' : '登录'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+
+        <CardFooter className="justify-center">
+          <div className="animate-fade-in" style={{animationDelay: '0.5s'}}>
+            <p className="text-primary-200 text-center">
+              还没有账户？{' '}
+              <button
+                onClick={onSwitchToRegister}
+                className="text-accent-400 hover:text-accent-300 font-medium transition-colors duration-200 hover:underline"
+              >
+                立即注册
+              </button>
+            </p>
           </div>
-        </div>
-
-        {error && (
-          <div className="bg-red-900/50 border border-red-500 rounded-lg p-3">
-            <p className="text-red-200 text-sm">{error}</p>
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed"
-        >
-          {loading ? '登录中...' : '登录'}
-        </button>
-      </form>
-
-      <div className="mt-6 text-center">
-        <p className="text-purple-200">
-          还没有账户？{' '}
-          <button
-            onClick={onSwitchToRegister}
-            className="text-yellow-400 hover:text-yellow-300 font-medium"
-          >
-            立即注册
-          </button>
-        </p>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   )
 }

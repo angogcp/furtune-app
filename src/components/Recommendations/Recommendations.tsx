@@ -364,11 +364,11 @@ export default function Recommendations() {
               {/* 内容头部 */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
-                  <div className={`p-2 rounded-lg bg-${typeConfig.color}-600/20 mr-3`}>
-                    <TypeIcon className={`w-5 h-5 text-${typeConfig.color}-400`} />
+                  <div className="p-2 rounded-lg bg-purple-600/20 mr-3">
+                    <TypeIcon className="w-5 h-5 text-purple-400" />
                   </div>
                   <div>
-                    <span className={`text-${typeConfig.color}-400 text-sm font-medium`}>
+                    <span className="text-purple-400 text-sm font-medium">
                       {typeConfig.name}
                     </span>
                     {recommendation.relevanceScore && (
@@ -463,7 +463,7 @@ export default function Recommendations() {
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-2">{selectedContent.title}</h2>
                   <div className="flex items-center">
-                    <span className={`px-3 py-1 rounded-full text-sm bg-${contentTypeNames[selectedContent.contentType].color}-600/20 text-${contentTypeNames[selectedContent.contentType].color}-400`}>
+                    <span className="px-3 py-1 rounded-full text-sm bg-purple-600/20 text-purple-400">
                       {contentTypeNames[selectedContent.contentType].name}
                     </span>
                   </div>

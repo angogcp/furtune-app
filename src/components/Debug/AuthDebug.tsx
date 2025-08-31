@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
+import { Loading } from '../ui'
 
 interface DebugInfo {
   isConfigured: boolean
@@ -74,8 +75,14 @@ export default function AuthDebug() {
 
   if (loading) {
     return (
-      <div className="p-4 bg-blue-900/50 rounded-lg border border-blue-400/30">
-        <h3 className="text-lg font-semibold text-blue-300 mb-2">调试信息加载中...</h3>
+      <div className="p-4 bg-primary-900/50 rounded-lg border border-primary-400/30 flex flex-col items-center justify-center">
+        <Loading 
+          variant="spinner" 
+          size="md" 
+          color="primary" 
+          text="调试信息加载中..." 
+          className="animate-fade-in"
+        />
       </div>
     )
   }

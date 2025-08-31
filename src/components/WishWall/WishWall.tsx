@@ -88,16 +88,7 @@ export default function WishWall() {
     }
   }
 
-  const getWishColors = (index: number) => {
-    const colors = [
-      'from-pink-900/30 to-purple-900/30 border-pink-500/50',
-      'from-blue-900/30 to-indigo-900/30 border-blue-500/50',
-      'from-green-900/30 to-teal-900/30 border-green-500/50',
-      'from-yellow-900/30 to-orange-900/30 border-yellow-500/50',
-      'from-purple-900/30 to-pink-900/30 border-purple-500/50'
-    ]
-    return colors[index % colors.length]
-  }
+
 
   if (loading) {
     return (
@@ -170,10 +161,10 @@ export default function WishWall() {
             <p className="text-purple-300">还没有人许愿，成为第一个许愿的人吧！</p>
           </div>
         ) : (
-          wishes.map((wish, index) => (
+          wishes.map((wish) => (
             <div
               key={wish.id}
-              className={`bg-gradient-to-r ${getWishColors(index)} rounded-lg p-4 border`}
+              className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-purple-500/50 rounded-lg p-4 border"
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center space-x-2">

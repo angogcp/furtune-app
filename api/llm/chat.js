@@ -9,12 +9,12 @@ export default async function handler(req, res) {
 
   try {
     // Get configuration from environment variables (server-side only)
-    const API_ENDPOINT = process.env.LLM_API_ENDPOINT;
-    const API_KEY = process.env.LLM_API_KEY;
-    const API_MODEL = process.env.LLM_MODEL || 'gpt-3.5-turbo';
-    const API_TEMPERATURE = parseFloat(process.env.LLM_TEMPERATURE || '0.8');
-    const API_MAX_TOKENS = parseInt(process.env.LLM_MAX_TOKENS || '800');
-    const API_TIMEOUT = parseInt(process.env.LLM_TIMEOUT || '30000');
+    const API_ENDPOINT = process.env.VITE_LLM_API_ENDPOINT || process.env.LLM_API_ENDPOINT;
+    const API_KEY = process.env.VITE_LLM_API_KEY || process.env.LLM_API_KEY;
+    const API_MODEL = process.env.VITE_LLM_MODEL || process.env.LLM_MODEL || 'gpt-3.5-turbo';
+    const API_TEMPERATURE = parseFloat(process.env.VITE_LLM_TEMPERATURE || process.env.LLM_TEMPERATURE || '0.8');
+    const API_MAX_TOKENS = parseInt(process.env.VITE_LLM_MAX_TOKENS || process.env.LLM_MAX_TOKENS || '800');
+    const API_TIMEOUT = parseInt(process.env.VITE_LLM_TIMEOUT || process.env.LLM_TIMEOUT || '30000');
 
     // Validate required environment variables
     if (!API_ENDPOINT || !API_KEY) {
