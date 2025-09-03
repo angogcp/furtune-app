@@ -125,7 +125,7 @@ const PrintPage: React.FC<PrintPageProps> = ({ userInput, result, plainLanguageR
         fontFamily: '"Microsoft YaHei", Arial, sans-serif'
       }}>
         <h1 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '28px' }}>
-          🔮 神秘占卜馆
+          🔮 算算乐
         </h1>
         
         <div className="section" style={{

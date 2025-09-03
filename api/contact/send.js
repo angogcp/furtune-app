@@ -22,7 +22,7 @@ async function handler(req, res) {
     // For now, we'll simulate sending the email
     const emailData = {
       to: 'waiwai1212faq@2925.com',
-      subject: `神秘占卜馆 - ${type === 'feedback' ? '用户反馈' : '客服咨询'}: ${subject}`,
+      subject: `算算乐 - ${type === 'feedback' ? '用户反馈' : '客服咨询'}: ${subject}`,
       body: `类型：${type === 'feedback' ? '用户反馈' : '客服咨询'}\n\n` +
             `姓名：${name}\n` +
             `邮箱：${email}\n` +
@@ -30,7 +30,7 @@ async function handler(req, res) {
             `主题：${subject}\n\n` +
             `详细内容：\n${message}\n\n` +
             `发送时间：${new Date().toLocaleString('zh-CN')}\n\n` +
-            `来自：神秘占卜馆联系表单`
+            `来自：算算乐联系表单`
     };
 
     // Log the email data (in production, this would actually send the email)

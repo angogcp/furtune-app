@@ -8,12 +8,41 @@ interface FormattedPlainLanguageResultProps {
 const FormattedPlainLanguageResult = memo<FormattedPlainLanguageResultProps>(({ content }) => {
   // 解析大白话内容并格式化
   const formatPlainLanguage = (text: string) => {
-    // 分割内容为段落
-    const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
+    // 分割内容为段落，支持多种分割方式
+    const paragraphs = text
+      .split(/\n\n+/)
+      .filter(p => p.trim())
+      .map(p => p.trim())
+      .filter(p => p.length > 10); // 过滤太短的段落
+    
+    // 用于跟踪已经出现的主题，避免重复
+    const seenTopics = new Set<string>();
     
     return paragraphs.map((paragraph, index) => {
       const trimmed = paragraph.trim();
       if (!trimmed) return null;
+      
+      // 检测并跳过重复的主题段落
+      const topicKeywords = [
+        '感情指引', '感情', '爱情', '恋爱',
+        '事业发展', '事业', '工作', '职业',
+        '财运分析', '财运', '金钱', '财富',
+        '实用建议', '建议', '指导',
+        '未来展望', '未来', '将来',
+        '简单总结', '总结', '大白话'
+      ];
+      
+      // 检查当前段落是否与已处理的主题重复
+      for (const keyword of topicKeywords) {
+        if (trimmed.includes(keyword)) {
+          if (seenTopics.has(keyword)) {
+            console.log(`Skipping duplicate plain language topic: ${keyword}`);
+            return null; // 跳过重复的主题段落
+          }
+          seenTopics.add(keyword);
+          break;
+        }
+      }
       
       // 优化的分类逻辑 - 按照优先级排序，避免误分类
       
@@ -27,8 +56,10 @@ const FormattedPlainLanguageResult = memo<FormattedPlainLanguageResultProps>(({ 
                 <MessageCircle className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
-                <h5 className="text-blue-100 font-semibold mb-2 print-subtitle print-icon-summary print:text-gray-800">💬 简单总结</h5>
-                <div className="text-blue-50 leading-relaxed print-content" dangerouslySetInnerHTML={{ __html: formatTextWithEmojis(trimmed) }}></div>
+                <h5 className="text-blue-100 font-semibold mb-3 print-subtitle print-icon-summary print:text-gray-800">💬 简单总结</h5>
+                <div className="text-blue-50 leading-relaxed text-base print-content html-content">
+                  <p className="leading-relaxed" dangerouslySetInnerHTML={{ __html: formatTextWithEmojis(trimmed) }}></p>
+                </div>
               </div>
             </div>
           </div>
@@ -181,11 +212,13 @@ const FormattedPlainLanguageResult = memo<FormattedPlainLanguageResultProps>(({ 
         );
       }
       
-      // 8. 默认段落
+      // 8. 默认段落 - 增强可读性
       return (
         <div key={index} className="bg-gradient-to-r from-slate-700/60 to-gray-700/60 rounded-xl p-6 border border-slate-400/40 mb-6 relative shadow-lg print-friendly-card avoid-break">
           <div className="absolute top-3 right-3 text-2xl opacity-30 print:hidden">💭</div>
-          <div className="text-slate-100 leading-relaxed print-content" dangerouslySetInnerHTML={{ __html: formatTextWithEmojis(trimmed) }}></div>
+          <div className="text-slate-100 leading-relaxed text-base print-content">
+            <p className="leading-relaxed" dangerouslySetInnerHTML={{ __html: formatTextWithEmojis(trimmed) }}></p>
+          </div>
         </div>
       );
     }).filter(Boolean);
@@ -218,35 +251,54 @@ const FormattedPlainLanguageResult = memo<FormattedPlainLanguageResultProps>(({ 
   // 为文本添加合适的表情符号
   const formatTextWithEmojis = (text: string) => {
     return text
-      // 清除所有markdown格式符号
-      .replace(/\*\*([^*]+)\*\*/g, '$1')  // 清除加粗标记 **text** -> text
-      .replace(/\*([^*]+)\*/g, '$1')     // 清除斜体标记 *text* -> text
-      .replace(/##\s*/g, '')            // 清除二级标题标记 ## -> 
-      .replace(/#\s*/g, '')             // 清除一级标题标记 # -> 
-      .replace(/_{2,}/g, '')            // 清除下划线 __ -> 
-      .replace(/`([^`]+)`/g, '$1')      // 清除代码标记 `code` -> code
+      // 清除所有markdown格式符号和重复的标题
+      .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-white">$1</strong>')  // 保留加粗但转为HTML
+      .replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>')     // 保留斜体但转为HTML
+      .replace(/#{1,6}\s*/g, '')            // 清除所有级别标题标记
+      .replace(/_{2,}/g, '')                // 清除下划线 __ -> 
+      .replace(/`([^`]+)`/g, '<code class="bg-slate-600/40 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>')  // 代码块样式化
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // 清除链接标记 [text](url) -> text
-      .replace(/^[-*+]\s+/gm, '')       // 清除列表标记 - item -> item
-      .replace(/^\d+\.\s+/gm, '')       // 清除数字列表标记 1. item -> item
-      .replace(/^>\s*/gm, '')           // 清除引用标记 > text -> text
-      .replace(/^-{3,}$/gm, '')         // 清除分隔线 --- -> 
-      .replace(/^\s*-{3,}\s*$/gm, '')   // 清除分隔线（包括空格）
-      .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余空行
+      .replace(/^[-*+]\s+/gm, '• ')         // 列表标记改为bullet点
+      .replace(/^\d+\.\s+/gm, '')           // 清除数字列表标记
+      .replace(/^>\s*/gm, '')               // 清除引用标记
+      .replace(/^-{3,}$/gm, '')             // 清除分隔线
+      .replace(/^\s*-{3,}\s*$/gm, '')       // 清除分隔线（包括空格）
+      .replace(/\n\s*\n\s*\n/g, '</p><p class="mt-4 leading-relaxed">') // 段落分隔
+      .replace(/\n/g, '<br class="leading-relaxed">')               // 单个换行转为HTML
+      // 移除重复的emoji标题和常见重复模式
+      .replace(/💖\s*感情指引[：:]?\s*/gi, '')
+      .replace(/💡\s*实用建议[：:]?\s*/gi, '')
+      .replace(/🔮\s*未来展望[：:]?\s*/gi, '')
+      .replace(/💼\s*事业发展[：:]?\s*/gi, '')
+      .replace(/💰\s*财运分析[：:]?\s*/gi, '')
+      .replace(/⭐\s*核心要点[：:]?\s*/gi, '')
+      .replace(/📖\s*指导建议[：:]?\s*/gi, '')
+      .replace(/💬\s*简单总结[：:]?\s*/gi, '')
+      .replace(/🎯\s*大白话解读[：:]?\s*/gi, '')
+      // 清除重复的分段标识
+      .replace(/(第[一二三四五六七八九十一-九]|１|２|３|４|５)[个]?方面[：，。是]?\s*/gi, '')
+      .replace(/[首先|其次|最后|另外|此外][：，]?\s*/gi, '')
+      // 括号内容高亮
       .replace(/（\s*([^）]+)\s*）/g, '<span class="inline-block bg-slate-700/30 px-2 py-1 rounded-md text-sm border border-slate-600/30 mx-1">（$1）</span>')
-      .replace(/(\s|^)(爱情|感情)(\s|$)/g, '$1❤️ $2$3')
-      .replace(/(\s|^)(事业|工作)(\s|$)/g, '$1💼 $2$3')
-      .replace(/(\s|^)(财运|金钱|财富)(\s|$)/g, '$1💰 $2$3')
-      .replace(/(\s|^)(健康|身体)(\s|$)/g, '$1🏥 $2$3')
-      .replace(/(\s|^)(未来|将来)(\s|$)/g, '$1🔮 $2$3')
-      .replace(/(\s|^)(机会|机遇)(\s|$)/g, '$1🌟 $2$3')
-      .replace(/(\s|^)(挑战|困难)(\s|$)/g, '$1⚡ $2$3')
-      .replace(/(\s|^)(成功|胜利)(\s|$)/g, '$1🎉 $2$3')
-      .replace(/(\s|^)(幸福|快乐)(\s|$)/g, '$1😊 $2$3')
-      .replace(/(\s|^)(平衡|和谐)(\s|$)/g, '$1⚖️ $2$3')
-      .replace(/(\s|^)(变化|转变)(\s|$)/g, '$1🔄 $2$3')
-      .replace(/(\s|^)(沟通|交流)(\s|$)/g, '$1💬 $2$3')
-      .replace(/(\s|^)(信心|自信)(\s|$)/g, '$1💪 $2$3')
-      .replace(/(\s|^)(创新|创造)(\s|$)/g, '$1💡 $2$3');
+      // 表情符号增强 - 仅在开头没有emoji时添加
+      .replace(/(^|\s)(爱情|感情)(?!.*[❤️💕💖])/g, '$1❤️ $2')
+      .replace(/(^|\s)(事业|工作)(?!.*[💼🏢👔])/g, '$1💼 $2')
+      .replace(/(^|\s)(财运|金钱|财富)(?!.*[💰💸💵])/g, '$1💰 $2')
+      .replace(/(^|\s)(健康|身体)(?!.*[🏥❤️‍🩹💪])/g, '$1🏥 $2')
+      .replace(/(^|\s)(未来|将来)(?!.*[🔮✨🌟])/g, '$1🔮 $2')
+      .replace(/(^|\s)(机会|机遇)(?!.*[🌟✨💫])/g, '$1🌟 $2')
+      .replace(/(^|\s)(挑战|困难)(?!.*[⚡🔥💪])/g, '$1⚡ $2')
+      .replace(/(^|\s)(成功|胜利)(?!.*[🎉🏆👑])/g, '$1🎉 $2')
+      .replace(/(^|\s)(幸福|快乐)(?!.*[😊😄🌈])/g, '$1😊 $2')
+      .replace(/(^|\s)(平衡|和谐)(?!.*[⚖️☯️🤝])/g, '$1⚖️ $2')
+      .replace(/(^|\s)(变化|转变)(?!.*[🔄🌀🦋])/g, '$1🔄 $2')
+      .replace(/(^|\s)(沟通|交流)(?!.*[💬🗣️📞])/g, '$1💬 $2')
+      .replace(/(^|\s)(信心|自信)(?!.*[💪👑✨])/g, '$1💪 $2')
+      .replace(/(^|\s)(创新|创造)(?!.*[💡🚀🎨])/g, '$1💡 $2')
+      // 清理多余的HTML标签和空格
+      .replace(/<br>\s*<br>\s*<br>/g, '</p><p class="mt-4 leading-relaxed">') // 限制最多两个换行
+      .replace(/^\s+|\s+$/g, '')               // 清除首尾空白
+      .trim();
   };
 
   return (

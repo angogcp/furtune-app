@@ -6,7 +6,13 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   last_sign_in TIMESTAMP WITH TIME ZONE,
   sign_in_streak INTEGER DEFAULT 0,
-  total_sign_ins INTEGER DEFAULT 0
+  total_sign_ins INTEGER DEFAULT 0,
+  -- Personal information for fortune telling
+  full_name TEXT,
+  date_of_birth DATE,
+  time_of_birth TIME,
+  place_of_birth TEXT,
+  gender TEXT CHECK (gender IN ('male', 'female'))
 );
 
 -- 签到记录表
@@ -65,6 +71,8 @@ CREATE INDEX IF NOT EXISTS idx_sign_ins_user_date ON sign_ins(user_id, date);
 CREATE INDEX IF NOT EXISTS idx_daily_fortunes_user_date ON daily_fortunes(user_id, date);
 CREATE INDEX IF NOT EXISTS idx_wishes_created_at ON wishes(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_divination_history_user ON divination_history(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_users_date_of_birth ON users(date_of_birth);
+CREATE INDEX IF NOT EXISTS idx_users_gender ON users(gender);
 
 -- 启用行级安全策略
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;

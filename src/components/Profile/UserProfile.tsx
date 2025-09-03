@@ -1,14 +1,23 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { User, Mail, Calendar, Award, Flame, Star, LogOut, Edit } from 'lucide-react'
+import { User, Mail, Calendar, Award, Flame, Star, LogOut, Edit, MapPin, Clock, UserIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 
 export default function UserProfile() {
-  const { user, userProfile, signOut } = useAuth()
+  const { user, userProfile, signOut, updateProfile } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
-  const [username, setUsername] = useState(userProfile?.username || '')
   const [loading, setLoading] = useState(false)
+  
+  // Form state for personal information
+  const [formData, setFormData] = useState({
+    username: userProfile?.username || '',
+    full_name: userProfile?.full_name || '',
+    date_of_birth: userProfile?.date_of_birth || '',
+    time_of_birth: userProfile?.time_of_birth || '',
+    place_of_birth: userProfile?.place_of_birth || '',
+    gender: userProfile?.gender || 'male' as 'male' | 'female'
+  })
 
   if (!user) {
     return (
@@ -19,13 +28,34 @@ export default function UserProfile() {
   }
 
   const handleUpdateProfile = async () => {
-    // This would be implemented with the updateProfile function from AuthContext
+    if (!updateProfile) {
+      console.error('updateProfile function not available')
+      return
+    }
+    
     setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsEditing(false)
+    try {
+      const result = await updateProfile(formData)
+      if (!result.error) {
+        setIsEditing(false)
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false)
+    setFormData({
+      username: userProfile?.username || '',
+      full_name: userProfile?.full_name || '',
+      date_of_birth: userProfile?.date_of_birth || '',
+      time_of_birth: userProfile?.time_of_birth || '',
+      place_of_birth: userProfile?.place_of_birth || '',
+      gender: userProfile?.gender || 'male'
+    })
   }
 
   const handleSignOut = async () => {
@@ -40,27 +70,84 @@ export default function UserProfile() {
         </div>
         
         {isEditing ? (
-          <div className="space-y-3">
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="text-xl font-bold bg-purple-800/50 border border-purple-600 rounded px-3 py-1 text-white text-center"
-            />
-            <div className="flex justify-center space-x-2">
+          <div className="space-y-4 max-w-md mx-auto">
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-1">用户名</label>
+              <input
+                type="text"
+                value={formData.username}
+                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                className="w-full bg-purple-800/50 border border-purple-600 rounded px-3 py-2 text-white text-center"
+                placeholder="请输入用户名"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-1">姓名</label>
+              <input
+                type="text"
+                value={formData.full_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                className="w-full bg-purple-800/50 border border-purple-600 rounded px-3 py-2 text-white text-center"
+                placeholder="请输入真实姓名"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-1">出生日期</label>
+              <input
+                type="date"
+                value={formData.date_of_birth}
+                onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
+                className="w-full bg-purple-800/50 border border-purple-600 rounded px-3 py-2 text-white text-center"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-1">出生时间</label>
+              <input
+                type="time"
+                value={formData.time_of_birth}
+                onChange={(e) => setFormData(prev => ({ ...prev, time_of_birth: e.target.value }))}
+                className="w-full bg-purple-800/50 border border-purple-600 rounded px-3 py-2 text-white text-center"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-1">出生地点</label>
+              <input
+                type="text"
+                value={formData.place_of_birth}
+                onChange={(e) => setFormData(prev => ({ ...prev, place_of_birth: e.target.value }))}
+                className="w-full bg-purple-800/50 border border-purple-600 rounded px-3 py-2 text-white text-center"
+                placeholder="请输入出生地点"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-1">性别</label>
+              <select
+                value={formData.gender}
+                onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'male' | 'female' }))}
+                className="w-full bg-purple-800/50 border border-purple-600 rounded px-3 py-2 text-white text-center"
+              >
+                <option value="male">男</option>
+                <option value="female">女</option>
+              </select>
+            </div>
+            
+            <div className="flex justify-center space-x-3 pt-4">
               <button
                 onClick={handleUpdateProfile}
                 disabled={loading}
-                className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-sm text-white"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 rounded text-white font-medium transition-colors"
               >
                 {loading ? '保存中...' : '保存'}
               </button>
               <button
-                onClick={() => {
-                  setIsEditing(false)
-                  setUsername(userProfile?.username || '')
-                }}
-                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 rounded text-sm text-white"
+                onClick={handleCancel}
+                disabled={loading}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:opacity-50 rounded text-white font-medium transition-colors"
               >
                 取消
               </button>
@@ -68,10 +155,11 @@ export default function UserProfile() {
           </div>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">{userProfile?.username || user?.email}</h2>
+            <h2 className="text-2xl font-bold text-white mb-1">{userProfile?.full_name || userProfile?.username || user?.email}</h2>
+            <p className="text-purple-300 text-sm mb-3">{userProfile?.username}</p>
             <button
               onClick={() => setIsEditing(true)}
-              className="text-purple-300 hover:text-purple-200 text-sm flex items-center mx-auto"
+              className="text-purple-300 hover:text-purple-200 text-sm flex items-center mx-auto transition-colors"
             >
               <Edit className="w-4 h-4 mr-1" />
               编辑资料
@@ -125,6 +213,78 @@ export default function UserProfile() {
             </span>
           </div>
         )}
+      </div>
+
+      {/* Personal Information Section */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+          <UserIcon className="w-5 h-5 mr-2 text-purple-400" />
+          个人信息
+        </h3>
+        <div className="bg-purple-800/20 rounded-lg p-4 space-y-3">
+          {userProfile?.full_name ? (
+            <div className="flex items-center text-purple-200">
+              <User className="w-4 h-4 mr-3 text-purple-400" />
+              <span>姓名：{userProfile.full_name}</span>
+            </div>
+          ) : (
+            <div className="flex items-center text-purple-300">
+              <User className="w-4 h-4 mr-3 text-purple-500" />
+              <span className="text-sm">未设置姓名</span>
+            </div>
+          )}
+          
+          {userProfile?.date_of_birth ? (
+            <div className="flex items-center text-purple-200">
+              <Calendar className="w-4 h-4 mr-3 text-purple-400" />
+              <span>出生日期：{userProfile.date_of_birth}</span>
+            </div>
+          ) : (
+            <div className="flex items-center text-purple-300">
+              <Calendar className="w-4 h-4 mr-3 text-purple-500" />
+              <span className="text-sm">未设置出生日期</span>
+            </div>
+          )}
+          
+          {userProfile?.time_of_birth ? (
+            <div className="flex items-center text-purple-200">
+              <Clock className="w-4 h-4 mr-3 text-purple-400" />
+              <span>出生时间：{userProfile.time_of_birth}</span>
+            </div>
+          ) : (
+            <div className="flex items-center text-purple-300">
+              <Clock className="w-4 h-4 mr-3 text-purple-500" />
+              <span className="text-sm">未设置出生时间</span>
+            </div>
+          )}
+          
+          {userProfile?.place_of_birth ? (
+            <div className="flex items-center text-purple-200">
+              <MapPin className="w-4 h-4 mr-3 text-purple-400" />
+              <span>出生地点：{userProfile.place_of_birth}</span>
+            </div>
+          ) : (
+            <div className="flex items-center text-purple-300">
+              <MapPin className="w-4 h-4 mr-3 text-purple-500" />
+              <span className="text-sm">未设置出生地点</span>
+            </div>
+          )}
+          
+          {userProfile?.gender && (
+            <div className="flex items-center text-purple-200">
+              <Star className="w-4 h-4 mr-3 text-purple-400" />
+              <span>性别：{userProfile.gender === 'male' ? '男' : '女'}</span>
+            </div>
+          )}
+          
+          {(!userProfile?.full_name || !userProfile?.date_of_birth || !userProfile?.time_of_birth || !userProfile?.place_of_birth) && (
+            <div className="mt-4 p-3 bg-amber-900/30 border border-amber-500/50 rounded-lg">
+              <p className="text-amber-200 text-sm">
+                ✨ 完善个人信息可以获得更准确的占卜结果
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Achievement Badges */}

@@ -660,7 +660,7 @@ export function generateBirthChart(birthDate: string, birthTime: string, birthPl
   
   // 计算宫位强度
   const houseStrengths = houses.map(house => {
-    const planetsInHouse = activePlanets.filter(planet => planet.house.id === house.id);
+    const planetsInHouse = activePlanets.filter(planet => planet.house && planet.house.id === house.id);
     return {
       ...house,
       planetCount: planetsInHouse.length,
@@ -671,17 +671,17 @@ export function generateBirthChart(birthDate: string, birthTime: string, birthPl
   
   // 计算元素分布
   const elementDistribution = {
-    '火象': activePlanets.filter(p => p.sign.element === '火象').length,
-    '土象': activePlanets.filter(p => p.sign.element === '土象').length,
-    '风象': activePlanets.filter(p => p.sign.element === '风象').length,
-    '水象': activePlanets.filter(p => p.sign.element === '水象').length
+    '火象': activePlanets.filter(p => p.sign && p.sign.element === '火象').length,
+    '土象': activePlanets.filter(p => p.sign && p.sign.element === '土象').length,
+    '风象': activePlanets.filter(p => p.sign && p.sign.element === '风象').length,
+    '水象': activePlanets.filter(p => p.sign && p.sign.element === '水象').length
   };
   
   // 计算性质分布
   const qualityDistribution = {
-    '基本宫': activePlanets.filter(p => p.sign.quality === '基本宫').length,
-    '固定宫': activePlanets.filter(p => p.sign.quality === '固定宫').length,
-    '变动宫': activePlanets.filter(p => p.sign.quality === '变动宫').length
+    '基本宫': activePlanets.filter(p => p.sign && p.sign.quality === '基本宫').length,
+    '固定宫': activePlanets.filter(p => p.sign && p.sign.quality === '固定宫').length,
+    '变动宫': activePlanets.filter(p => p.sign && p.sign.quality === '变动宫').length
   };
   
   return {

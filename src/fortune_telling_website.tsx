@@ -35,8 +35,8 @@ interface InputData {
 
 // 中文文本配置
 const texts = {
-  title: '神秘占卜馆',
-  subtitle: '探索命运奥秘，指引人生方向',
+  title: '算算乐',
+  subtitle: '算出惊喜，乐见未来。',
   selectMethod: '选择占卜方式',
   selectType: '选择咨询类型',
   detailInfo: '详细信息',

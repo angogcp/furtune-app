@@ -23,6 +23,12 @@ async function handler(req, res) {
       });
     }
 
+    console.log('🔍 LLM API Debug Info:');
+    console.log('- Endpoint:', API_ENDPOINT);
+    console.log('- Model:', API_MODEL);
+    console.log('- API Key present:', !!API_KEY);
+    console.log('- API Key starts with:', API_KEY ? API_KEY.substring(0, 10) + '...' : 'N/A');
+
     // Extract request data
     const { messages, temperature, max_tokens } = req.body;
 

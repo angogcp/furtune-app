@@ -7,6 +7,35 @@ import { calculateCompatibilityScore, generateLifeStory } from '../../data/psych
 import { divinationMethods } from '../DivinationMethodSelector/DivinationMethodSelector';
 import { readingTypes } from '../DivinationTypeSelector/DivinationTypeSelector';
 
+// Emergency fallback function when imports fail
+function createEmergencyResult(methodId: string, typeId: string, input: string): string {
+  const methodNames: Record<string, string> = {
+    tarot: '塔罗牌占卜',
+    astrology: '星座占星',
+    numerology: '数字命理',
+    lottery: '观音求签',
+    jiaobei: '问卢撲筿',
+    bazi: '八字命理',
+    ziwei: '紫微斗数',
+    personality: '性格测试',
+    compatibility: '配对打分',
+    lifestory: '命格小故事'
+  };
+  
+  const typeNames: Record<string, string> = {
+    love: '爱情运势',
+    career: '事业发展',
+    wealth: '财富运势',
+    health: '健康状况',
+    general: '综合运势'
+  };
+  
+  const methodName = methodNames[methodId] || '占卜';
+  const typeName = typeNames[typeId] || '运势';
+  
+  return `🔮 **${methodName}结果**\n\n🎯 **针对您的${typeName}问题**\n"${input}"\n\n🌟 **占卜解读**\n根据${methodName}的指引，对于您的${typeName}问题，我们可以看到以下信息：\n\n• 当前运势整体向好，适合积极行动\n• 需要保持耐心，等待最佳时机\n• 相信自己的直觉，勇敢前进\n\n💫 **建议**\n在${typeName}方面，建议您保持积极的心态，相信自己的能力。命运掌握在自己手中，勇敢追求梦想！`;
+}
+
 // 生成个性化的今日运势
 function generatePersonalizedDailyHoroscope(sign: any, userQuestion: string, timeBasedSeed: number): string {
   const questionKeywords = userQuestion.toLowerCase();
@@ -100,10 +129,23 @@ export function generateDivinationResult(
   console.log('Special Data:', specialData);
   console.log('Available methods:', divinationMethods?.length || 'undefined');
   console.log('Available types:', readingTypes?.length || 'undefined');
+  console.log('DivinationMethods type:', typeof divinationMethods);
+  console.log('ReadingTypes type:', typeof readingTypes);
+  
+  // Add safety check for imports
+  if (!divinationMethods || !Array.isArray(divinationMethods)) {
+    console.error('DivinationMethods not properly imported');
+    return createEmergencyResult(methodId, typeId, input);
+  }
+  
+  if (!readingTypes || !Array.isArray(readingTypes)) {
+    console.error('ReadingTypes not properly imported');
+    return createEmergencyResult(methodId, typeId, input);
+  }
   
   if (!methodId || !typeId || !input) {
     console.error('Missing required parameters');
-    return '请提供完整的占卜信息。';
+    return `❓ **信息不完整**\n\n请提供完整的占卜信息：\n• 占卜方法\n• 占卜类型\n• 您的问题\n\n请重新整理后再次尝试。`;
   }
   
   const method = divinationMethods.find(m => m.id === methodId);
@@ -114,12 +156,12 @@ export function generateDivinationResult(
   
   if (!method) {
     console.error('Method not found:', methodId);
-    return `未找到占卜方法: ${methodId}`;
+    return `⚠️ **未找到占卜方法**\n\n方法ID: ${methodId}\n\n请选择以下可用的占卜方法：\n• 塔罗牌占卜\n• 星座占星\n• 数字命理\n• 观音求签\n• 撲筯问卜\n• 八字命理\n\n请重新选择占卜方法。`;
   }
   
   if (!type) {
     console.error('Type not found:', typeId);
-    return `未找到占卜类型: ${typeId}`;
+    return `⚠️ **未找到占卜类型**\n\n类型ID: ${typeId}\n\n请选择以下可用的占卜类型：\n• 感情运势\n• 事业发展\n• 财富运程\n• 健康运势\n• 学业运势\n• 综合运势\n\n请重新选择占卜类型。`;
   }
   
   // 转换数据格式以兼容原版本
@@ -194,8 +236,20 @@ export function generateDivinationResult(
         console.log('Birth date:', convertedBirthInfo.date);
         console.log('Birth time:', convertedBirthInfo.time);
         
-        const birthChart = generateBirthChart(convertedBirthInfo.date, convertedBirthInfo.time, convertedBirthInfo.place);
-        console.log('Generated birth chart:', birthChart);
+        let birthChart;
+        try {
+          birthChart = generateBirthChart(convertedBirthInfo.date, convertedBirthInfo.time, convertedBirthInfo.place);
+          console.log('Generated birth chart:', birthChart);
+        } catch (astrologyError) {
+          console.error('Astrology chart generation failed:', astrologyError);
+          // Return a basic astrology reading without complex calculations
+          const basicSign = getZodiacSign(convertedBirthInfo.date);
+          if (basicSign) {
+            return `⭐ **星座运势分析**\n\n🎯 **针对您的${type?.name || '问题'}**\n"${input}"\n\n🌟 **您的星座信息**\n太阳星座：${basicSign.name}${basicSign.symbol}\n\n💫 **今日运势**\n作为${basicSign.name}座，您天生具有${basicSign.traits.slice(0, 2).join('、')}的特质。在${type?.name}方面，建议您发挥${basicSign.strengths[0]}的优势。\n\n🍀 **幸运指引**\n幸运数字：${basicSign.luckyNumbers.join('、')}\n幸运颜色：${basicSign.luckyColors.join('、')}\n\n💫 **建议**\n相信自己的直觉，结合星座的指引，勇敢地走向属于您的道路。`;
+          } else {
+            return '无法解析您的出生信息，请检查日期格式是否正确。';
+          }
+        }
         
         if (!birthChart) {
           console.error('Failed to generate birth chart');
@@ -522,7 +576,7 @@ export function generateDivinationResult(
           `在${type?.name || '相关'}方面，建议您保持积极的心态，相信自己的能力。命运掌握在自己手中，勇敢追求梦想！`;
     }
   } catch (error) {
-    console.error('生成占卜结果时出错:', error);
+    console.error('生成占卜结果时出错:', error, {methodId, typeId, input});
     return `🙏 **抱歉，占卜过程中出现了问题**\n\n` +
       `针对您的${type?.name || '问题'}："${input}"\n\n` +
       `虽然占卜系统遇到了一些技术困难，但请相信宇宙的智慧依然在指引着您。\n\n` +

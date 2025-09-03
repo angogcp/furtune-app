@@ -57,7 +57,7 @@ const ContactForm: React.FC = () => {
     
     try {
       // 生成邮件内容
-      const emailSubject = encodeURIComponent(`神秘占卜馆 - ${formData.type === 'feedback' ? '用户反馈' : '客服咨询'}: ${formData.subject}`);
+      const emailSubject = encodeURIComponent(`算算乐 - ${formData.type === 'feedback' ? '用户反馈' : '客服咨询'}: ${formData.subject}`);
       const emailBody = encodeURIComponent(
         `类型：${formData.type === 'feedback' ? '用户反馈' : '客服咨询'}\n\n` +
         `姓名：${formData.name}\n` +
@@ -66,7 +66,7 @@ const ContactForm: React.FC = () => {
         `主题：${formData.subject}\n\n` +
         `详细内容：\n${formData.message}\n\n` +
         `发送时间：${new Date().toLocaleString('zh-CN')}\n\n` +
-        `来自：神秘占卜馆联系表单`
+        `来自：算算乐联系表单`
       );
       
       // 创建mailto链接

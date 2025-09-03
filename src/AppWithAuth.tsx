@@ -7,9 +7,9 @@ import RegisterForm from './components/Auth/RegisterForm'
 import DailyCheckin from './components/DailyCheckin/DailyCheckin'
 import WishWall from './components/WishWall/WishWall'
 import UserProfile from './components/Profile/UserProfile'
-import GrowthRecord from './components/GrowthRecord/GrowthRecord'
-import Recommendations from './components/Recommendations/Recommendations'
-import FortuneReminders from './components/FortuneReminders/FortuneReminders'
+// import GrowthRecord from './components/GrowthRecord/GrowthRecord'
+// import Recommendations from './components/Recommendations/Recommendations'
+// import FortuneReminders from './components/FortuneReminders/FortuneReminders'
 import PrintPage from './components/PrintPage'
 
 
@@ -21,7 +21,7 @@ import { NetworkErrorBoundary } from './components/NetworkErrorBoundary'
 import { Button, Card, Loading } from './components/ui'
 
 import App from './App' // Original fortune telling app
-import FortuneWebsite from './fortune_telling_website' // Web version
+// import FortuneWebsite from './fortune_telling_website' // Web version
 import { User, Calendar, Heart, Sparkles, Home, LogIn, TrendingUp, BookOpen, Bell, Globe, HelpCircle, Mail, Menu, X, Star, Crown, Share2 } from 'lucide-react'
 
 function AuthWrapper() {
@@ -55,11 +55,14 @@ function AuthWrapper() {
               {/* Logo */}
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-gradient-to-r from-accent-500 to-primary-500 rounded-xl shadow-glow">
-                  <Sparkles className="w-6 h-6 text-white" />
+                  <img src="/logo.png" alt="算算乐 Logo" className="w-6 h-6 object-contain" />
                 </div>
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-accent-400 to-primary-400 bg-clip-text text-transparent">
-                  神秘占卜馆
-                </h1>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-accent-400 to-primary-400 bg-clip-text text-transparent">
+                    算算乐
+                  </h1>
+                  <p className="text-xs text-purple-300 hidden sm:block">算出惊喜，乐见未来。</p>
+                </div>
               </div>
               
               {/* Desktop Navigation */}
@@ -67,12 +70,12 @@ function AuthWrapper() {
                 {user ? (
                   <>
                     <NavButton to="/" icon={Home} label="占卜" />
-                    <NavButton to="/web" icon={Globe} label="Web版" />
+                    {/* <NavButton to="/web" icon={Globe} label="Web版" /> */}
                     <NavButton to="/checkin" icon={Calendar} label="签到" />
                     <NavButton to="/wishes" icon={Heart} label="许愿墙" />
-                    <NavButton to="/growth" icon={TrendingUp} label="成长记录" />
-                    <NavButton to="/recommendations" icon={BookOpen} label="个性化推荐" />
-                    <NavButton to="/reminders" icon={Bell} label="命运提醒" />
+                    {/* <NavButton to="/growth" icon={TrendingUp} label="成长记录" /> */}
+                    {/* <NavButton to="/recommendations" icon={BookOpen} label="个性化推荐" /> */}
+                    {/* <NavButton to="/reminders" icon={Bell} label="命运提醒" /> */}
                     <NavButton to="/faq" icon={HelpCircle} label="FAQ" />
                     <NavButton to="/contact" icon={Mail} label="联系我们" />
                     <NavButton to="/profile" icon={User} label="个人" />
@@ -113,12 +116,12 @@ function AuthWrapper() {
                   {user ? (
                     <>
                       <MobileNavButton to="/" icon={Home} label="占卜" onClick={() => setMobileMenuOpen(false)} />
-                      <MobileNavButton to="/web" icon={Globe} label="Web版" onClick={() => setMobileMenuOpen(false)} />
+                      {/* <MobileNavButton to="/web" icon={Globe} label="Web版" onClick={() => setMobileMenuOpen(false)} /> */}
                       <MobileNavButton to="/checkin" icon={Calendar} label="签到" onClick={() => setMobileMenuOpen(false)} />
                       <MobileNavButton to="/wishes" icon={Heart} label="许愿墙" onClick={() => setMobileMenuOpen(false)} />
-                      <MobileNavButton to="/growth" icon={TrendingUp} label="成长记录" onClick={() => setMobileMenuOpen(false)} />
-                      <MobileNavButton to="/recommendations" icon={BookOpen} label="个性化推荐" onClick={() => setMobileMenuOpen(false)} />
-                      <MobileNavButton to="/reminders" icon={Bell} label="命运提醒" onClick={() => setMobileMenuOpen(false)} />
+                      {/* <MobileNavButton to="/growth" icon={TrendingUp} label="成长记录" onClick={() => setMobileMenuOpen(false)} /> */}
+                      {/* <MobileNavButton to="/recommendations" icon={BookOpen} label="个性化推荐" onClick={() => setMobileMenuOpen(false)} /> */}
+                      {/* <MobileNavButton to="/reminders" icon={Bell} label="命运提醒" onClick={() => setMobileMenuOpen(false)} /> */}
                       <MobileNavButton to="/faq" icon={HelpCircle} label="FAQ" onClick={() => setMobileMenuOpen(false)} />
                       <MobileNavButton to="/contact" icon={Mail} label="联系我们" onClick={() => setMobileMenuOpen(false)} />
                       <MobileNavButton to="/profile" icon={User} label="个人" onClick={() => setMobileMenuOpen(false)} />
@@ -157,13 +160,13 @@ function AuthWrapper() {
             {user ? (
               <Routes>
                 <Route path="/" element={<App />} />
-                <Route path="/web" element={<FortuneWebsite />} />
+                {/* <Route path="/web" element={<FortuneWebsite />} /> */}
                 <Route path="/print" element={<PrintPageWrapper />} />
                 <Route path="/checkin" element={<DailyCheckin />} />
                 <Route path="/wishes" element={<WishWall />} />
-                <Route path="/growth" element={<GrowthRecord />} />
-                <Route path="/recommendations" element={<Recommendations />} />
-                <Route path="/reminders" element={<FortuneReminders />} />
+                {/* <Route path="/growth" element={<GrowthRecord />} /> */}
+                {/* <Route path="/recommendations" element={<Recommendations />} /> */}
+                {/* <Route path="/reminders" element={<FortuneReminders />} /> */}
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<ContactForm />} />
                 <Route path="/profile" element={<UserProfile />} />
@@ -180,6 +183,31 @@ function AuthWrapper() {
             )}
           </div>
         </main>
+
+        {/* Footer */}
+        <footer className="bg-primary-900/50 backdrop-blur-md border-t border-primary-400/30 mt-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="text-center space-y-2">
+              <div className="flex items-center justify-center space-x-2 text-purple-300">
+                <img src="/logo.png" alt="算算乐 Logo" className="w-4 h-4 object-contain" />
+                <span className="text-sm font-medium">算算乐</span>
+                <span className="text-xs text-purple-400">|</span>
+                <span className="text-xs">算出惊喜，乐见未来。</span>
+              </div>
+              <div className="text-xs text-purple-400 space-y-1">
+                <p>Created by Ango, 2025.</p>
+                <a 
+                  href="http://n-blog.angoango.dpdns.org" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-purple-300 hover:text-purple-200 transition-colors underline"
+                >
+                  n-blog.angoango.dpdns.org
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
 
         {/* Enhanced Auth Modal */}
         {showAuth && !user && (
@@ -255,15 +283,22 @@ function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
       )}
       
       <div className="text-center py-12 lg:py-20">
+        {/* Logo and App Branding */}
+        <div className="flex justify-center mb-8">
+          <div className="p-4 bg-gradient-to-r from-accent-500 to-primary-500 rounded-2xl shadow-glow animate-pulse-gentle">
+            <img src="/logo.png" alt="算算乐 Logo" className="w-16 h-16 object-contain" />
+          </div>
+        </div>
+        
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-6 animate-slide-up">
-          欢迎来到神秘占卜馆
+          欢迎来到算算乐
         </h1>
         <div className="space-y-2 mb-12">
           <p className="text-lg sm:text-xl text-white leading-relaxed animate-slide-up" style={{animationDelay: '0.1s'}}>
-            探索命运奥秘，指引人生方向
+            算出惊喜，乐见未来。
           </p>
           <p className="text-lg sm:text-xl text-white leading-relaxed animate-slide-up" style={{animationDelay: '0.2s'}}>
-            加入我们，开启您的神秘之旅
+            加入我们，开启您的算命之旅
           </p>
         </div>
         

@@ -4,3 +4,23 @@
 
 /* 自定义打印样式 - 必须在Tailwind utilities之后 */
 @import './styles/print.css';
+
+/* 增强可读性的样式 */
+@layer utilities {
+  .text-readable {
+    line-height: 1.8;
+    letter-spacing: 0.025em;
+  }
+  
+  .card-content {
+    @apply leading-relaxed text-base;
+  }
+  
+  .html-content p {
+    @apply mb-3 leading-relaxed;
+  }
+  
+  .html-content br {
+    line-height: 1.8;
+  }
+}

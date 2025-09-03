@@ -11,6 +11,12 @@ interface UserProfile {
   created_at: string
   sign_in_streak: number
   total_sign_ins: number
+  // Personal information for fortune telling
+  full_name?: string
+  date_of_birth?: string
+  time_of_birth?: string
+  place_of_birth?: string
+  gender?: 'male' | 'female'
 }
 
 interface AuthContextType {

@@ -4,6 +4,7 @@ import { TarotCardSelector } from '../TarotCardSelector/TarotCardSelector';
 import { TarotSpreadSelector } from '../TarotSpreadSelector/TarotSpreadSelector';
 import { TarotCardGrid } from '../TarotCardGrid/TarotCardGrid';
 import { tarotSpreads } from '../../data/tarotCards';
+import { User, Calendar, Clock, MapPin } from 'lucide-react';
 
 interface DivinationInputProps {
   selectedMethod: DivinationMethodId;
@@ -93,6 +94,11 @@ const DivinationInput = memo<DivinationInputProps>(({
   };
 
   const handleTarotSubmit = () => {
+    console.log('=== TAROT SUBMIT CLICKED ===');
+    console.log('selectedCards.length:', selectedCards.length);
+    console.log('selectedCardCount:', selectedCardCount);
+    console.log('userInput.trim():', userInput.trim());
+    
     if (selectedCards.length === selectedCardCount && userInput.trim()) {
       setSpecialData({
         ...specialData,
@@ -100,7 +106,10 @@ const DivinationInput = memo<DivinationInputProps>(({
         cardCount: selectedCardCount,
         selectedSpread
       });
+      console.log('Calling onSubmit for tarot');
       onSubmit();
+    } else {
+      console.log('Tarot submit conditions not met');
     }
   };
 
@@ -108,12 +117,6 @@ const DivinationInput = memo<DivinationInputProps>(({
     if (tarotStep === 'spreadSelection') {
       return (
         <div className="space-y-6">
-          <div className="text-center space-y-4">
-            <div className="text-6xl animate-pulse">🔮</div>
-            <h3 className="text-xl font-semibold text-white">选择塔罗牌阵</h3>
-            <p className="text-slate-300">不同的牌阵可以为您提供不同角度的指引</p>
-          </div>
-          
           <TarotSpreadSelector
             selectedSpread={selectedSpread}
             onSpreadSelect={handleSpreadSelect}
@@ -853,7 +856,11 @@ const DivinationInput = memo<DivinationInputProps>(({
             </button>
           ) : (
             <button
-              onClick={onNextStep}
+              onClick={() => {
+                console.log('=== DIVINATION BUTTON CLICKED ===');
+                console.log('onNextStep being called');
+                onNextStep();
+              }}
               disabled={!canSubmit()}
               className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
             >

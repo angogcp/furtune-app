@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase'
-import { toast } from 'sonner'
+import toast from 'react-hot-toast'
 import { offlineManager } from './offlineManager'
 
 // Network status types
@@ -32,8 +32,8 @@ class NetworkManager {
   }
 
   private listeners: Array<(state: NetworkState) => void> = []
-  private connectionTestInterval: NodeJS.Timeout | null = null
-  private retryTimeout: NodeJS.Timeout | null = null
+  private connectionTestInterval: ReturnType<typeof setInterval> | null = null
+  private retryTimeout: ReturnType<typeof setTimeout> | null = null
   private maxRetries = 5
   private baseRetryDelay = 1000
 
@@ -48,7 +48,7 @@ class NetworkManager {
     window.addEventListener('offline', this.handleOffline.bind(this))
 
     // Supabase auth state changes
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabase.auth.onAuthStateChange((event: any, session: any) => {
       if (event === 'TOKEN_REFRESHED' && !session) {
         console.warn('Token refresh failed - network issue detected')
         this.handleConnectionIssue('Token refresh failed')
@@ -341,7 +341,6 @@ class NetworkManager {
   public showNetworkError(error: string) {
     toast.error(error, {
       duration: 5000,
-      position: 'top-center',
       style: {
         background: '#ef4444',
         color: 'white',
@@ -353,7 +352,6 @@ class NetworkManager {
   public showNetworkSuccess(message: string) {
     toast.success(message, {
       duration: 3000,
-      position: 'top-center',
       style: {
         background: '#10b981',
         color: 'white',

@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3004;
 
 // 中间件
 app.use(cors({
@@ -102,7 +102,7 @@ app.options('*', (req, res) => {
   res.sendStatus(200);
 });
 
-// 404 处理 - 使用简单的路由匹配
+// 404 处理
 app.use((req, res) => {
   if (req.url.startsWith('/api/')) {
     res.status(404).json({ error: 'API endpoint not found' });
