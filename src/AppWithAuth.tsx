@@ -15,7 +15,8 @@ import ReportShare from './components/ReportShare/ReportShare'
 import AuthDebug from './components/Debug/AuthDebug'
 import { NetworkStatus } from './components/NetworkStatus'
 
-import App from './App' // Original fortune telling app
+import MainApp from './App' // Original fortune telling app with ProfileProvider
+import { ProfileProvider } from './contexts/ProfileContext'
 import FortuneWebsite from './fortune_telling_website' // Web version
 import { User, Calendar, Heart, Sparkles, Home, LogIn, AlertTriangle, TrendingUp, BookOpen, Bell, Crown, Share2, Globe } from 'lucide-react'
 
@@ -23,6 +24,11 @@ function AuthWrapper() {
   const { user, loading } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  
+  const handleNavigateToProfile = () => {
+    window.history.pushState({}, '', '/profile')
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
 
   if (loading) {
     return (
@@ -80,7 +86,11 @@ function AuthWrapper() {
         <div className="p-4">
           {user ? (
             <Routes>
-              <Route path="/" element={<App />} />
+              <Route path="/" element={
+                <ProfileProvider>
+                  <MainApp onNavigateToProfile={handleNavigateToProfile} />
+                </ProfileProvider>
+              } />
               <Route path="/web" element={<FortuneWebsite />} />
               <Route path="/checkin" element={<DailyCheckin />} />
               <Route path="/wishes" element={<WishWall />} />
@@ -89,12 +99,21 @@ function AuthWrapper() {
               <Route path="/reminders" element={<FortuneReminders />} />
                 <Route path="/master" element={<MasterConsultation />} />
                 <Route path="/report" element={<ReportShare />} />
-                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/profile" element={
+                  <ProfileProvider>
+                    <UserProfile />
+                  </ProfileProvider>
+                } />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           ) : (
             <Routes>
               <Route path="/" element={<GuestHome onShowAuth={() => setShowAuth(true)} />} />
+              <Route path="/profile" element={
+                <ProfileProvider>
+                  <UserProfile />
+                </ProfileProvider>
+              } />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           )}

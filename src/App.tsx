@@ -1,5 +1,10 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, AlertCircle, Sparkles, Download, Printer, Search, User, UserCheck, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle, ArrowLeft, Lightbulb } from 'lucide-react';
+import { Star, Moon, Sun, Gem, Zap, Heart, Coins, Users, Briefcase, Shield, AlertCircle, Sparkles, Download, Printer, Search, User, UserCheck, BookOpen, MessageCircle, Clock, Copy, X, AlertTriangle, ArrowLeft, Lightbulb, UserCircle, Settings } from 'lucide-react';
+import { ImprovedFortuneAppContent } from './components/ImprovedFortuneApp';
+import UserProfile from './components/UserProfile';
+import { ProfileProvider, useProfile } from './contexts/ProfileContext';
+import FortuneWebsite from './fortune_telling_website';
+import './styles/enhanced-ui.css';
 
 // 类型定义
 interface SearchResult {
@@ -387,6 +392,12 @@ const texts: TextsConfig = {
     '20': { poem: '当春久雨喜初晴，玉兔金乌渐渐明。旧事消散新事遂，看看一跳过龙门。', meaning: '上吉签', interpretation: '久雨初晴，阴霾散去。旧事了结新事顺遂，如鱼跃龙门，前程似锦。' }
   }
 
+};
+
+// App mode selector
+const APP_MODES = {
+  IMPROVED: 'improved',
+  CLASSIC: 'classic'
 };
 
 // Constants for divination methods and configurations
@@ -1492,7 +1503,8 @@ const exportToPDF = (result: any, t: any, contentType: 'original' | 'plain' | 'b
 };
 
 // Main component
-export default function FortuneWebsite() {
+function FortuneWebsite() {
+  const { profile, isProfileComplete, autoFillBirthInfo, autoFillPersonalInfo, autoFillCompatibilityInfo } = useProfile();
   const [selectedMethod, setSelectedMethod] = useState(DIVINATION_METHODS.TAROT);
   const [readingType, setReadingType] = useState(READING_TYPES.GENERAL);
   const [question, setQuestion] = useState('');
@@ -2154,6 +2166,31 @@ ${result.reading}
 记住，占卜只是参考，最重要的还是你自己的努力和选择。加油！😊`;
   };
 
+  // Auto-fill functions
+  const handleAutoFillBirthInfo = () => {
+    const autoFillData = autoFillBirthInfo();
+    updateInputData('birthInfo', {
+      ...inputData.birthInfo,
+      ...autoFillData
+    });
+  };
+
+  const handleAutoFillPersonalInfo = () => {
+    const autoFillData = autoFillPersonalInfo();
+    updateInputData('personalInfo', {
+      ...inputData.personalInfo,
+      ...autoFillData
+    });
+  };
+
+  const handleAutoFillCompatibilityInfo = () => {
+    const autoFillData = autoFillCompatibilityInfo();
+    updateInputData('compatibilityInfo', {
+      ...inputData.compatibilityInfo,
+      ...autoFillData
+    });
+  };
+
   // Input data handlers
   const updateInputData = useCallback((key: string, value: any) => {
     setInputData(prev => ({
@@ -2184,6 +2221,27 @@ ${result.reading}
           <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 ml-2 text-yellow-400" />
         </div>
         <p className="text-lg sm:text-xl text-purple-200">{t.subtitle}</p>
+        
+        {/* Profile Status and Quick Access */}
+        <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mt-4">
+          <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg border text-sm ${isProfileComplete ? 'bg-green-900/20 border-green-400/30 text-green-200' : 'bg-yellow-900/20 border-yellow-400/30 text-yellow-200'}`}>
+            <UserCircle className="w-4 h-4" />
+            <span>
+              {isProfileComplete ? '个人资料已完善' : '建议完善个人资料'}
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              // Navigate to profile page using history API
+              window.history.pushState({}, '', '/profile');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-400/50 rounded-lg font-medium text-blue-300 transition-all duration-300 text-sm"
+          >
+            <Settings className="w-4 h-4" />
+            <span>个人资料</span>
+          </button>
+        </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-3 sm:px-4 pb-6 sm:pb-8">
@@ -2391,42 +2449,56 @@ ${result.reading}
           )}
 
           {selectedMethod === DIVINATION_METHODS.ASTROLOGY && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
-                <input
-                  type="date"
-                  min="1920-01-01"
-                  max="2030-12-31"
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base" 
-                  onChange={(e) => updateInputData('birthInfo', {
-                    ...inputData.birthInfo,
-                    date: e.target.value
-                  })}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">{t.birthTime} <span className="text-red-400">*</span></label>
-                <input
-                  type="time"
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base"
-                  onChange={(e) => updateInputData('birthInfo', {
-                    ...inputData.birthInfo,
-                    time: e.target.value
-                  })}
-                />
-              </div>
-              <div className="sm:col-span-2 lg:col-span-1">
-                <label className="block text-sm font-medium mb-2">{t.birthPlace} <span className="text-red-400">*</span></label>
-                <input
-                  type="text"
-                  placeholder={t.cityName}
-                  className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 text-base"
-                  onChange={(e) => updateInputData('birthInfo', {
-                    ...inputData.birthInfo,
-                    location: e.target.value
-                  })}
-                />
+            <div className="mb-4 sm:mb-6">
+              {/* Auto-fill Button */}
+              {isProfileComplete && (
+                <div className="mb-4">
+                  <button
+                    onClick={handleAutoFillBirthInfo}
+                    className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 hover:bg-green-600/30 border border-green-400/50 rounded-lg font-medium text-green-300 transition-all duration-300 text-sm"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    <span>使用个人资料自动填入</span>
+                  </button>
+                </div>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">{t.birthDate} <span className="text-red-400">*</span></label>
+                  <input
+                    type="date"
+                    min="1920-01-01"
+                    max="2030-12-31"
+                    className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base" 
+                    onChange={(e) => updateInputData('birthInfo', {
+                      ...inputData.birthInfo,
+                      date: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">{t.birthTime} <span className="text-red-400">*</span></label>
+                  <input
+                    type="time"
+                    className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white text-base"
+                    onChange={(e) => updateInputData('birthInfo', {
+                      ...inputData.birthInfo,
+                      time: e.target.value
+                    })}
+                  />
+                </div>
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <label className="block text-sm font-medium mb-2">{t.birthPlace} <span className="text-red-400">*</span></label>
+                  <input
+                    type="text"
+                    placeholder={t.cityName}
+                    className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 text-base"
+                    onChange={(e) => updateInputData('birthInfo', {
+                      ...inputData.birthInfo,
+                      location: e.target.value
+                    })}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -2560,7 +2632,20 @@ ${result.reading}
           )}
 
           {selectedMethod === DIVINATION_METHODS.BAZI && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="mb-4 sm:mb-6">
+              {/* Auto-fill Button */}
+              {isProfileComplete && (
+                <div className="mb-4">
+                  <button
+                    onClick={handleAutoFillBirthInfo}
+                    className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 hover:bg-green-600/30 border border-green-400/50 rounded-lg font-medium text-green-300 transition-all duration-300 text-sm"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    <span>使用个人资料自动填入</span>
+                  </button>
+                </div>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">{t.name} <span className="text-red-400">*</span></label>
                 <input
@@ -2637,7 +2722,8 @@ ${result.reading}
                 />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
           {selectedMethod === DIVINATION_METHODS.ZIWEI && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -2708,12 +2794,26 @@ ${result.reading}
           )}
 
           {selectedMethod === DIVINATION_METHODS.PERSONALITY && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="mb-4 sm:mb-6">
+              {/* Auto-fill Button */}
+              {isProfileComplete && (
+                <div className="mb-4">
+                  <button
+                    onClick={handleAutoFillPersonalInfo}
+                    className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 hover:bg-green-600/30 border border-green-400/50 rounded-lg font-medium text-green-300 transition-all duration-300 text-sm"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    <span>使用个人资料自动填入</span>
+                  </button>
+                </div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="block text-sm font-medium mb-2">姓名 <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   placeholder="请输入您的姓名"
+                  value={inputData.personalInfo?.name || ''}
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
@@ -2726,6 +2826,7 @@ ${result.reading}
                 <input
                   type="number"
                   placeholder="请输入您的年龄"
+                  value={inputData.personalInfo?.age || ''}
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
@@ -2738,6 +2839,7 @@ ${result.reading}
                 <input
                   type="text"
                   placeholder="请输入您的职业"
+                  value={inputData.personalInfo?.occupation || ''}
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
@@ -2750,6 +2852,7 @@ ${result.reading}
                 <input
                   type="text"
                   placeholder="请输入您的兴趣爱好"
+                  value={inputData.personalInfo?.hobbies || ''}
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400"
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
@@ -2762,12 +2865,14 @@ ${result.reading}
                 <textarea
                   className="w-full p-3 rounded bg-purple-800 border border-purple-600 text-white placeholder-purple-400 h-20 resize-none"
                   placeholder="请简单描述一下您的性格特点"
+                  value={inputData.personalInfo?.selfDescription || ''}
                   onChange={(e) => updateInputData('personalInfo', {
                     ...inputData.personalInfo,
                     selfDescription: e.target.value
                   })}
                 />
               </div>
+            </div>
             </div>
           )}
 
@@ -3585,3 +3690,53 @@ ${result.reading}
     </div>
   );
 }
+
+// Main App component with mode toggle
+interface MainAppProps {
+  onNavigateToProfile?: () => void;
+}
+
+function MainApp({ onNavigateToProfile }: MainAppProps) {
+  const [appMode, setAppMode] = useState(APP_MODES.IMPROVED);
+  
+  // Toggle between improved and classic UI
+  const toggleAppMode = () => {
+    setAppMode(prev => prev === APP_MODES.IMPROVED ? APP_MODES.CLASSIC : APP_MODES.IMPROVED);
+  };
+
+  // Handle method selection from improved homepage
+  const handleMethodSelect = (methodId: string) => {
+    // No longer switch to classic mode - let ImprovedFortuneApp handle it internally
+    console.log('Method selected:', methodId);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+      {/* Mode Toggle Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={toggleAppMode}
+          className="flex items-center space-x-2 px-4 py-2 bg-purple-800/80 backdrop-blur-sm border border-purple-600 rounded-lg text-white hover:bg-purple-700/80 transition-all duration-300 shadow-lg"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            {appMode === APP_MODES.IMPROVED ? '经典版本' : '改进版本'}
+          </span>
+        </button>
+      </div>
+
+      {/* Render appropriate app version */}
+      {appMode === APP_MODES.IMPROVED ? (
+        <ImprovedFortuneAppContent 
+          onNavigateToProfile={onNavigateToProfile} 
+          onMethodSelect={handleMethodSelect}
+        />
+      ) : (
+        <FortuneWebsite />
+      )}
+    </div>
+  );
+}
+
+export default MainApp;
+export { FortuneWebsite };
