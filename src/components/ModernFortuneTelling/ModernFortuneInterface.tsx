@@ -3,7 +3,7 @@ import {
   Star, Moon, Sun, Gem, Zap, Heart, Crown, ArrowLeft, Sparkles, 
   Send, Shuffle, Download, Share2, BookOpen, Clock, User, Calendar,
   MapPin, Wand2, Eye, Target, ChevronRight, Loader2, Wifi, WifiOff,
-  FileText, Printer, Lightbulb
+  FileText, Printer, Lightbulb, Trash2
 } from 'lucide-react';
 import { useProfile } from '../../contexts/ProfileContext';
 import llmService from '../../utils/llmService';
@@ -102,6 +102,18 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   const [plainLanguageResult, setPlainLanguageResult] = useState<string>('');
   const [isGeneratingPlainLanguage, setIsGeneratingPlainLanguage] = useState(false);
   const [drawnLottery, setDrawnLottery] = useState<{number: string, poem: string, meaning: string, interpretation: string} | null>(null);
+  const [drawnJiaobei, setDrawnJiaobei] = useState<{result: string, meaning: string} | null>(null);
+
+  const drawJiaobei = () => {
+    const results = ['聖筊', '笑筊', '陰筊'];
+    const meanings = {
+      '聖筊': '一正一反，神明同意您的请求',
+      '笑筊': '两个平面向上，神明在笑，并没有表示同意',
+      '陰筊': '平面朝下，表示请求驳回'
+    };
+    const randomResult = results[Math.floor(Math.random() * results.length)];
+    setDrawnJiaobei({result: randomResult, meaning: meanings[randomResult]});
+  };
   
   // Session-specific input fields (not stored in profile)
   const [sessionData, setSessionData] = useState({
@@ -1542,6 +1554,56 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         </div>
       )}
 
+      {selectedMethodId === 'jiaobei' && (
+        <div className="mb-8">
+          <label className="block text-lg font-semibold text-white mb-4">
+            <Moon className="w-5 h-5 inline mr-2" />
+            掷筊问卜 <span className="text-red-400">*</span>
+          </label>
+          
+          {!drawnJiaobei ? (
+            <div className="text-center">
+              <p className="text-purple-200 mb-6 text-lg">
+                🙏 请先虔心祈祷，再轻点下方按钮掷筊
+              </p>
+              <button
+                onClick={drawJiaobei}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl font-bold text-white text-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-3 mx-auto shadow-2xl"
+              >
+                <Moon className="w-6 h-6" />
+                <span>🙏 掷筊问卜</span>
+              </button>
+            </div>
+          ) : (
+            <div className="bg-gradient-to-br from-blue-900/60 to-indigo-900/60 rounded-xl border border-blue-400/30 p-6">
+              <div className="text-center mb-4">
+                <h4 className="text-xl font-bold text-blue-300 mb-2">
+                  🎲 掷筊结果：{drawnJiaobei.result}
+                </h4>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-blue-800/30 rounded-lg p-4">
+                  <h5 className="text-blue-300 font-semibold mb-2">🔮 结果含义：</h5>
+                  <p className="text-blue-100 leading-relaxed">
+                    {drawnJiaobei.meaning}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="text-center mt-6">
+                <button
+                  onClick={() => setDrawnJiaobei(null)}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-all duration-300 transform hover:scale-105"
+                >
+                  🔄 重新掷筊
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* API Status Info */}
       <div className="mb-6 p-4 bg-indigo-800/30 rounded-xl border border-indigo-400/30">
         <div className="flex items-center justify-between text-sm">
@@ -1677,7 +1739,14 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
     </div>
   );
 
-  const renderResult = () => (
+  const handleClearResult = () => {
+  setResult('');
+  setStep('input');
+  setPlainLanguageResult('');
+  setShowPlainLanguage(false);
+  setIsGeneratingPlainLanguage(false);
+};
+const renderResult = () => (
     <div className="max-w-3xl mx-auto">
       {/* Result Header */}
       <div className="text-center mb-8">
@@ -1770,6 +1839,13 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         >
           <Shuffle className="w-5 h-5" />
           <span>重新占卜</span>
+        </button>
+        <button
+          onClick={handleClearResult}
+          className="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white transition-all duration-300 flex items-center space-x-2 hover:scale-105 hover:shadow-lg"
+        >
+          <Trash2 className="w-5 h-5" />
+          <span>清除结果</span>
         </button>
         
         <button
