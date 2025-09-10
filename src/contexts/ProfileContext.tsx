@@ -9,6 +9,9 @@ export interface UserProfileData {
   occupation: string;
   hobbies: string;
   selfDescription: string;
+  personality: string;
+  dreams: string;
+  lifeExperience: string;
 }
 
 interface ProfileContextType {
@@ -87,7 +90,10 @@ const defaultProfile: UserProfileData = {
   gender: '',
   occupation: '',
   hobbies: '',
-  selfDescription: ''
+  selfDescription: '',
+  personality: '',
+  dreams: '',
+  lifeExperience: ''
 };
 
 export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

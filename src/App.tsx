@@ -3299,7 +3299,7 @@ ${result.reading}
           >
             {isLoading ? t.divining : t.startDivination}
           </button>
-        </div>
+</div>
 
         {/* Error Display */}
         {error && (

@@ -81,6 +81,22 @@ const fortuneMethods: Record<string, FortuneMethod> = {
     description: '测试两人缘分指数，分析感情匹配度',
     color: 'from-pink-500 to-rose-500',
     category: 'relationship'
+  },
+  'numerology': {
+    id: 'numerology',
+    icon: Target,
+    title: '数字命理',
+    description: '通过数字能量揭示命运密码',
+    color: 'from-indigo-500 to-blue-500',
+    category: 'modern'
+  },
+  'lifestory': {
+    id: 'lifestory',
+    icon: BookOpen,
+    title: '命格小故事',
+    description: '生成专属命运故事，趣味了解人生轨迹',
+    color: 'from-teal-500 to-cyan-500',
+    category: 'quick'
   }
 };
 
@@ -88,7 +104,7 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   selectedMethodId, 
   onBack 
 }) => {
-  const { profile, isProfileComplete } = useProfile();
+  const { profile, isProfileComplete, updateProfile } = useProfile();
   const [step, setStep] = useState<'input' | 'processing' | 'result'>('input');
   const [question, setQuestion] = useState('');
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
@@ -113,6 +129,30 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
     };
     const randomResult = results[Math.floor(Math.random() * results.length)];
     setDrawnJiaobei({result: randomResult, meaning: meanings[randomResult]});
+  };
+
+  // Clean markdown formatting from text
+  const cleanMarkdownText = (text: string): string => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
+      .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+      .replace(/#{1,6}\s*/g, '')       // Remove ### headers
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove [text](link)
+      .replace(/`([^`]+)`/g, '$1')     // Remove `code`
+      .replace(/^\s*[-*+]\s+/gm, '• ') // Convert list markers to bullets
+      .replace(/^\s*\d+\.\s+/gm, '')  // Remove numbered list markers
+      .replace(/\n{3,}/g, '\n\n')     // Reduce multiple newlines
+      .trim();
+  };
+
+  // Format text for better display
+  const formatDisplayText = (text: string): string => {
+    const cleaned = cleanMarkdownText(text);
+    return cleaned
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .join('\n\n');
   };
   
   // Session-specific input fields (not stored in profile)
@@ -451,6 +491,155 @@ ${specificAdvice}
 愿星辰指引您的道路，祝您好运！`;
   };
 
+  // Generate numerology-specific fortune result based on profile and question
+  const generateNumerologyFallback = (profileData: any, question: string, method: string) => {
+    // Calculate life path number from birth date
+    let lifePathNumber = 1;
+    if (profileData.birthDate) {
+      const dateStr = profileData.birthDate.replace(/[^0-9]/g, '');
+      let sum = 0;
+      for (let digit of dateStr) {
+        sum += parseInt(digit);
+      }
+      while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+        sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+      }
+      lifePathNumber = sum;
+    }
+    
+    // Calculate name number from name
+    let nameNumber = 1;
+    if (profileData.name) {
+      const nameValue = profileData.name.split('').reduce((sum, char) => {
+        const code = char.charCodeAt(0);
+        return sum + (code % 9 || 9);
+      }, 0);
+      nameNumber = nameValue % 9 || 9;
+    }
+    
+    // Number meanings
+    const numberMeanings: Record<number, string> = {
+      1: '领导者、独立、创新',
+      2: '合作、平衡、敏感',
+      3: '创造、表达、乐观',
+      4: '稳定、实用、勤奋',
+      5: '自由、冒险、变化',
+      6: '关爱、责任、和谐',
+      7: '智慧、分析、神秘',
+      8: '成功、权力、物质',
+      9: '人道、慈悲、完成',
+      11: '直觉、灵性、启发',
+      22: '大师建造者、实现梦想',
+      33: '大师教师、无私奉献'
+    };
+    
+    const lifePathMeaning = numberMeanings[lifePathNumber] || '神秘的力量';
+    const nameMeaning = numberMeanings[nameNumber] || '独特的能量';
+    
+    // Generate contextual advice based on the question
+    let contextualAdvice = '';
+    const lowercaseQuestion = question.toLowerCase();
+    
+    if (lowercaseQuestion.includes('感情') || lowercaseQuestion.includes('爱情')) {
+      contextualAdvice = `您的生命数字${lifePathNumber}在感情方面显示，您需要${lifePathNumber <= 5 ? '主动表达' : '耐心等待'}，真爱正在向您靠近。`;
+    } else if (lowercaseQuestion.includes('工作') || lowercaseQuestion.includes('事业')) {
+      contextualAdvice = `数字${lifePathNumber}提示您在事业上要发挥${lifePathMeaning}的特质，这是您成功的关键。`;
+    } else if (lowercaseQuestion.includes('财运') || lowercaseQuestion.includes('金钱')) {
+      contextualAdvice = `您的财富数字显示，通过${lifePathNumber % 2 === 0 ? '稳健投资' : '创新思维'}可以获得更好的财运。`;
+    } else {
+      contextualAdvice = `您的生命数字${lifePathNumber}为您指明了人生的方向和使命。`;
+    }
+    
+    return `🔢 **数字命理解析**
+
+针对您的问题"${question}"，数字命理为您揭示以下信息：
+
+📊 **核心数字分析：**
+• 生命路径数字：${lifePathNumber} (${lifePathMeaning})
+• 姓名数字：${nameNumber} (${nameMeaning})
+
+🌟 **数字能量解读：**
+${contextualAdvice}
+
+✨ **生命密码指引：**
+1. 您的生命数字${lifePathNumber}代表着${lifePathMeaning}的能量
+2. 在重要决策时，可以参考数字${lifePathNumber}的特质
+3. 您的幸运数字是${lifePathNumber}、${nameNumber}和${(lifePathNumber + nameNumber) % 9 || 9}
+4. 每月${lifePathNumber}号和${nameNumber}号是您的能量高峰日
+
+🎯 **行动建议：**
+• 发挥您数字${lifePathNumber}的天赋优势
+• 在生活中多关注包含您幸运数字的机会
+• 保持与您数字能量相符的生活方式
+• 相信数字的指引，但也要结合实际行动
+
+🌙 **数字祝福：**
+愿数字的神秘力量为您带来好运，指引您走向光明的未来！`;
+  };
+  
+  // Generate life story-specific fortune result based on profile and question
+  const generateLifestoryFallback = (profileData: any, question: string, method: string) => {
+    // Generate story elements based on profile
+    const name = profileData.name || '有缘人';
+    const birthPlace = profileData.birthPlace || '一个美丽的地方';
+    const occupation = profileData.occupation || '追梦者';
+    
+    // Story themes based on question
+    let storyTheme = '';
+    let storyMoral = '';
+    let futureVision = '';
+    
+    const lowercaseQuestion = question.toLowerCase();
+    
+    if (lowercaseQuestion.includes('感情') || lowercaseQuestion.includes('爱情')) {
+      storyTheme = '爱情传说';
+      storyMoral = '真爱需要耐心等待和勇敢追求';
+      futureVision = '一段美好的姻缘正在向您走来，请保持开放的心态';
+    } else if (lowercaseQuestion.includes('工作') || lowercaseQuestion.includes('事业')) {
+      storyTheme = '成功之路';
+      storyMoral = '成功来自于坚持不懈的努力和智慧的选择';
+      futureVision = '您的事业将迎来重要转机，新的机遇正在酝酿';
+    } else if (lowercaseQuestion.includes('财运') || lowercaseQuestion.includes('金钱')) {
+      storyTheme = '财富密码';
+      storyMoral = '真正的财富来自于智慧和德行的积累';
+      futureVision = '通过正当途径，您的财富将稳步增长';
+    } else {
+      storyTheme = '人生传奇';
+      storyMoral = '每个人都有自己独特的人生使命和价值';
+      futureVision = '您的人生将充满精彩的转折和美好的收获';
+    }
+    
+    return `📖 **${name}的命格小故事**
+
+关于您的问题"${question}"，让我为您讲述一个专属的命运故事：
+
+🌟 **${storyTheme}篇章**
+
+在${birthPlace}这片神奇的土地上，诞生了一位名叫${name}的特殊之人。从小，${name}就展现出与众不同的气质，仿佛天生就承载着某种使命。
+
+作为一名${occupation}，${name}在人生的道路上经历了许多考验。每一次挫折都是成长的阶梯，每一次选择都在塑造着独特的命运轨迹。
+
+命运之神看到了${name}内心的纯真和努力，决定在关键时刻给予指引。正如古老的预言所说："心诚者，天必佑之；努力者，运必随之。"
+
+📚 **故事寓意：**
+${storyMoral}。${name}的故事告诉我们，命运虽有定数，但通过自己的努力和智慧，完全可以创造出更美好的人生。
+
+🔮 **现实启示：**
+1. 相信自己的内在力量和独特价值
+2. 在困难面前保持乐观和坚韧
+3. 善待他人，积累人生的正能量
+4. 抓住机遇，勇敢地追求梦想
+
+🌈 **未来展望：**
+${futureVision}。就像故事中的主人公一样，您也将在人生的舞台上书写属于自己的精彩篇章。
+
+✨ **命运寄语：**
+每个人都是自己人生故事的主角，${name}的传奇还在继续书写。愿您的故事充满爱、智慧和成功！
+
+📝 **故事续集预告：**
+下一章将是关于突破和收获的故事，请期待命运为您安排的精彩情节！`;
+  };
+
   // Generate plain language interpretation
   const generatePlainLanguageInterpretation = (originalResult: string, question: string, method: string) => {
     const lowercaseQuestion = question.toLowerCase();
@@ -620,12 +809,12 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         </div>
         <div style="margin: 20px 0; padding: 15px; background-color: #F7FAFC; border-left: 4px solid #9F7AEA;">
           <h3 style="color: #2D3748; margin-bottom: 10px;">占卜解读：</h3>
-          <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${result}</div>
+          <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${formatDisplayText(result)}</div>
         </div>
         ${showPlainLanguage ? `
         <div style="margin: 20px 0; padding: 15px; background-color: #F0FFF4; border-left: 4px solid #48BB78;">
           <h3 style="color: #2D3748; margin-bottom: 10px;">大白话解读：</h3>
-          <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)}</div>
+          <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${formatDisplayText(plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title))}</div>
         </div>
         ` : ''}
         <div style="margin-top: 30px; text-align: center; color: #A0AEC0; font-size: 14px;">
@@ -684,13 +873,13 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           
           <div style="margin: 20px 0; padding: 15px; background-color: #F7FAFC; border-left: 4px solid #9F7AEA;">
             <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">占卜解读：</h3>
-            <div style="color: #4A5568; white-space: pre-wrap; line-height: 1.6;">${result}</div>
+            <div style="color: #4A5568; white-space: pre-wrap; line-height: 1.6;">${formatDisplayText(result)}</div>
           </div>
           
           ${showPlainLanguage && plainLanguageResult ? `
           <div style="margin: 20px 0; padding: 15px; background-color: #F0FFF4; border-left: 4px solid #48BB78;">
             <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">大白话解读：</h3>
-            <div style="color: #4A5568; white-space: pre-wrap; line-height: 1.6;">${plainLanguageResult}</div>
+            <div style="color: #4A5568; white-space: pre-wrap; line-height: 1.6;">${formatDisplayText(plainLanguageResult)}</div>
           </div>
           ` : ''}
           
@@ -897,6 +1086,10 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             selfDescription: sessionData.selfDescription || profile.selfDescription
           };
           fallbackResult = generatePersonalityFallback(enhancedProfile, question, selectedMethod.title);
+        } else if (selectedMethodId === 'numerology') {
+          fallbackResult = generateNumerologyFallback(profile, question, selectedMethod.title);
+        } else if (selectedMethodId === 'lifestory') {
+          fallbackResult = generateLifestoryFallback(profile, question, selectedMethod.title);
         } else if (selectedMethodId === 'tarot' && selectedCards.length > 0) {
           fallbackResult = generateTarotFallback(selectedCards, question, selectedMethod.title);
         } else if (selectedMethodId === 'lottery' && drawnLottery) {
@@ -923,6 +1116,10 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           selfDescription: sessionData.selfDescription || profile.selfDescription
         };
         fallbackResult = generatePersonalityFallback(enhancedProfile, question, selectedMethod.title);
+      } else if (selectedMethodId === 'numerology') {
+        fallbackResult = generateNumerologyFallback(profile, question, selectedMethod.title);
+      } else if (selectedMethodId === 'lifestory') {
+        fallbackResult = generateLifestoryFallback(profile, question, selectedMethod.title);
       } else if (selectedMethodId === 'tarot' && selectedCards.length > 0) {
         fallbackResult = generateTarotFallback(selectedCards, question, selectedMethod.title);
       } else if (selectedMethodId === 'lottery' && drawnLottery) {
@@ -1398,6 +1595,88 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         </div>
       )}
 
+      {/* Detailed Information for Lifestory */}
+      {selectedMethodId === 'lifestory' && (
+        <div className="mb-8">
+          <div className="p-6 bg-gradient-to-r from-teal-900/30 to-cyan-900/30 rounded-xl border border-teal-400/30">
+            <div className="flex items-center mb-6">
+              <BookOpen className="w-5 h-5 text-teal-300 mr-2" />
+              <h3 className="text-lg font-semibold text-white">📖 详细信息</h3>
+              <span className="ml-2 text-xs bg-teal-500/20 text-teal-200 px-2 py-1 rounded">
+                用于生成个性化故事
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-teal-200 mb-2">
+                  职业 <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={profile.occupation || ''}
+                  onChange={(e) => {
+                     updateProfile({ occupation: e.target.value });
+                   }}
+                  placeholder="请输入您的职业，如：程序员、教师、医生等"
+                  className="w-full p-3 bg-teal-800/30 border border-teal-600/50 rounded-lg text-white placeholder-teal-400 focus:border-teal-400 focus:outline-none transition-colors"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-teal-200 mb-2">
+                  性格特点 <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={profile.personality || ''}
+                  onChange={(e) => {
+                     updateProfile({ personality: e.target.value });
+                   }}
+                  placeholder="请描述您的性格特点，如：开朗、内向、乐观等"
+                  className="w-full p-3 bg-teal-800/30 border border-teal-600/50 rounded-lg text-white placeholder-teal-400 focus:border-teal-400 focus:outline-none transition-colors"
+                />
+              </div>
+              
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-teal-200 mb-2">
+                  梦想目标 <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={profile.dreams || ''}
+                  onChange={(e) => {
+                     updateProfile({ dreams: e.target.value });
+                   }}
+                  placeholder="请描述您的梦想和目标，如：成为优秀的设计师、环游世界、拥有幸福的家庭等"
+                  className="w-full h-24 p-3 bg-teal-800/30 border border-teal-600/50 rounded-lg text-white placeholder-teal-400 focus:border-teal-400 focus:outline-none resize-none transition-colors"
+                />
+              </div>
+              
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-teal-200 mb-2">
+                  人生经历 <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={profile.lifeExperience || ''}
+                  onChange={(e) => {
+                     updateProfile({ lifeExperience: e.target.value });
+                   }}
+                  placeholder="请简单描述一些重要的人生经历，如：求学经历、工作变化、重要的人生转折点等"
+                  className="w-full h-32 p-3 bg-teal-800/30 border border-teal-600/50 rounded-lg text-white placeholder-teal-400 focus:border-teal-400 focus:outline-none resize-none transition-colors"
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4 p-3 bg-teal-900/20 border border-teal-400/30 rounded-lg">
+              <p className="text-teal-200 text-sm flex items-center">
+                <Lightbulb className="w-4 h-4 mr-2" />
+                提供越详细的信息，生成的命格小故事就越个性化和精准
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Question Input */}
       <div className="mb-8">
         <label className="block text-lg font-semibold text-white mb-4">
@@ -1793,7 +2072,7 @@ const renderResult = () => (
           占卜解读
         </h3>
         <div className="text-purple-100 leading-relaxed whitespace-pre-line animate-fade-in">
-          {result}
+          {formatDisplayText(result)}
         </div>
       </div>
 
@@ -1816,7 +2095,7 @@ const renderResult = () => (
                 <span>正在生成大白话解读，请稍候...</span>
               </div>
             ) : (
-              plainLanguageResult || '点击“大白话解读”按钮生成简化版本'
+              formatDisplayText(plainLanguageResult || '点击"大白话解读"按钮生成简化版本')
             )}
           </div>
         </div>
@@ -1885,7 +2164,7 @@ const renderResult = () => (
         
         <button
           onClick={() => {
-            const text = `${selectedMethod.title}结果\n\n问题：${question}\n\n解读：\n${result}${showPlainLanguage ? '\n\n大白话解读：\n' + (plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)) : ''}\n\n占卜时间：${new Date().toLocaleString('zh-CN')}`;
+            const text = `${selectedMethod.title}结果\n\n问题：${question}\n\n解读：\n${formatDisplayText(result)}${showPlainLanguage ? '\n\n大白话解读：\n' + formatDisplayText(plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)) : ''}\n\n占卜时间：${new Date().toLocaleString('zh-CN')}`;
             navigator.clipboard.writeText(text);
             setShowCopySuccess(true);
             setTimeout(() => setShowCopySuccess(false), 2000);
@@ -1920,7 +2199,7 @@ const renderResult = () => (
             if (navigator.share) {
               navigator.share({
                 title: `${selectedMethod.title}结果`,
-                text: result.slice(0, 100) + '...'
+                text: formatDisplayText(result).slice(0, 100) + '...'
               });
             }
           }}
