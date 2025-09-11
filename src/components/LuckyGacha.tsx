@@ -63,8 +63,8 @@ const customStyles = `
   
   .slider::-webkit-slider-thumb {
     appearance: none;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: linear-gradient(45deg, #ec4899, #8b5cf6);
     cursor: pointer;
@@ -72,20 +72,69 @@ const customStyles = `
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
     transition: all 0.2s ease;
   }
-  
+
   .slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
     box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
   }
-  
+
   .slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: linear-gradient(45deg, #ec4899, #8b5cf6);
     cursor: pointer;
     border: 3px solid white;
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .slider::-webkit-slider-thumb {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 32px;
+      height: 32px;
+    }
+    
+    /* 移动端动画优化 */
+    .anime-rotate {
+      animation: animeRotate 1.5s ease-in-out;
+    }
+    
+    .anime-glow {
+      animation: glow 1.5s ease-in-out infinite;
+    }
+    
+    /* 移动端减少动画强度 */
+    .anime-float {
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    /* 移动端优化hover效果 */
+    .hover\:scale-\[1\.02\]:hover {
+      transform: scale(1.01);
+    }
+    
+    /* 移动端触摸优化 */
+    button, .slider {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* 增大按钮点击区域 */
+    button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* 滑块触摸区域优化 */
+    .slider {
+      height: 44px;
+      padding: 8px 0;
+    }
   }
   
   .scrollbar-thin::-webkit-scrollbar {
@@ -536,7 +585,7 @@ const LuckyGacha: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white p-3 md:p-4 relative overflow-hidden">
       {/* Inject custom styles */}
       <style dangerouslySetInnerHTML={{ __html: customStyles }} />
       {/* Background decorative elements */}
@@ -579,10 +628,10 @@ const LuckyGacha: React.FC = () => {
         </div>
 
         {/* Enhanced Main Machine */}
-        <div className="bg-gradient-to-b from-slate-800/30 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-purple-500/30 shadow-2xl">
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="bg-gradient-to-b from-slate-800/30 to-slate-900/50 backdrop-blur-xl rounded-3xl p-4 md:p-8 border border-purple-500/30 shadow-2xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
             {/* Enhanced Gacha Area */}
-            <div className="xl:col-span-2 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 rounded-2xl p-8 relative overflow-hidden min-h-[500px] border border-purple-400/20">
+            <div className="lg:col-span-2 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 rounded-2xl p-4 md:p-8 relative overflow-hidden min-h-[300px] md:min-h-[400px] lg:min-h-[500px] border border-purple-400/20">
               <canvas 
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full pointer-events-none z-20"
@@ -605,7 +654,7 @@ const LuckyGacha: React.FC = () => {
                 {/* Enhanced Capsule */}
                 <div className="relative">
                   {/* Glow effect */}
-                  <div className={`absolute inset-0 w-48 h-48 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 blur-xl opacity-50 transition-all duration-700 ${
+                  <div className={`absolute inset-0 w-32 h-32 md:w-40 lg:w-48 md:h-40 lg:h-48 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 blur-xl opacity-50 transition-all duration-700 ${
                     isSpinning ? 'animate-pulse scale-110' : 'scale-100'
                   }`}></div>
                   
@@ -613,16 +662,16 @@ const LuckyGacha: React.FC = () => {
                 <div className="relative">
                   {/* Floating Particles */}
                   <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-4 left-8 w-2 h-2 bg-yellow-300 rounded-full anime-sparkle" style={{ animationDelay: '0s' }}></div>
-                    <div className="absolute top-12 right-6 w-1.5 h-1.5 bg-pink-300 rounded-full anime-sparkle" style={{ animationDelay: '0.3s' }}></div>
-                    <div className="absolute bottom-8 left-12 w-2.5 h-2.5 bg-blue-300 rounded-full anime-sparkle" style={{ animationDelay: '0.6s' }}></div>
-                    <div className="absolute bottom-4 right-10 w-1 h-1 bg-green-300 rounded-full anime-sparkle" style={{ animationDelay: '0.9s' }}></div>
-                    <div className="absolute top-8 left-4 w-1.5 h-1.5 bg-purple-300 rounded-full anime-sparkle" style={{ animationDelay: '1.2s' }}></div>
-                    <div className="absolute bottom-12 right-4 w-2 h-2 bg-orange-300 rounded-full anime-sparkle" style={{ animationDelay: '1.5s' }}></div>
+                    <div className="absolute top-2 md:top-4 left-4 md:left-8 w-1.5 md:w-2 h-1.5 md:h-2 bg-yellow-300 rounded-full anime-sparkle" style={{ animationDelay: '0s' }}></div>
+                    <div className="absolute top-6 md:top-12 right-3 md:right-6 w-1 md:w-1.5 h-1 md:h-1.5 bg-pink-300 rounded-full anime-sparkle" style={{ animationDelay: '0.3s' }}></div>
+                    <div className="absolute bottom-4 md:bottom-8 left-6 md:left-12 w-2 md:w-2.5 h-2 md:h-2.5 bg-blue-300 rounded-full anime-sparkle" style={{ animationDelay: '0.6s' }}></div>
+                    <div className="absolute bottom-2 md:bottom-4 right-5 md:right-10 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-300 rounded-full anime-sparkle" style={{ animationDelay: '0.9s' }}></div>
+                    <div className="absolute top-4 md:top-8 left-2 md:left-4 w-1 md:w-1.5 h-1 md:h-1.5 bg-purple-300 rounded-full anime-sparkle" style={{ animationDelay: '1.2s' }}></div>
+                    <div className="absolute bottom-6 md:bottom-12 right-2 md:right-4 w-1.5 md:w-2 h-1.5 md:h-2 bg-orange-300 rounded-full anime-sparkle" style={{ animationDelay: '1.5s' }}></div>
                   </div>
                   
                   {/* Main Capsule with Anime Effects */}
-                  <div className={`relative w-44 h-44 rounded-full bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 flex items-center justify-center text-3xl font-bold text-white shadow-2xl border-4 border-white/20 transition-all duration-700 ${
+                  <div className={`relative w-32 h-32 md:w-36 lg:w-44 md:h-36 lg:h-44 rounded-full bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 flex items-center justify-center text-2xl md:text-3xl font-bold text-white shadow-2xl border-2 md:border-4 border-white/20 transition-all duration-700 ${
                     isSpinning ? 'anime-rotate scale-95 shadow-pink-500/50 anime-glow' : 'hover:scale-105 shadow-purple-500/30 anime-float'
                   }`}>
                     {/* Inner magical glow */}
@@ -709,7 +758,7 @@ const LuckyGacha: React.FC = () => {
                           <span className="text-xs text-purple-400 opacity-60">第 {getCurrentWeek()} 周特别预测</span>
                         </div>
                       </div>
-                      <div className="text-xl font-bold mb-3 leading-relaxed text-white">
+                      <div className="text-lg md:text-xl font-bold mb-3 leading-relaxed md:leading-relaxed text-white">
                         {currentPrediction.text}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-purple-200">
@@ -722,27 +771,29 @@ const LuckyGacha: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="flex gap-3">
+                    <div className="flex gap-2 md:gap-3">
                       <button 
                         onClick={handleCopy}
-                        className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
+                        className="flex items-center gap-2 px-3 md:px-4 py-4 md:py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-base md:text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 touch-manipulation flex-1 justify-center"
                       >
-                        <Copy size={16} />
-                        {copyText}
+                        <Copy size={18} className="md:w-4 md:h-4" />
+                        <span className="hidden sm:inline">{copyText}</span>
+                        <span className="sm:hidden">复制</span>
                       </button>
                       <button 
                         onClick={handleSave}
-                        className="flex items-center gap-2 px-4 py-3 bg-slate-700/80 border border-slate-500/50 rounded-xl text-sm font-medium hover:bg-slate-600/80 transition-all duration-200 transform hover:scale-105 shadow-lg backdrop-blur-sm"
+                        className="flex items-center gap-2 px-3 md:px-4 py-4 md:py-3 bg-slate-700/80 border border-slate-500/50 rounded-xl text-base md:text-sm font-medium hover:bg-slate-600/80 transition-all duration-200 transform hover:scale-105 shadow-lg backdrop-blur-sm touch-manipulation flex-1 justify-center"
                       >
-                        <Save size={16} />
-                        {saveText}
+                        <Save size={18} className="md:w-4 md:h-4" />
+                        <span className="hidden sm:inline">{saveText}</span>
+                        <span className="sm:hidden">保存</span>
                       </button>
                     </div>
                   </div>
                 )}
                 
                 {/* Enhanced Anime-Style Pull Lever */}
-                <div className="absolute right-8 bottom-16">
+                <div className="absolute right-2 md:right-8 bottom-8 md:bottom-16">
                   <div className="relative">
                     {/* Magical Aura */}
                     <div className={`absolute inset-0 bg-gradient-to-b from-pink-400 to-purple-400 rounded-2xl blur-xl opacity-60 transition-all duration-300 ${
@@ -751,16 +802,16 @@ const LuckyGacha: React.FC = () => {
                     
                     {/* Floating Magic Particles */}
                     <div className="absolute inset-0 pointer-events-none">
-                      <div className="absolute -top-4 left-2 w-2 h-2 bg-yellow-300 rounded-full anime-sparkle"></div>
-                      <div className="absolute -top-2 right-4 w-1.5 h-1.5 bg-pink-300 rounded-full anime-sparkle" style={{ animationDelay: '0.3s' }}></div>
-                      <div className="absolute -bottom-3 left-6 w-2.5 h-2.5 bg-purple-300 rounded-full anime-sparkle" style={{ animationDelay: '0.6s' }}></div>
-                      <div className="absolute -bottom-1 right-2 w-1 h-1 bg-blue-300 rounded-full anime-sparkle" style={{ animationDelay: '0.9s' }}></div>
+                      <div className="absolute -top-2 md:-top-4 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 bg-yellow-300 rounded-full anime-sparkle"></div>
+                      <div className="absolute -top-1 md:-top-2 right-2 md:right-4 w-1 md:w-1.5 h-1 md:h-1.5 bg-pink-300 rounded-full anime-sparkle" style={{ animationDelay: '0.3s' }}></div>
+                      <div className="absolute -bottom-2 md:-bottom-3 left-3 md:left-6 w-2 md:w-2.5 h-2 md:h-2.5 bg-purple-300 rounded-full anime-sparkle" style={{ animationDelay: '0.6s' }}></div>
+                      <div className="absolute -bottom-1 right-1 md:right-2 w-0.5 md:w-1 h-0.5 md:h-1 bg-blue-300 rounded-full anime-sparkle" style={{ animationDelay: '0.9s' }}></div>
                     </div>
                     
                     <button 
                       onClick={handlePull}
                       disabled={isSpinning}
-                      className={`relative px-6 py-10 bg-gradient-to-b from-white via-pink-50 to-pink-100 text-pink-900 font-bold rounded-2xl shadow-2xl border-4 border-pink-200/50 transition-all duration-300 transform overflow-hidden ${
+                      className={`relative px-4 md:px-6 py-6 md:py-10 bg-gradient-to-b from-white via-pink-50 to-pink-100 text-pink-900 font-bold rounded-xl md:rounded-2xl shadow-2xl border-2 md:border-4 border-pink-200/50 transition-all duration-300 transform overflow-hidden touch-manipulation ${
                         isSpinning 
                           ? 'scale-95 opacity-70 cursor-not-allowed shadow-pink-500/30 anime-glow' 
                           : 'hover:scale-110 hover:shadow-pink-500/50 hover:from-pink-50 hover:to-pink-200 active:scale-95 anime-float'
@@ -816,7 +867,7 @@ const LuckyGacha: React.FC = () => {
                   <select 
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full bg-slate-700/80 border border-slate-500/50 rounded-xl px-4 py-3 text-white font-medium focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all duration-200 backdrop-blur-sm"
+                    className="w-full bg-slate-700/80 border border-slate-500/50 rounded-xl px-3 md:px-4 py-4 md:py-3 text-white font-medium focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all duration-200 backdrop-blur-sm text-base md:text-sm touch-manipulation"
                   >
                     <option value="all">🌟 全部类别</option>
                     <option value="love">💕 爱情</option>
@@ -840,7 +891,7 @@ const LuckyGacha: React.FC = () => {
                       max="100"
                       value={rarityBonus}
                       onChange={(e) => setRarityBonus(Number(e.target.value))}
-                      className="slider w-full h-3 bg-slate-600 rounded-full appearance-none cursor-pointer"
+                      className="slider w-full h-4 md:h-3 bg-slate-600 rounded-full appearance-none cursor-pointer touch-manipulation"
                       style={{
                         background: `linear-gradient(to right, #8b5cf6 0%, #ec4899 ${rarityBonus}%, #475569 ${rarityBonus}%, #475569 100%)`
                       }}
@@ -868,7 +919,7 @@ const LuckyGacha: React.FC = () => {
                     <button 
                       onClick={handleMultiPull}
                       disabled={isSpinning}
-                      className={`relative w-full flex items-center justify-center gap-2 px-4 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-xl text-sm font-bold transition-all duration-300 transform overflow-hidden shadow-lg ${
+                      className={`relative w-full flex items-center justify-center gap-2 px-3 md:px-4 py-5 md:py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-xl text-base md:text-sm font-bold transition-all duration-300 transform overflow-hidden shadow-lg touch-manipulation ${
                         isSpinning 
                           ? 'scale-95 opacity-50 cursor-not-allowed anime-glow' 
                           : 'hover:scale-110 hover:from-purple-600 hover:to-pink-600 hover:shadow-purple-500/40 active:scale-95 anime-float'
@@ -902,7 +953,7 @@ const LuckyGacha: React.FC = () => {
                     
                     <button 
                       onClick={clearHistory}
-                      className="relative px-4 py-4 bg-gradient-to-r from-slate-700/80 to-slate-800/80 border border-slate-500/50 rounded-xl text-sm font-medium transition-all duration-300 transform shadow-lg backdrop-blur-sm group overflow-hidden hover:scale-110 hover:bg-slate-600/80 hover:shadow-slate-500/30 active:scale-95 anime-float"
+                      className="relative px-5 md:px-4 py-5 md:py-4 bg-gradient-to-r from-slate-700/80 to-slate-800/80 border border-slate-500/50 rounded-xl text-sm font-medium transition-all duration-300 transform shadow-lg backdrop-blur-sm group overflow-hidden hover:scale-110 hover:bg-slate-600/80 hover:shadow-slate-500/30 active:scale-95 anime-float touch-manipulation"
                       title="清除历史记录"
                     >
                       {/* Button inner glow */}
@@ -944,7 +995,7 @@ const LuckyGacha: React.FC = () => {
                           'from-slate-800/40 to-slate-700/40 border-slate-500/30'
                         }`}>
                           <div className="flex items-start justify-between mb-2">
-                            <div className="font-medium text-sm text-white leading-relaxed flex-1">
+                            <div className="font-medium text-base md:text-sm text-white leading-relaxed md:leading-normal flex-1">
                               {item.text}
                             </div>
                             <div className={`ml-2 px-2 py-1 rounded-full text-xs font-bold shrink-0 ${
@@ -958,15 +1009,15 @@ const LuckyGacha: React.FC = () => {
                                item.rarity === 'uncommon' ? '🔮' : '🎯'}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-purple-200">
-                            <span className="bg-purple-700/50 px-2 py-1 rounded-full">
+                          <div className="flex items-center gap-2 text-sm md:text-xs text-purple-200">
+                            <span className="bg-purple-700/50 px-2 py-1 rounded-full text-xs md:text-xs">
                               {CATEGORY_LABELS[item.cat]}
                             </span>
-                            <span className="opacity-75">
+                            <span className="opacity-75 text-xs md:text-xs">
                               {new Date(item.time).toLocaleDateString()}
                             </span>
                             {item.note && (
-                              <span className="bg-pink-700/50 px-2 py-1 rounded-full">
+                              <span className="bg-pink-700/50 px-2 py-1 rounded-full text-xs md:text-xs">
                                 {item.note}
                               </span>
                             )}
@@ -982,7 +1033,7 @@ const LuckyGacha: React.FC = () => {
           
           {/* Enhanced Footer */}
           <div className="text-center mt-8 space-y-3">
-            <div className="flex items-center justify-center gap-4 text-sm text-purple-300">
+            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm md:text-sm text-purple-300">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                 <span>实时运行</span>
@@ -996,7 +1047,7 @@ const LuckyGacha: React.FC = () => {
                 <span>精美动效</span>
               </div>
             </div>
-            <div className="text-sm text-purple-400 bg-purple-900/20 px-4 py-2 rounded-full border border-purple-500/20 inline-block">
+            <div className="text-xs md:text-sm text-purple-400 bg-purple-900/20 px-3 md:px-4 py-2 rounded-full border border-purple-500/20 inline-block max-w-full">
               ✨ 内含随机与趣味成分，纯娱乐体验 — 别把小扭蛋当作严肃决策依据哦 😉
             </div>
           </div>
