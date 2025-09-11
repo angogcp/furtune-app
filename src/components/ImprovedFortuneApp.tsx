@@ -10,6 +10,7 @@ import SearchAndFilter from './SearchAndFilter';
 import ProgressiveDisclosure from './ProgressiveDisclosure';
 import UserProfile from './UserProfile';
 import ModernFortuneInterface from './ModernFortuneTelling/ModernFortuneInterface';
+import ErrorBoundary from './ErrorBoundary';
 import { ProfileProvider, useProfile } from '../contexts/ProfileContext';
 
 // 数据接口定义
@@ -498,10 +499,12 @@ export const ImprovedFortuneAppContent: React.FC<ImprovedFortuneAppContentProps>
   // 如果选择了占卜方法，显示现代占卜界面
   if (showModernFortune && selectedMethod) {
     return (
-      <ModernFortuneInterface 
-        selectedMethodId={selectedMethod}
-        onBack={handleBackToSelection}
-      />
+      <ErrorBoundary>
+        <ModernFortuneInterface 
+          selectedMethodId={selectedMethod}
+          onBack={handleBackToSelection}
+        />
+      </ErrorBoundary>
     );
   }
 

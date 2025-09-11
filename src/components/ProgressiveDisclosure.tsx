@@ -79,6 +79,21 @@ const ProgressiveDisclosure: React.FC<ProgressiveDisclosureProps> = ({
 
   const recommendations = getRecommendations();
 
+  // Handle empty state
+  if (!items || items.length === 0) {
+    return (
+      <div className={`${className}`}>
+        <div className="text-center py-12">
+          <div className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 backdrop-blur-sm rounded-xl border border-purple-400/20 p-8">
+            <Star className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">暂无可用的占卜方法</h3>
+            <p className="text-purple-200">请稍后再试或联系管理员</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`${className}`}>
       {/* Beginner's Guide */}

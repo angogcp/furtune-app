@@ -3,7 +3,7 @@ import {
   Star, Moon, Sun, Gem, Zap, Heart, Crown, ArrowLeft, Sparkles, 
   Send, Shuffle, Download, Share2, BookOpen, Clock, User, Calendar,
   MapPin, Wand2, Eye, Target, ChevronRight, Loader2, Wifi, WifiOff,
-  FileText, Printer, Lightbulb, Trash2
+  FileText, Printer, Lightbulb, Trash2, Hash, Briefcase, DollarSign, Activity
 } from 'lucide-react';
 import { useProfile } from '../../contexts/ProfileContext';
 import llmService from '../../utils/llmService';
@@ -26,6 +26,14 @@ interface ModernFortuneInterfaceProps {
 }
 
 const fortuneMethods: Record<string, FortuneMethod> = {
+  'astrology': {
+    id: 'astrology',
+    icon: Star,
+    title: '星座占星',
+    description: '解读星象运行对您的影响',
+    color: 'from-blue-500 to-indigo-500',
+    category: 'modern'
+  },
   'bazi': {
     id: 'bazi',
     icon: Crown,
@@ -119,6 +127,7 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   const [isGeneratingPlainLanguage, setIsGeneratingPlainLanguage] = useState(false);
   const [drawnLottery, setDrawnLottery] = useState<{number: string, poem: string, meaning: string, interpretation: string} | null>(null);
   const [drawnJiaobei, setDrawnJiaobei] = useState<{result: string, meaning: string} | null>(null);
+  const [consultationType, setConsultationType] = useState<string>('');
 
   const drawJiaobei = () => {
     const results = ['聖筊', '笑筊', '陰筊'];
@@ -1022,6 +1031,13 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
     if (!question.trim()) return;
     if (selectedMethodId === 'tarot' && selectedCards.length === 0) return;
     if (selectedMethodId === 'lottery' && !drawnLottery) return;
+    if (selectedMethodId === 'lottery' && !consultationType) return;
+    if (selectedMethodId === 'tarot' && !consultationType) return;
+    if (selectedMethodId === 'astrology' && !consultationType) return;
+    if (selectedMethodId === 'jiaobei' && !consultationType) return;
+    if (selectedMethodId === 'numerology' && !consultationType) return;
+    if (selectedMethodId === 'ziwei' && !consultationType) return;
+    if (selectedMethodId === 'bazi' && !consultationType) return;
     
     setIsProcessing(true);
     setStep('processing');
@@ -1053,7 +1069,85 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         if (selectedMethodId === 'tarot' && selectedCards.length > 0) {
           enhancedQuestion = `我抽取了以下塔罗牌：${selectedCards.join('、')}。问题：${question}`;
         } else if (selectedMethodId === 'lottery' && drawnLottery) {
-          enhancedQuestion = `我抽取了第${drawnLottery.number}签，签文："${drawnLottery.poem}"，签意：${drawnLottery.meaning}。问题：${question}`;
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运程',
+            'health': '健康状况',
+            'study': '学业考试',
+            'general': '综合运势'
+          };
+          enhancedQuestion = `我想咨询${typeLabels[consultationType] || consultationType}方面的问题。我抽取了第${drawnLottery.number}签，签文："${drawnLottery.poem}"，签意：${drawnLottery.meaning}。问题：${question}`;
+        } else if (selectedMethodId === 'bazi' && consultationType) {
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运程',
+            'health': '健康状况',
+            'study': '学业考试',
+            'general': '综合运势'
+          };
+          enhancedQuestion = `我想咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+        }
+        
+        if (selectedMethodId === 'tarot' && consultationType) {
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运势',
+            'health': '健康状况',
+            'study': '学业考试',
+            'comprehensive': '综合运势'
+          };
+          enhancedQuestion = `我想通过塔罗牌咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+        }
+        
+        if (selectedMethodId === 'astrology' && consultationType) {
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运势',
+            'health': '健康状况',
+            'study': '学业考试',
+            'comprehensive': '综合运势'
+          };
+          enhancedQuestion = `我想通过星座占星咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+        }
+        
+        if (selectedMethodId === 'jiaobei' && consultationType) {
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运势',
+            'health': '健康状况',
+            'study': '学业考试',
+            'comprehensive': '综合运势'
+          };
+          enhancedQuestion = `我想通过擲筊问卜咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+        }
+        
+        if (selectedMethodId === 'numerology' && consultationType) {
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运势',
+            'health': '健康状况',
+            'study': '学业考试',
+            'comprehensive': '综合运势'
+          };
+          enhancedQuestion = `我想通过数字命理咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+        }
+        
+        if (selectedMethodId === 'ziwei' && consultationType) {
+          const typeLabels = {
+            'love': '感情运势',
+            'career': '事业发展', 
+            'wealth': '财富运势',
+            'health': '健康状况',
+            'study': '学业考试',
+            'comprehensive': '综合运势'
+          };
+          enhancedQuestion = `我想通过紫微斗数咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
         }
         
         const response = await llmService.callAPI(
@@ -1185,6 +1279,52 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
               <p className="text-yellow-200 text-sm">
                 💡 完善个人资料可获得更精准的占卜结果
               </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Consultation Type Selection - Only for bazi method */}
+      {selectedMethodId === 'bazi' && (
+        <div className="mb-8 p-6 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-xl border border-yellow-400/30">
+          <div className="flex items-center mb-4">
+            <Crown className="w-5 h-5 text-yellow-300 mr-2" />
+            <h3 className="text-lg font-semibold text-white">咨询类型</h3>
+            <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-200 px-2 py-1 rounded">
+              必选
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { value: 'love', label: '感情运势', icon: '💕', desc: '恋爱、婚姻、感情发展' },
+              { value: 'career', label: '事业发展', icon: '💼', desc: '工作、升职、事业规划' },
+              { value: 'wealth', label: '财富运程', icon: '💰', desc: '财运、投资、收入状况' },
+              { value: 'health', label: '健康状况', icon: '🏥', desc: '身体健康、疾病预防' },
+              { value: 'study', label: '学业考试', icon: '📚', desc: '学习、考试、升学' },
+              { value: 'general', label: '综合运势', icon: '✨', desc: '整体运势、人生走向' }
+            ].map((type) => (
+              <button
+                key={type.value}
+                onClick={() => setConsultationType(type.value)}
+                className={`p-4 text-left rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === type.value
+                    ? 'bg-yellow-400/20 border-yellow-400 text-yellow-300 shadow-lg shadow-yellow-400/30'
+                    : 'bg-yellow-800/30 border-yellow-600/50 text-yellow-200 hover:border-yellow-400 hover:bg-yellow-700/30'
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <span className="text-2xl mr-3">{type.icon}</span>
+                  <span className="font-semibold">{type.label}</span>
+                </div>
+                <p className="text-sm opacity-80">{type.desc}</p>
+              </button>
+            ))}
+          </div>
+          
+          {!consultationType && (
+            <div className="mt-4 text-center text-yellow-400 text-sm bg-yellow-900/20 rounded-lg p-3 border border-yellow-400/30">
+              ⚠️ 请选择一个咨询类型以获得更精准的八字分析
             </div>
           )}
         </div>
@@ -1677,6 +1817,276 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         </div>
       )}
 
+
+
+      {/* Astrology Birth Information */}
+      {selectedMethodId === 'astrology' && (
+        <div className="mb-8">
+          <div className="p-6 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-xl border border-blue-400/30">
+            <div className="flex items-center mb-6">
+              <Star className="w-5 h-5 text-blue-300 mr-2" />
+              <h3 className="text-lg font-semibold text-white">🌟 出生信息</h3>
+              <span className="ml-2 text-xs bg-blue-500/20 text-blue-200 px-2 py-1 rounded">
+                必填
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-blue-200 mb-2">
+                  出生日期 <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={profile?.birthDate || ''}
+                  onChange={(e) => updateProfile({ birthDate: e.target.value })}
+                  className="w-full p-3 bg-blue-800/30 border border-blue-600/50 rounded-lg text-white focus:border-blue-400 focus:outline-none transition-colors"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-blue-200 mb-2">
+                  出生时间 <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="time"
+                  value={profile?.birthTime || ''}
+                  onChange={(e) => updateProfile({ birthTime: e.target.value })}
+                  className="w-full p-3 bg-blue-800/30 border border-blue-600/50 rounded-lg text-white focus:border-blue-400 focus:outline-none transition-colors"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-blue-200 mb-2">
+                  出生地点 <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={profile?.birthPlace || ''}
+                  onChange={(e) => updateProfile({ birthPlace: e.target.value })}
+                  placeholder="请输入出生城市"
+                  className="w-full p-3 bg-blue-800/30 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:border-blue-400 focus:outline-none transition-colors"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-blue-200 mb-2">
+                  性别 <span className="text-red-400">*</span>
+                </label>
+                <select
+                  value={profile?.gender || ''}
+                  onChange={(e) => updateProfile({ gender: e.target.value })}
+                  className="w-full p-3 bg-blue-800/30 border border-blue-600/50 rounded-lg text-white focus:border-blue-400 focus:outline-none transition-colors"
+                >
+                  <option value="">请选择性别</option>
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg">
+              <p className="text-blue-200 text-sm flex items-center">
+                <Lightbulb className="w-4 h-4 mr-2" />
+                准确的出生信息是星盘分析的基础，请确保信息正确
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Consultation Type Selection for Astrology */}
+      {selectedMethodId === 'astrology' && (
+        <div className="mb-8">
+          <label className="block text-lg font-semibold text-white mb-4">
+            <Star className="w-5 h-5 inline mr-2" />
+            选择咨询类型 <span className="text-red-400">*</span>
+          </label>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { id: 'love', icon: '💕', label: '感情运势', desc: '爱情、婚姻、人际关系' },
+              { id: 'career', icon: '💼', label: '事业发展', desc: '工作、升职、创业机会' },
+              { id: 'wealth', icon: '💰', label: '财富运势', desc: '投资、理财、收入状况' },
+              { id: 'health', icon: '🏥', label: '健康状况', desc: '身体、心理、养生建议' },
+              { id: 'study', icon: '📚', label: '学业考试', desc: '学习、考试、进修发展' },
+              { id: 'comprehensive', icon: '🔮', label: '综合运势', desc: '整体运势、未来趋势' }
+            ].map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setConsultationType(type.id)}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  consultationType === type.id
+                    ? 'border-blue-400 bg-blue-900/50 shadow-lg shadow-blue-500/20'
+                    : 'border-blue-600/30 bg-blue-900/20 hover:border-blue-500/50 hover:bg-blue-900/30'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{type.icon}</span>
+                  <div>
+                    <div className="font-semibold text-white">{type.label}</div>
+                    <div className="text-sm text-blue-300">{type.desc}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {!consultationType && (
+            <div className="mt-4 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg">
+              <p className="text-blue-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请选择您想要咨询的类型
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Consultation Type Selection for Jiaobei */}
+      {selectedMethodId === 'jiaobei' && (
+        <div className="mb-8">
+          <label className="block text-lg font-semibold text-white mb-4">
+            <Gem className="w-5 h-5 inline mr-2" />
+            选择咨询类型 <span className="text-red-400">*</span>
+          </label>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { id: 'love', icon: '💕', label: '感情运势', desc: '爱情、婚姻、人际关系' },
+              { id: 'career', icon: '💼', label: '事业发展', desc: '工作、升职、创业机会' },
+              { id: 'wealth', icon: '💰', label: '财富运势', desc: '投资、理财、收入状况' },
+              { id: 'health', icon: '🏥', label: '健康状况', desc: '身体、心理、养生建议' },
+              { id: 'study', icon: '📚', label: '学业考试', desc: '学习、考试、进修发展' },
+              { id: 'comprehensive', icon: '🔮', label: '综合运势', desc: '整体运势、未来趋势' }
+            ].map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setConsultationType(type.id)}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  consultationType === type.id
+                    ? 'border-amber-400 bg-amber-900/50 shadow-lg shadow-amber-500/20'
+                    : 'border-amber-600/30 bg-amber-900/20 hover:border-amber-500/50 hover:bg-amber-900/30'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{type.icon}</span>
+                  <div>
+                    <div className="font-semibold text-white">{type.label}</div>
+                    <div className="text-sm text-amber-300">{type.desc}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {!consultationType && (
+            <div className="mt-4 p-3 bg-amber-900/20 border border-amber-400/30 rounded-lg">
+              <p className="text-amber-300 text-sm text-center flex items-center justify-center">
+                <Gem className="w-4 h-4 mr-2" />
+                请选择您想要咨询的类型
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Consultation Type Selection for Numerology */}
+      {selectedMethodId === 'numerology' && (
+        <div className="mb-8">
+          <label className="block text-lg font-semibold text-white mb-4">
+            <Hash className="w-5 h-5 inline mr-2" />
+            选择咨询类型 <span className="text-red-400">*</span>
+          </label>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { id: 'love', icon: '💕', label: '感情运势', desc: '爱情、婚姻、人际关系' },
+              { id: 'career', icon: '💼', label: '事业发展', desc: '工作、升职、创业机会' },
+              { id: 'wealth', icon: '💰', label: '财富运势', desc: '投资、理财、收入状况' },
+              { id: 'health', icon: '🏥', label: '健康状况', desc: '身体、心理、养生建议' },
+              { id: 'study', icon: '📚', label: '学业考试', desc: '学习、考试、进修发展' },
+              { id: 'comprehensive', icon: '🔮', label: '综合运势', desc: '整体运势、未来趋势' }
+            ].map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setConsultationType(type.id)}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  consultationType === type.id
+                    ? 'border-green-400 bg-green-900/50 shadow-lg shadow-green-500/20'
+                    : 'border-green-600/30 bg-green-900/20 hover:border-green-500/50 hover:bg-green-900/30'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{type.icon}</span>
+                  <div>
+                    <div className="font-semibold text-white">{type.label}</div>
+                    <div className="text-sm text-green-300">{type.desc}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {!consultationType && (
+            <div className="mt-4 p-3 bg-green-900/20 border border-green-400/30 rounded-lg">
+              <p className="text-green-300 text-sm text-center flex items-center justify-center">
+                <Hash className="w-4 h-4 mr-2" />
+                请选择您想要咨询的类型
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Consultation Type Selection for Ziwei */}
+      {selectedMethodId === 'ziwei' && (
+        <div className="mb-8">
+          <label className="block text-lg font-semibold text-white mb-4">
+            <Star className="w-5 h-5 inline mr-2" />
+            选择咨询类型 <span className="text-red-400">*</span>
+          </label>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { id: 'love', icon: '💕', label: '感情运势', desc: '爱情、婚姻、人际关系' },
+              { id: 'career', icon: '💼', label: '事业发展', desc: '工作、升职、创业机会' },
+              { id: 'wealth', icon: '💰', label: '财富运势', desc: '投资、理财、收入状况' },
+              { id: 'health', icon: '🏥', label: '健康状况', desc: '身体、心理、养生建议' },
+              { id: 'study', icon: '📚', label: '学业考试', desc: '学习、考试、进修发展' },
+              { id: 'comprehensive', icon: '🔮', label: '综合运势', desc: '整体运势、未来趋势' }
+            ].map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setConsultationType(type.id)}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  consultationType === type.id
+                    ? 'border-purple-400 bg-purple-900/50 shadow-lg shadow-purple-500/20'
+                    : 'border-purple-600/30 bg-purple-900/20 hover:border-purple-500/50 hover:bg-purple-900/30'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{type.icon}</span>
+                  <div>
+                    <div className="font-semibold text-white">{type.label}</div>
+                    <div className="text-sm text-purple-300">{type.desc}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {!consultationType && (
+            <div className="mt-4 p-3 bg-purple-900/20 border border-purple-400/30 rounded-lg">
+              <p className="text-purple-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请选择您想要咨询的类型
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Question Input */}
       <div className="mb-8">
         <label className="block text-lg font-semibold text-white mb-4">
@@ -1714,6 +2124,54 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           </div>
         )}
       </div>
+
+      {/* Consultation Type Selection for Tarot */}
+      {selectedMethodId === 'tarot' && (
+        <div className="mb-8">
+          <label className="block text-lg font-semibold text-white mb-4">
+            <Heart className="w-5 h-5 inline mr-2" />
+            选择咨询类型 <span className="text-red-400">*</span>
+          </label>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { id: 'love', icon: '💕', label: '感情运势', desc: '爱情、婚姻、人际关系' },
+              { id: 'career', icon: '💼', label: '事业发展', desc: '工作、升职、创业机会' },
+              { id: 'wealth', icon: '💰', label: '财富运势', desc: '投资、理财、收入状况' },
+              { id: 'health', icon: '🏥', label: '健康状况', desc: '身体、心理、养生建议' },
+              { id: 'study', icon: '📚', label: '学业考试', desc: '学习、考试、进修发展' },
+              { id: 'comprehensive', icon: '🔮', label: '综合运势', desc: '整体运势、未来趋势' }
+            ].map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setConsultationType(type.id)}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  consultationType === type.id
+                    ? 'border-purple-400 bg-purple-900/50 shadow-lg shadow-purple-500/20'
+                    : 'border-purple-600/30 bg-purple-900/20 hover:border-purple-500/50 hover:bg-purple-900/30'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{type.icon}</span>
+                  <div>
+                    <div className="font-semibold text-white">{type.label}</div>
+                    <div className="text-sm text-purple-300">{type.desc}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {!consultationType && (
+            <div className="mt-4 p-3 bg-purple-900/20 border border-purple-400/30 rounded-lg">
+              <p className="text-purple-300 text-sm text-center flex items-center justify-center">
+                <Heart className="w-4 h-4 mr-2" />
+                请选择您想要咨询的类型
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tarot Card Selection - Only show for tarot method */}
       {selectedMethodId === 'tarot' && (
@@ -1775,8 +2233,121 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         </div>
       )}
 
-      {/* 观音求签 - Oracle Drawing */}
+      {/* Consultation Type Selection for Lottery */}
       {selectedMethodId === 'lottery' && (
+        <div className="mb-8">
+          <div className="p-6 bg-gradient-to-r from-orange-900/30 to-red-900/30 rounded-xl border border-orange-400/30">
+            <div className="flex items-center mb-6">
+              <Sun className="w-5 h-5 text-orange-300 mr-2" />
+              <h3 className="text-lg font-semibold text-white">🙏 咨询类型</h3>
+              <span className="ml-2 text-xs bg-orange-500/20 text-orange-200 px-2 py-1 rounded">
+                必选
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <button
+                onClick={() => setConsultationType('love')}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === 'love'
+                    ? 'border-pink-400 bg-pink-900/40 shadow-lg shadow-pink-500/20'
+                    : 'border-orange-400/30 bg-orange-800/20 hover:border-orange-400/50'
+                }`}
+              >
+                <div className="text-center">
+                  <Heart className="w-8 h-8 mx-auto mb-2 text-pink-400" />
+                  <div className="text-white font-semibold">感情运势</div>
+                  <div className="text-orange-200 text-xs mt-1">爱情、婚姻、人际关系</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => setConsultationType('career')}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === 'career'
+                    ? 'border-blue-400 bg-blue-900/40 shadow-lg shadow-blue-500/20'
+                    : 'border-orange-400/30 bg-orange-800/20 hover:border-orange-400/50'
+                }`}
+              >
+                <div className="text-center">
+                  <Briefcase className="w-8 h-8 mx-auto mb-2 text-blue-400" />
+                  <div className="text-white font-semibold">事业发展</div>
+                  <div className="text-orange-200 text-xs mt-1">工作、升职、创业</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => setConsultationType('wealth')}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === 'wealth'
+                    ? 'border-yellow-400 bg-yellow-900/40 shadow-lg shadow-yellow-500/20'
+                    : 'border-orange-400/30 bg-orange-800/20 hover:border-orange-400/50'
+                }`}
+              >
+                <div className="text-center">
+                  <DollarSign className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
+                  <div className="text-white font-semibold">财富运程</div>
+                  <div className="text-orange-200 text-xs mt-1">财运、投资、收入</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => setConsultationType('health')}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === 'health'
+                    ? 'border-green-400 bg-green-900/40 shadow-lg shadow-green-500/20'
+                    : 'border-orange-400/30 bg-orange-800/20 hover:border-orange-400/50'
+                }`}
+              >
+                <div className="text-center">
+                  <Activity className="w-8 h-8 mx-auto mb-2 text-green-400" />
+                  <div className="text-white font-semibold">健康状况</div>
+                  <div className="text-orange-200 text-xs mt-1">身体、疾病、养生</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => setConsultationType('study')}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === 'study'
+                    ? 'border-indigo-400 bg-indigo-900/40 shadow-lg shadow-indigo-500/20'
+                    : 'border-orange-400/30 bg-orange-800/20 hover:border-orange-400/50'
+                }`}
+              >
+                <div className="text-center">
+                  <BookOpen className="w-8 h-8 mx-auto mb-2 text-indigo-400" />
+                  <div className="text-white font-semibold">学业考试</div>
+                  <div className="text-orange-200 text-xs mt-1">学习、考试、深造</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => setConsultationType('general')}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                  consultationType === 'general'
+                    ? 'border-purple-400 bg-purple-900/40 shadow-lg shadow-purple-500/20'
+                    : 'border-orange-400/30 bg-orange-800/20 hover:border-orange-400/50'
+                }`}
+              >
+                <div className="text-center">
+                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                  <div className="text-white font-semibold">综合运势</div>
+                  <div className="text-orange-200 text-xs mt-1">整体运程、人生指导</div>
+                </div>
+              </button>
+            </div>
+            
+            {!consultationType && (
+              <div className="mt-4 text-center text-orange-300 text-sm bg-orange-900/20 rounded-lg p-3 border border-orange-400/30">
+                ⚠️ 请选择一个咨询类型，观音菩萨将为您提供更精准的指引
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 观音求签 - Oracle Drawing */}
+      {selectedMethodId === 'lottery' && consultationType && (
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Sun className="w-5 h-5 inline mr-2" />
@@ -1922,7 +2493,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       <div className="text-center">
         <button
           onClick={handleStartDivination}
-          disabled={!question.trim() || question.length < 2 || (selectedMethodId === 'tarot' && selectedCards.length === 0) || (selectedMethodId === 'lottery' && !drawnLottery)}
+          disabled={!question.trim() || question.length < 2 || (selectedMethodId === 'tarot' && selectedCards.length === 0) || (selectedMethodId === 'lottery' && (!drawnLottery || !consultationType)) || (selectedMethodId === 'tarot' && !consultationType) || (selectedMethodId === 'astrology' && (!consultationType || !profile?.birthDate || !profile?.birthTime || !profile?.birthPlace || !profile?.gender)) || (selectedMethodId === 'jiaobei' && !consultationType) || (selectedMethodId === 'numerology' && !consultationType) || (selectedMethodId === 'ziwei' && !consultationType) || (selectedMethodId === 'bazi' && !consultationType)}
           className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl font-bold text-white text-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 mx-auto"
         >
           <Sparkles className="w-6 h-6" />
@@ -1965,9 +2536,95 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             </div>
           )}
           
+          {selectedMethodId === 'lottery' && question.trim() && question.length >= 2 && drawnLottery && !consultationType && (
+            <div className="bg-orange-900/20 border border-orange-400/30 rounded-lg p-3">
+              <p className="text-orange-300 text-sm text-center flex items-center justify-center">
+                <Sun className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'tarot' && question.trim() && question.length >= 2 && selectedCards.length === 0 && (
+            <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-3">
+              <p className="text-purple-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请先选择塔罗牌
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'tarot' && question.trim() && question.length >= 2 && selectedCards.length > 0 && !consultationType && (
+            <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-3">
+              <p className="text-purple-300 text-sm text-center flex items-center justify-center">
+                <Heart className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'astrology' && question.trim() && question.length >= 2 && (!profile?.birthDate || !profile?.birthTime || !profile?.birthPlace || !profile?.gender) && (
+            <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-3">
+              <p className="text-blue-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请填写完整的出生信息
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'astrology' && question.trim() && question.length >= 2 && profile?.birthDate && profile?.birthTime && profile?.birthPlace && profile?.gender && !consultationType && (
+            <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-3">
+              <p className="text-blue-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'jiaobei' && question.trim() && question.length >= 2 && !consultationType && (
+            <div className="bg-amber-900/20 border border-amber-400/30 rounded-lg p-3">
+              <p className="text-amber-300 text-sm text-center flex items-center justify-center">
+                <Gem className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'numerology' && question.trim() && question.length >= 2 && !consultationType && (
+            <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
+              <p className="text-green-300 text-sm text-center flex items-center justify-center">
+                <Hash className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'ziwei' && question.trim() && question.length >= 2 && !consultationType && (
+            <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-3">
+              <p className="text-purple-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
+          {selectedMethodId === 'bazi' && question.trim() && question.length >= 2 && !consultationType && (
+            <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-3">
+              <p className="text-blue-300 text-sm text-center flex items-center justify-center">
+                <Star className="w-4 h-4 mr-2" />
+                请选择咨询类型
+              </p>
+            </div>
+          )}
+          
           {question.trim() && question.length >= 2 && 
-           (selectedMethodId !== 'tarot' || selectedCards.length > 0) &&
-           (selectedMethodId !== 'lottery' || drawnLottery) && (
+           (selectedMethodId !== 'tarot' || (selectedCards.length > 0 && consultationType)) &&
+           (selectedMethodId !== 'lottery' || (drawnLottery && consultationType)) &&
+           (selectedMethodId !== 'astrology' || (consultationType && profile?.birthDate && profile?.birthTime && profile?.birthPlace && profile?.gender)) &&
+           (selectedMethodId !== 'jiaobei' || consultationType) &&
+           (selectedMethodId !== 'numerology' || consultationType) &&
+           (selectedMethodId !== 'ziwei' || consultationType) &&
+           (selectedMethodId !== 'bazi' || consultationType) && (
             <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
               <p className="text-green-300 text-sm text-center flex items-center justify-center">
                 <span className="mr-2">✅</span>
