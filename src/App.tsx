@@ -1503,7 +1503,7 @@ const exportToPDF = (result: any, t: any, contentType: 'original' | 'plain' | 'b
 };
 
 // Main component
-function FortuneWebsite() {
+function FortuneWebsiteLocal() {
   const { profile, isProfileComplete, autoFillBirthInfo, autoFillPersonalInfo, autoFillCompatibilityInfo } = useProfile();
   const [selectedMethod, setSelectedMethod] = useState(DIVINATION_METHODS.TAROT);
   const [readingType, setReadingType] = useState(READING_TYPES.GENERAL);
@@ -3717,11 +3717,11 @@ function MainApp({ onNavigateToProfile }: MainAppProps) {
           onMethodSelect={handleMethodSelect}
         />
       ) : (
-        <FortuneWebsite />
+        <FortuneWebsiteLocal />
       )}
     </div>
   );
 }
 
 export default MainApp;
-export { FortuneWebsite };
+export { FortuneWebsiteLocal as FortuneWebsite };
