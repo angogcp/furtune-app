@@ -12,7 +12,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { signIn } = useAuth()
+  const { signIn, signInAnonymously } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,12 +27,24 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     setLoading(false)
   }
 
+  const handleGuestLogin = async () => {
+    setLoading(true)
+    setError('')
+
+    const { error } = await signInAnonymously()
+    if (error) {
+      setError(error)
+    }
+
+    setLoading(false)
+  }
+
   return (
     <div className="bg-purple-900/50 rounded-lg p-8 border border-purple-400/30 max-w-md mx-auto">
       <div className="text-center mb-6">
         <LogIn className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
         <h2 className="text-2xl font-bold text-white mb-2">欢迎回来</h2>
-        <p className="text-purple-200">登录您的占卜账户</p>
+        <p className="text-purple-200">登录您的占卜账户，或快速以游客体验</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,6 +101,15 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed"
         >
           {loading ? '登录中...' : '登录'}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleGuestLogin}
+          disabled={loading}
+          className="w-full py-3 px-4 mt-3 bg-purple-800/60 hover:bg-purple-700/60 disabled:bg-gray-700/60 border border-purple-600 rounded-lg font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed"
+        >
+          {loading ? '正在进入游客模式...' : '先体验一下（无需注册）'}
         </button>
       </form>
 

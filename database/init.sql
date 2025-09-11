@@ -128,13 +128,21 @@ CREATE POLICY "Users can insert own divination history" ON divination_history
 -- 创建触发器函数：自动创建用户资料
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_email TEXT;
+  v_username TEXT;
 BEGIN
-  INSERT INTO public.users (id, email, username)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1))
+  v_email := COALESCE(NEW.email, 'anon+' || NEW.id::text || '@guest.local');
+  v_username := COALESCE(
+    NEW.raw_user_meta_data->>'username',
+    CASE 
+      WHEN NEW.email IS NOT NULL THEN split_part(NEW.email, '@', 1)
+      ELSE 'guest_' || substr(NEW.id::text, 1, 8)
+    END
   );
+
+  INSERT INTO public.users (id, email, username)
+  VALUES (NEW.id, v_email, v_username);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

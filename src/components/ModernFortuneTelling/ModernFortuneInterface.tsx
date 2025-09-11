@@ -10,6 +10,7 @@ import llmService from '../../utils/llmService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../../styles/modern-fortune.css';
+import { useNavigate } from 'react-router-dom';
 
 interface FortuneMethod {
   id: string;
@@ -128,6 +129,7 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   const [drawnLottery, setDrawnLottery] = useState<{number: string, poem: string, meaning: string, interpretation: string} | null>(null);
   const [drawnJiaobei, setDrawnJiaobei] = useState<{result: string, meaning: string} | null>(null);
   const [consultationType, setConsultationType] = useState<string>('');
+  const navigate = useNavigate();
 
   const drawJiaobei = () => {
     const results = ['聖筊', '笑筊', '陰筊'];
@@ -1720,11 +1722,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             完善您的个人资料（姓名、出生日期等）可以获得更个性化和精准的占卜分析结果。
           </p>
           <button
-            onClick={() => {
-              // Try to open profile edit modal or navigate
-              console.log('开始编辑个人资料');
-              // You can add navigation logic here
-            }}
+            onClick={() => navigate('/profile')}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white text-sm transition-all duration-300 flex items-center space-x-2"
           >
             <User className="w-4 h-4" />

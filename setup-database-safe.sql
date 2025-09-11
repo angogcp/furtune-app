@@ -152,13 +152,21 @@ CREATE POLICY "Users can insert own divination history" ON public.divination_his
 -- Create trigger function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_email TEXT;
+  v_username TEXT;
 BEGIN
+  v_email := COALESCE(NEW.email, 'anon+' || NEW.id::text || '@guest.local');
+  v_username := COALESCE(
+    NEW.raw_user_meta_data->>'username',
+    CASE 
+      WHEN NEW.email IS NOT NULL THEN split_part(NEW.email, '@', 1)
+      ELSE 'guest_' || substr(NEW.id::text, 1, 8)
+    END
+  );
+
   INSERT INTO public.users (id, email, username)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1))
-  )
+  VALUES (NEW.id, v_email, v_username)
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 EXCEPTION
@@ -167,8 +175,8 @@ EXCEPTION
     INSERT INTO public.users (id, email, username)
     VALUES (
       NEW.id,
-      NEW.email,
-      split_part(NEW.email, '@', 1) || '_' || substr(NEW.id::text, 1, 8)
+      v_email,
+      v_username || '_' || substr(NEW.id::text, 1, 4)
     )
     ON CONFLICT (id) DO NOTHING;
     RETURN NEW;

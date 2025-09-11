@@ -23,6 +23,8 @@ interface AuthContextType {
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error?: string }>
   refreshProfile: () => Promise<void>
+  // 新增：游客登录
+  signInAnonymously: () => Promise<{ error?: string }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -260,6 +262,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // 新增：游客登录（匿名会话）
+  const signInAnonymously = async () => {
+    if (!isSupabaseConfigured) {
+      return { error: '请先配置 Supabase 环境变量才能使用游客登录' }
+    }
+
+    try {
+      await networkManager.executeWithRetry(async () => {
+        const { error } = await supabase.auth.signInAnonymously()
+        if (error) {
+          throw error
+        }
+      })
+      return {}
+    } catch (error: any) {
+      console.error('Anonymous sign in error:', error)
+      const errorMessage = error.message || '游客登录失败，请重试'
+      networkManager.showNetworkError(errorMessage)
+      return { error: errorMessage }
+    }
+  }
+
   const signOut = async () => {
     if (!isSupabaseConfigured) {
       return
@@ -325,7 +349,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
     updateProfile,
-    refreshProfile
+    refreshProfile,
+    signInAnonymously,
   }
 
   return (
