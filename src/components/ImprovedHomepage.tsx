@@ -253,120 +253,14 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="w-8 h-8 text-yellow-400 mr-3" />
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-              神秘占卜馆
+              算算乐
             </h1>
             <Sparkles className="w-8 h-8 text-yellow-400 ml-3" />
           </div>
-          <p className="text-xl text-purple-200 mb-6">探索命运奥秘，指引人生方向</p>
-          
-          {/* Profile Section */}
-          <div className="max-w-md mx-auto mb-6">
-            <div className="bg-purple-800/30 rounded-xl p-4 border border-purple-600/50">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <UserCircle className="w-5 h-5 text-purple-300 mr-2" />
-                  <span className="text-purple-200 font-medium">个人资料</span>
-                </div>
-                <button
-                  onClick={handleNavigateToProfile}
-                  className="p-2 text-purple-300 hover:text-white hover:bg-purple-700/50 rounded-lg transition-all duration-300"
-                  title="Go to Profile Settings"
-                >
-                  <Settings className="w-4 h-4" />
-                </button>
-              </div>
-              
-              {isProfileComplete ? (
-                <div className="text-left text-sm text-purple-200">
-                  <p><span className="text-yellow-400">姓名：</span>{profile.name}</p>
-                  <p><span className="text-yellow-400">出生：</span>{profile.birthDate} {profile.birthTime}</p>
-                  <p><span className="text-yellow-400">地点：</span>{profile.birthPlace}</p>
-                  <p><span className="text-yellow-400">性别：</span>{profile.gender === 'male' ? '男' : profile.gender === 'female' ? '女' : '未设置'}</p>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <p className="text-purple-300 text-sm mb-3">请完善个人资料以获得更精准的占卜结果</p>
-                  <button
-                    onClick={handleNavigateToProfile}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-sm font-medium transition-all duration-300"
-                  >
-                    完善资料
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Search Bar */}
-          <div className="max-w-md mx-auto relative">
-            <div className="flex items-center">
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className="p-3 bg-purple-800/50 hover:bg-purple-700/50 rounded-l-xl border border-purple-600 transition-all duration-300"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-              <input
-                type="text"
-                placeholder="搜索占卜方法..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={`bg-purple-800/50 border border-purple-600 text-white placeholder-purple-400 rounded-r-xl px-4 py-3 transition-all duration-300 ${
-                  showSearch ? 'w-full opacity-100' : 'w-0 opacity-0'
-                }`}
-              />
-            </div>
-          </div>
+          <p className="text-xl text-purple-200 mb-6">今天算了吗？一起乐一乐！</p>
         </div>
 
-        {/* 热门推荐 */}
-        <div className="mb-12">
-          <div className="flex items-center mb-6">
-            <TrendingUp className="w-6 h-6 text-yellow-400 mr-2" />
-            <h2 className="text-2xl font-bold">热门推荐</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {popularMethods.map((method) => {
-              const IconComponent = method.icon;
-              return (
-                <div
-                  key={method.id}
-                  onClick={() => onSelectMethod(method.id)}
-                  className="group relative p-6 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-2xl bg-gradient-to-r from-purple-800/50 to-indigo-800/50 border border-purple-600/50 hover:border-yellow-400/50"
-                >
-                  <div className="absolute top-2 right-2">
-                    <div className="bg-yellow-500/20 px-2 py-1 rounded-full">
-                      <span className="text-xs text-yellow-400 font-semibold">{method.popularity}%</span>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className={`w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r ${method.color} p-3 group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className="w-full h-full text-white" />
-                    </div>
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-yellow-400 transition-colors">
-                      {method.title}
-                    </h3>
-                    <p className="text-sm opacity-80 line-clamp-2">{method.description}</p>
-                    
-                    <div className="flex flex-wrap gap-1 mt-3 justify-center">
-                      {method.tags.slice(0, 2).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-purple-700/50 rounded-full text-xs text-purple-200"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <ChevronRight className="absolute bottom-4 right-4 w-5 h-5 text-purple-400 group-hover:text-yellow-400 group-hover:translate-x-1 transition-all duration-300" />
-                </div>
-              );
-            })}
-          </div>
-        </div>
+
 
         {/* Category Tabs */}
         <div className="mb-8">
@@ -480,14 +374,22 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
 
         {/* Footer Info */}
         <div className="text-center py-8 border-t border-purple-400/20">
-          <div className="bg-purple-900/30 rounded-xl p-6 max-w-2xl mx-auto">
-            <div className="flex items-center justify-center mb-3">
-              <Clock className="w-5 h-5 text-yellow-400 mr-2" />
-              <span className="text-yellow-400 font-semibold">温馨提示</span>
-            </div>
-            <p className="text-purple-200 text-sm leading-relaxed">
-              所有占卜结果仅供参考和娱乐，请理性对待。重要决定请结合现实情况和理性思考。
-              建议定期体验不同的占卜方法，从多角度了解自己的人生方向。
+          {/* Disclaimer */}
+          <div className="mb-6">
+            <p className="text-purple-300 text-sm">
+              ✨ 占卜结果仅供参考，重要决定请结合理性思考 ✨
+            </p>
+          </div>
+          
+          {/* Creator Info */}
+          <div className="mt-6 pt-6 border-t border-purple-400/10">
+            <p className="text-purple-300 text-sm">
+              Created by Ango, 2025.
+            </p>
+            <p className="text-purple-400 text-xs mt-1">
+              <a href="https://n-blog.angoango.dpdns.org" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition-colors">
+                n-blog.angoango.dpdns.org
+              </a>
             </p>
           </div>
         </div>

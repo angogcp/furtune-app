@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>命运扭蛋机（盲盒式预言）</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#ff6b6b; --muted:#9aa4b2; --glass:rgba(255,255,255,0.04);
+      --size:clamp(320px, 42vw, 680px);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071024 0%, #081226 60%);color:#e6eef8}
+    .wrap{max-width:calc(var(--size) + 40px);margin:28px auto;padding:20px;}
+
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    h1{font-size:20px;margin:0}
+    .subtitle{color:var(--muted);font-size:13px}
+
+    .machine{
+      width:var(--size);margin:0 auto;background:linear-gradient(180deg,#071a2b 0%, #0b2b3f 100%);border-radius:18px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    .panel{display:grid;grid-template-columns:1fr 280px;gap:18px}
+    @media (max-width:900px){.panel{grid-template-columns:1fr}}
+
+    .gacha-area{background:var(--glass);padding:18px;border-radius:12px;min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+
+    .capsule{
+      width:160px;height:160px;border-radius:50%;background:linear-gradient(145deg,#ffd4d4,#ff7b7b);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#2b0310;box-shadow:0 12px 30px rgba(255,107,107,0.18);transform-origin:center;transition:transform 600ms cubic-bezier(.2,.8,.2,1);
+    }
+    .capsule--spin{transform:rotate(720deg) scale(0.95)}
+
+    .lever{position:absolute;right:22px;bottom:46px;width:64px;height:160px;display:flex;align-items:flex-end;justify-content:center}
+    .lever button{writing-mode:vertical-rl;transform:rotate(180deg);padding:10px 14px;border-radius:14px;background:linear-gradient(180deg,#fff,#ffe6e6);color:#5b0b0b;border:none;font-weight:700;box-shadow:0 8px 22px rgba(10,5,10,0.25);cursor:pointer}
+
+    .result-card{width:100%;max-width:420px;margin-top:18px;background:linear-gradient(180deg,#071226, #0b3040);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 20px rgba(2,8,18,0.6)}
+    .rarity{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    .rarity.common{background:rgba(255,255,255,0.04);color:#cbd5e1}
+    .rarity.uncommon{background:linear-gradient(90deg,#dff3ff,#bde7ff);color:#02324a}
+    .rarity.rare{background:linear-gradient(90deg,#ffedd5,#ffd08a);color:#4a2f00}
+    .rarity.epic{background:linear-gradient(90deg,#f3d6ff,#d9b3ff);color:#3f005b}
+
+    aside{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px}
+    .controls label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+    .controls select,input[type=range]{width:100%;margin-bottom:12px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--accent),#ff9c6b);color:#fff;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+    .history{max-height:220px;overflow:auto;margin-top:12px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.03)}
+    .history-item{padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);display:flex;justify-content:space-between;align-items:center}
+    .small{font-size:12px;color:var(--muted)}
+
+    footer{margin-top:16px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* confetti canvas */
+    #confetti{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+
+    /* cute sparkle */
+    .sparkle{position:absolute;left:12px;top:12px;font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>命运扭蛋机（盲盒式预言）</h1>
+        <div class="subtitle">轻轻一扭，收获今日神秘小启示 ✨</div>
+      </div>
+      <div class="small">制作：ChatGPT • 单文件 HTML</div>
+    </header>
+
+    <div class="machine" role="application" aria-label="扭蛋机">
+      <div class="panel">
+        <div class="gacha-area" id="gacha">
+          <canvas id="confetti"></canvas>
+          <div class="sparkle">🎲 随机预测 | 盲盒式</div>
+          <div id="capsuleWrap">
+            <div class="capsule" id="capsule">？</div>
+          </div>
+
+          <div class="result-card" id="result" style="display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div id="resultText" style="font-size:16px;font-weight:800">预言文本</div>
+                <div id="resultSub" class="small" style="margin-top:6px">类别 · <span id="resultCat">---</span></div>
+              </div>
+              <div id="resultRarity" class="rarity common">COMMON</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" id="copyBtn">复制</button>
+              <button class="btn secondary" id="saveBtn">保存到历史</button>
+            </div>
+          </div>
+
+          <div class="lever" aria-hidden>
+            <button id="pullBtn">扭一下</button>
+          </div>
+        </div>
+
+        <aside>
+          <div class="controls">
+            <label for="mode">类别偏好</label>
+            <select id="mode">
+              <option value="all">全部</option>
+              <option value="love">爱情</option>
+              <option value="career">事业</option>
+              <option value="wealth">财富</option>
+              <option value="health">健康</option>
+              <option value="luck">幸运提示</option>
+            </select>
+
+            <label for="rate">稀有率（想试手气可调高）</label>
+            <input type="range" id="rate" min="0" max="100" value="10">
+            <div class="small">把滑块向右移会稍微提高抽到稀有预言的概率。</div>
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn" id="multiBtn">连抽 x5</button>
+              <button class="btn secondary" id="resetBtn">清除历史</button>
+            </div>
+
+            <div class="history" id="history" aria-live="polite">
+              <!-- history items -->
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer>内含随机与趣味成分，纯娱乐 — 别把小扭蛋当作严肃决策依据哦 😉</footer>
+    </div>
+  </div>
+
+  <script>
+    // --- 预言数据 ---
+    const PREDICTIONS = [
+      // category: love, career, wealth, health, luck
+      {text: '今天有人会对你暗暗好感，微笑回应即可。', cat: 'love', rarity: 'common'},
+      {text: '你的直觉很准，跟着感觉去做一件小决定。', cat: 'career', rarity: 'common'},
+      {text: '钱包里有惊喜，别忘了检查口袋。', cat: 'wealth', rarity: 'common'},
+      {text: '午休 15 分钟，会让你精力翻倍。', cat: 'health', rarity: 'common'},
+      {text: '今天适合尝试新事物，惊喜常在小改变里。', cat: 'luck', rarity: 'common'},
+
+      {text: '喜欢的人可能会发来意外消息，保持镇定。', cat: 'love', rarity: 'uncommon'},
+      {text: '你会在工作中发现可以简化流程的好主意。', cat: 'career', rarity: 'uncommon'},
+      {text: '小额投资或理财阅读会给你新的方向。', cat: 'wealth', rarity: 'uncommon'},
+      {text: '今晚适合做一次放松拉伸或热水泡脚。', cat: 'health', rarity: 'uncommon'},
+      {text: '路上的一场小乌龙将变成笑谈，别放在心上。', cat: 'luck', rarity: 'uncommon'},
+
+      {text: '有人会在你最不经意时为你撑腰，记住感恩。', cat: 'love', rarity: 'rare'},
+      {text: '有机会参加对你长远有利的项目，主动出击。', cat: 'career', rarity: 'rare'},
+      {text: '你会得到一笔意外之财（可能是退税或报销）。', cat: 'wealth', rarity: 'rare'},
+      {text: '你的精神状态会有明显提升，适合开始新习惯。', cat: 'health', rarity: 'rare'},
+      {text: '一件旧事将得到圆满的结局，庆祝一下吧。', cat: 'luck', rarity: 'rare'},
+
+      {text: '命运之门对你短暂开启：大胆说出你的心意吧。', cat: 'love', rarity: 'epic'},
+      {text: '你将遇到改变职业轨迹的关键人物，把握时机。', cat: 'career', rarity: 'epic'},
+      {text: '财富星高照：一个长期目标将迎来关键突破。', cat: 'wealth', rarity: 'epic'},
+      {text: '健康能量爆棚，适合挑战自我并获显著回报。', cat: 'health', rarity: 'epic'},
+      {text: '极其罕见的好运：今天可能是你记忆中的幸运日。', cat: 'luck', rarity: 'epic'},
+    ];
+
+    // weights by rarity baseline
+    const RARITY_WEIGHTS = {common: 70, uncommon: 20, rare: 8, epic: 2};
+
+    // DOM
+    const capsule = document.getElementById('capsule');
+    const pullBtn = document.getElementById('pullBtn');
+    const result = document.getElementById('result');
+    const resultText = document.getElementById('resultText');
+    const resultSub = document.getElementById('resultSub');
+    const resultCat = document.getElementById('resultCat');
+    const resultRarity = document.getElementById('resultRarity');
+    const copyBtn = document.getElementById('copyBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const mode = document.getElementById('mode');
+    const rate = document.getElementById('rate');
+    const historyEl = document.getElementById('history');
+    const multiBtn = document.getElementById('multiBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // confetti canvas
+    const confettiCanvas = document.getElementById('confetti');
+    const confCtx = confettiCanvas.getContext('2d');
+    let confettiPieces = [];
+
+    function resizeCanvas(){
+      confettiCanvas.width = confettiCanvas.clientWidth;
+      confettiCanvas.height = confettiCanvas.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function rand(n){ return Math.random()*n }
+
+    // weighted rarity with slider influence
+    function pickRarity(){
+      const slider = Number(rate.value); // 0..100
+      // slider increases chance of uncommon+rare+epic proportionally
+      const bonus = slider/100; // 0..1
+      const w = Object.assign({}, RARITY_WEIGHTS);
+      // transfer some common weight to higher rarities based on bonus
+      const shift = w.common * bonus * 0.6; // cap shift portion
+      w.common -= shift;
+      w.uncommon += shift * 0.55;
+      w.rare += shift * 0.30;
+      w.epic += shift * 0.15;
+
+      const total = Object.values(w).reduce((a,b)=>a+b,0);
+      let r = Math.random()*total;
+      for(const k of ['common','uncommon','rare','epic']){
+        r -= w[k];
+        if(r<=0) return k;
+      }
+      return 'common';
+    }
+
+    function filteredPredictions(cat, rarity){
+      return PREDICTIONS.filter(p => (cat==='all' || p.cat===cat) && (!rarity || p.rarity===rarity));
+    }
+
+    function pickPrediction(cat){
+      const rar = pickRarity();
+      let pool = filteredPredictions(cat, rar);
+      if(pool.length===0){ // fallback: any with that rarity
+        pool = PREDICTIONS.filter(p=>p.rarity===rar);
+      }
+      const pick = pool[Math.floor(Math.random()*pool.length)];
+      return pick || PREDICTIONS[Math.floor(Math.random()*PREDICTIONS.length)];
+    }
+
+    // simple confetti
+    function spawnConfetti(count){
+      for(let i=0;i<count;i++){
+        confettiPieces.push({x:rand(confettiCanvas.width), y:-10, vx:rand(4)-2, vy:rand(3)+1, size:Math.floor(rand(8))+4, life:0, ttl:120+Math.floor(rand(80))});
+      }
+    }
+    function stepConfetti(){
+      confCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+      confettiPieces.forEach((p,i)=>{
+        p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.life++;
+        confCtx.save();
+        confCtx.translate(p.x,p.y);
+        confCtx.fillRect(0,0,p.size,p.size);
+        confCtx.restore();
+      });
+      confettiPieces = confettiPieces.filter(p=>p.life < p.ttl && p.y < confettiCanvas.height + 60);
+      requestAnimationFrame(stepConfetti);
+    }
+    stepConfetti();
+
+    // localStorage history
+    function saveToHistory(entry){
+      const key = 'gacha_history_v1';
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      list.unshift(entry);
+      localStorage.setItem(key, JSON.stringify(list.slice(0,50)));
+      renderHistory();
+    }
+    function loadHistory(){
+      const key = 'gacha_history_v1';
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    }
+    function renderHistory(){
+      const list = loadHistory();
+      historyEl.innerHTML = '';
+      if(list.length===0){historyEl.innerHTML = '<div class="small">还没有历史记录，开始扭蛋吧！</div>';return}
+      for(const it of list){
+        const div = document.createElement('div'); div.className='history-item';
+        div.innerHTML = `<div><div style="font-weight:700">${it.text}</div><div class="small">${it.cat} · ${it.rarity.toUpperCase()} · ${new Date(it.time).toLocaleString()}</div></div><div class="small">${it.note||''}</div>`;
+        historyEl.appendChild(div);
+      }
+    }
+    renderHistory();
+
+    // UI helpers
+    function showResult(pred){
+      resultText.textContent = pred.text;
+      resultCat.textContent = labelOf(pred.cat);
+      resultSub.textContent = `${labelOf(pred.cat)} · ${formatDate(new Date())}`;
+      resultRarity.textContent = pred.rarity.toUpperCase();
+      resultRarity.className = 'rarity ' + (pred.rarity);
+      result.style.display = 'block';
+    }
+    function labelOf(cat){
+      return ({love:'爱情',career:'事业',wealth:'财富',health:'健康',luck:'幸运提示'})[cat]||cat;
+    }
+    function formatDate(d){
+      return d.toLocaleString();
+    }
+
+    // action: pull
+    let busy=false;
+    async function doPull(single=true){
+      if(busy) return; busy=true;
+      result.style.display='none';
+      capsule.classList.remove('capsule--spin');
+      // visual: spin
+      await animateSpin();
+      // pick and show
+      const pred = pickPrediction(mode.value);
+      showResult(pred);
+      // sound and confetti depending on rarity
+      if(pred.rarity==='epic'){ spawnConfetti(80); playTone(880,0.2); playTone(1100,0.15); }
+      else if(pred.rarity==='rare'){ spawnConfetti(40); playTone(660,0.15); }
+      else if(pred.rarity==='uncommon'){ spawnConfetti(20); playTone(520,0.08); }
+      else { playTone(420,0.06); }
+      // small bounce
+      capsule.animate([{transform:'translateY(0)'},{transform:'translateY(-8px)'},{transform:'translateY(0)'}],{duration:500,easing:'cubic-bezier(.2,.8,.2,1)'});
+      // auto-save last but don't add to history automatically
+      lastPrediction = pred;
+      busy=false;
+
+      if(!single) await sleep(300);
+      return pred;
+    }
+
+    // spin animation
+    function animateSpin(){
+      return new Promise(res=>{
+        capsule.classList.add('capsule--spin');
+        setTimeout(()=>{capsule.classList.remove('capsule--spin');
+          // show capsule content briefly
+          capsule.textContent = '🎴';
+          setTimeout(()=>{capsule.textContent = '？';res();},700);
+        },900);
+      });
+    }
+
+    function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+    // audio using WebAudio
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, dur){
+      try{
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type='sine'; o.frequency.value = freq; g.gain.value = 0.0025;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        setTimeout(()=>{o.stop();}, dur*1000 + 30);
+      }catch(e){/* audio may be blocked */}
+    }
+
+    // button events
+    let lastPrediction = null;
+    pullBtn.addEventListener('click', ()=>{ doPull(); });
+    copyBtn.addEventListener('click', ()=>{
+      if(!lastPrediction){navigator.clipboard.writeText(resultText.textContent);return}
+      const text = `【扭蛋预言】${lastPrediction.text}\n类别：${labelOf(lastPrediction.cat)} · 稀有度：${lastPrediction.rarity.toUpperCase()}`;
+      navigator.clipboard.writeText(text).then(()=>{
+        copyBtn.textContent='已复制'; setTimeout(()=>copyBtn.textContent='复制',1200);
+      });
+    });
+
+    saveBtn.addEventListener('click', ()=>{
+      if(!lastPrediction) return;
+      saveToHistory({text:lastPrediction.text, cat:lastPrediction.cat, rarity:lastPrediction.rarity, time:Date.now()});
+      saveBtn.textContent='已保存'; setTimeout(()=>saveBtn.textContent='保存到历史',1000);
+    });
+
+    multiBtn.addEventListener('click', async ()=>{
+      multiBtn.disabled=true; multiBtn.textContent='连抽中...';
+      const results = [];
+      for(let i=0;i<5;i++){
+        const p = await doPull(false);
+        results.push(p);
+        // brief pause between pulls
+        await sleep(450);
+      }
+      multiBtn.disabled=false; multiBtn.textContent='连抽 x5';
+      // save them together
+      results.forEach(r => saveToHistory({text:r.text, cat:r.cat, rarity:r.rarity, time:Date.now(), note:'连抽'}));
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      if(confirm('确定要清除历史记录吗？')){ localStorage.removeItem('gacha_history_v1'); renderHistory(); }
+    });
+
+    // small keyboard shortcut
+    document.addEventListener('keydown', (e)=>{ if(e.key===' '){ e.preventDefault(); doPull(); } });
+
+    // init: seed a small animation
+    (async ()=>{
+      await sleep(200);
+      // tiny welcome spin
+      capsule.textContent='🎲';
+      await animateSpin();
+      capsule.textContent='？';
+    })();
+
+    // util: format time
+    // expose to window for debugging
+    window.doPull = doPull;
+
+  </script>
+</body>
+</html>

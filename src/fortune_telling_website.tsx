@@ -35,8 +35,8 @@ interface InputData {
 
 // 中文文本配置
 const texts = {
-  title: '神秘占卜馆',
-  subtitle: '探索命运奥秘，指引人生方向',
+  title: '算算乐',
+  subtitle: '今天算了吗？一起乐一乐！',
   selectMethod: '选择占卜方式',
   selectType: '选择咨询类型',
   detailInfo: '详细信息',
@@ -50,7 +50,7 @@ const texts = {
   timestamp: '占卜时间：',
   disclaimer: '✨ 占卜结果仅供参考，重要决定请结合理性思考 ✨',
   copyResult: '复制结果',
-  clearResult: '清除结果',
+  
   exportPDF: '导出PDF',
   print: '打印',
   aiGenerated: 'AI生成',
@@ -805,24 +805,10 @@ export default function FortuneTellingWebsite() {
                       <Copy className="w-4 h-4" />
                       <span>{texts.copyResult}</span>
                     </button>
-                    <button 
-                      onClick={() => setResult(null)}
-                      className="px-4 py-2 bg-gray-600/30 hover:bg-gray-600/50 rounded-lg text-sm transition-all duration-200 flex items-center space-x-2 border border-gray-500/30 hover:border-gray-400/50"
-                    >
-                      <X className="w-4 h-4" />
-                      <span>{texts.clearResult}</span>
-                    </button>
                   </div>
                 </div>
                 
-                <div className="mt-6 pt-4 border-t border-purple-400/20">
-                  <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-400/20">
-                    <p className="text-yellow-300 text-sm text-center flex items-center justify-center space-x-2">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>{texts.disclaimer}</span>
-                    </p>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>

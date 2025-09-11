@@ -828,7 +828,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         ` : ''}
         <div style="margin-top: 30px; text-align: center; color: #A0AEC0; font-size: 14px;">
           <p>占卜时间：${new Date().toLocaleString('zh-CN')}</p>
-          <p>结果仅供参考和娱乐，重要决定请结合现实情况和理性思考</p>
+
         </div>
       </div>
     `;
@@ -892,9 +892,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           </div>
           ` : ''}
           
-          <div style="margin-top: 30px; text-align: center; color: #A0AEC0; font-size: 12px;">
-            <p>结果仅供参考和娱乐，重要决定请结合现实情况和理性思考</p>
-          </div>
+
         </div>
       `;
       
@@ -978,7 +976,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       } catch (fallbackError) {
         console.error('Fallback PDF generation also failed:', fallbackError);
         // Ultimate fallback to text file
-        const pdfContent = `${selectedMethod.title}结果\n\n问题：${question}\n\n解读：\n${result}${showPlainLanguage ? '\n\n大白话解读：\n' + (plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)) : ''}\n\n占卜时间：${new Date().toLocaleString('zh-CN')}\n\n结果仅供参考和娱乐，重要决定请结合现实情况和理性思考`;
+        const pdfContent = `${selectedMethod.title}结果\n\n问题：${question}\n\n解读：\n${result}${showPlainLanguage ? '\n\n大白话解读：\n' + (plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)) : ''}\n\n占卜时间：${new Date().toLocaleString('zh-CN')}`;
         
         const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
@@ -2675,13 +2673,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
     </div>
   );
 
-  const handleClearResult = () => {
-  setResult('');
-  setStep('input');
-  setPlainLanguageResult('');
-  setShowPlainLanguage(false);
-  setIsGeneratingPlainLanguage(false);
-};
+
 const renderResult = () => (
     <div className="max-w-3xl mx-auto">
       {/* Result Header */}
@@ -2776,13 +2768,7 @@ const renderResult = () => (
           <Shuffle className="w-5 h-5" />
           <span>重新占卜</span>
         </button>
-        <button
-          onClick={handleClearResult}
-          className="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white transition-all duration-300 flex items-center space-x-2 hover:scale-105 hover:shadow-lg"
-        >
-          <Trash2 className="w-5 h-5" />
-          <span>清除结果</span>
-        </button>
+
         
         <button
           onClick={async () => {
@@ -2867,12 +2853,7 @@ const renderResult = () => (
         </button>
       </div>
 
-      {/* Disclaimer */}
-      <div className="mt-8 p-4 bg-yellow-900/20 border border-yellow-400/30 rounded-xl text-center">
-        <p className="text-yellow-200 text-sm">
-          ✨ 占卜结果仅供参考和娱乐，重要决定请结合现实情况和理性思考 ✨
-        </p>
-      </div>
+
     </div>
   );
 
@@ -2891,9 +2872,7 @@ const renderResult = () => (
           
           <div className="flex items-center space-x-2">
             <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-              神秘占卜馆
-            </h1>
+
           </div>
 
           <div className="w-24"></div> {/* Spacer for centering */}

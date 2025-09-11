@@ -122,8 +122,8 @@ interface TextsConfig {
 
 // 中文文本配置
 const texts: TextsConfig = {
-  title: '神秘占卜馆',
-  subtitle: '探索命运奥秘，指引人生方向',
+  title: '算算乐',
+  subtitle: '今天算了吗？一起乐一乐！',
   selectMethod: '选择占卜方式',
   selectType: '选择咨询类型',
   detailInfo: '详细信息',
@@ -137,7 +137,7 @@ const texts: TextsConfig = {
   timestamp: '占卜时间：',
   disclaimer: '✨ 占卜结果仅供参考，重要决定请结合理性思考 ✨',
   copyResult: '复制结果',
-  clearResult: '清除结果',
+  
   plainLanguageInterpretation: '大白话解读',
   plainLanguageTitle: '大白话解读版本',
   plainLanguageSubtitle: '简单易懂的解读说明',
@@ -3469,25 +3469,10 @@ ${result.reading}
                       <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{t.copyResult}</span>
                     </button>
-                    <button 
-                      onClick={() => setResult(null)}
-                      className="px-3 sm:px-4 py-2 bg-gray-600/30 hover:bg-gray-600/50 rounded-lg text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 border border-gray-500/30 hover:border-gray-400/50 touch-target active:scale-95"
-                    >
-                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span>{t.clearResult}</span>
-                    </button>
                   </div>
                 </div>
                 
-                {/* 免责声明 */}
-                <div className="mt-4 sm:mt-6 pt-4 border-t border-purple-400/20">
-                  <div className="bg-yellow-500/10 rounded-lg p-3 sm:p-4 border border-yellow-400/20">
-                    <p className="text-yellow-300 text-xs sm:text-sm text-center flex items-center justify-center flex-wrap gap-1 sm:gap-2">
-                      <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                      <span>{t.disclaimer}</span>
-                    </p>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>

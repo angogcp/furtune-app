@@ -14,11 +14,12 @@ import MasterConsultation from './components/MasterConsultation/MasterConsultati
 import ReportShare from './components/ReportShare/ReportShare'
 import AuthDebug from './components/Debug/AuthDebug'
 import { NetworkStatus } from './components/NetworkStatus'
+import FAQ from './components/FAQ/FAQ'
 
 import MainApp from './App' // Original fortune telling app with ProfileProvider
 import { ProfileProvider } from './contexts/ProfileContext'
 import FortuneWebsite from './fortune_telling_website' // Web version
-import { User, Calendar, Heart, Sparkles, Home, LogIn, AlertTriangle, TrendingUp, BookOpen, Bell, Crown, Share2, Globe } from 'lucide-react'
+import { User, Calendar, Heart, Sparkles, Home, LogIn, AlertTriangle, TrendingUp, BookOpen, Bell, Crown, Share2, Globe, HelpCircle } from 'lucide-react'
 
 function AuthWrapper() {
   const { user, loading } = useAuth()
@@ -51,7 +52,7 @@ function AuthWrapper() {
             <div className="flex items-center space-x-2">
               <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                神秘占卜馆
+                算算乐
               </h1>
             </div>
             
@@ -59,14 +60,9 @@ function AuthWrapper() {
               {user ? (
                 <>
                   <NavButton to="/" icon={Home} label="占卜" />
-                  <NavButton to="/web" icon={Globe} label="Web版" />
                   <NavButton to="/checkin" icon={Calendar} label="签到" />
                   <NavButton to="/wishes" icon={Heart} label="许愿墙" />
-                  <NavButton to="/growth" icon={TrendingUp} label="成长记录" />
-                  <NavButton to="/recommendations" icon={BookOpen} label="个性化推荐" />
-                  <NavButton to="/reminders" icon={Bell} label="命运提醒" />
-                  <NavButton to="/master" icon={Crown} label="大师解读" />
-                  <NavButton to="/report" icon={Share2} label="报告分享" />
+                  <NavButton to="/faq" icon={HelpCircle} label="FAQ" />
                   <NavButton to="/profile" icon={User} label="个人" />
                 </>
               ) : (
@@ -94,6 +90,7 @@ function AuthWrapper() {
               <Route path="/web" element={<FortuneWebsite />} />
               <Route path="/checkin" element={<DailyCheckin />} />
               <Route path="/wishes" element={<WishWall />} />
+              <Route path="/faq" element={<FAQ />} />
               <Route path="/growth" element={<GrowthRecord />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/reminders" element={<FortuneReminders />} />
@@ -171,11 +168,8 @@ function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
       
       <div className="text-center py-8 sm:py-12 lg:py-16">
         <Sparkles className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-6 sm:mb-8 text-yellow-400" />
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent mb-4 sm:mb-6">
-          欢迎来到神秘占卜馆
-        </h1>
+
         <p className="text-lg sm:text-xl text-purple-200 mb-6 sm:mb-8 leading-relaxed px-4">
-          探索命运奥秘，指引人生方向<br className="hidden sm:block" />
           加入我们，开启您的神秘之旅
         </p>
         

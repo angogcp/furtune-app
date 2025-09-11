@@ -329,13 +329,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <span>{saveStatus === 'saving' ? '保存中...' : '保存信息'}</span>
             </button>
 
-            <button
-              onClick={clearProfile}
-              className="flex items-center space-x-2 px-4 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-400/50 rounded-lg font-medium text-red-300 transition-all duration-300"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span>清空</span>
-            </button>
+
 
             <button
               onClick={exportProfile}
