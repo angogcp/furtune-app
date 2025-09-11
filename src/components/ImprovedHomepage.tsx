@@ -174,6 +174,17 @@ const fortuneMethods: FortuneMethod[] = [
     difficulty: 'intermediate',
     color: 'from-pink-500 to-rose-500',
     tags: ['配对', '缘分', '感情']
+  },
+  {
+    id: 'gacha',
+    icon: Gem,
+    title: '命运扭蛋机',
+    description: '盲盒式预言，轻轻一扭获得神秘启示',
+    category: 'quick',
+    popularity: 88,
+    difficulty: 'beginner',
+    color: 'from-pink-500 to-purple-500',
+    tags: ['扭蛋', '随机', '趣味']
   }
 ];
 

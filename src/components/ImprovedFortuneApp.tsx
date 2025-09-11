@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, Settings, UserCircle
+  Sparkles, Settings, UserCircle, ArrowLeft
 } from 'lucide-react';
 import ImprovedHomepage from './ImprovedHomepage';
 import UserProfile from './UserProfile';
 import ModernFortuneInterface from './ModernFortuneTelling/ModernFortuneInterface';
+import LuckyGacha from './LuckyGacha';
 import ErrorBoundary from './ErrorBoundary';
 import { ProfileProvider, useProfile } from '../contexts/ProfileContext';
 
@@ -24,7 +25,12 @@ const ImprovedFortuneAppContent: React.FC<ImprovedFortuneAppContentProps> = ({ o
   // 处理占卜方法选择
   const handleMethodSelect = (methodId: string) => {
     setSelectedMethod(methodId);
-    setShowModernFortune(true);
+    if (methodId === 'gacha') {
+      // 扭蛋机使用独立组件，不通过ModernFortuneInterface
+      setShowModernFortune(false);
+    } else {
+      setShowModernFortune(true);
+    }
     onMethodSelect?.(methodId);
   };
 
@@ -34,7 +40,23 @@ const ImprovedFortuneAppContent: React.FC<ImprovedFortuneAppContentProps> = ({ o
     setSelectedMethod('');
   };
 
-  // 如果选择了占卜方法，显示现代占卜界面
+  // 如果选择了扭蛋机，显示扭蛋机组件
+  if (selectedMethod === 'gacha') {
+    return (
+      <div className="relative">
+        <button
+          onClick={handleBackToSelection}
+          className="fixed top-4 left-4 z-50 flex items-center gap-2 px-4 py-2 bg-slate-800/80 backdrop-blur-sm text-white rounded-lg hover:bg-slate-700/80 transition-colors"
+        >
+          <ArrowLeft size={20} />
+          返回选择
+        </button>
+        <LuckyGacha />
+      </div>
+    );
+  }
+
+  // 如果选择了其他占卜方法，显示现代占卜界面
   if (showModernFortune && selectedMethod) {
     return (
       <ModernFortuneInterface
