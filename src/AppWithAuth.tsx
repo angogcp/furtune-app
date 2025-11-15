@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { isSupabaseConfigured } from './lib/supabase'
 import LoginForm from './components/Auth/LoginForm'
@@ -19,9 +19,13 @@ import FAQ from './components/FAQ/FAQ'
 import MainApp from './App' // Original fortune telling app with ProfileProvider
 import { ProfileProvider } from './contexts/ProfileContext'
 import FortuneWebsite from './fortune_telling_website' // Web version
+import LuckyGacha from './components/LuckyGacha'
 import { User, Calendar, Heart, Sparkles, Home, LogIn, AlertTriangle, TrendingUp, BookOpen, Bell, Crown, Share2, Globe, HelpCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './components/LanguageSwitcher'
 
 function AuthWrapper() {
+  const { t } = useTranslation()
   const { user, loading } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
@@ -36,7 +40,7 @@ function AuthWrapper() {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
           <Sparkles className="w-16 h-16 mx-auto mb-4 text-yellow-400 animate-spin" />
-          <p className="text-white text-xl">加载中...</p>
+          <p className="text-white text-xl">{t('loading')}</p>
         </div>
       </div>
     )
@@ -52,18 +56,18 @@ function AuthWrapper() {
             <div className="flex items-center space-x-2">
               <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                算算乐
+                {t('brand')}
               </h1>
             </div>
             
             <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
               {user ? (
                 <>
-                  <NavButton to="/" icon={Home} label="占卜" />
-                  <NavButton to="/checkin" icon={Calendar} label="签到" />
-                  <NavButton to="/wishes" icon={Heart} label="许愿墙" />
-                  <NavButton to="/faq" icon={HelpCircle} label="FAQ" />
-                  <NavButton to="/profile" icon={User} label="个人" />
+                  <NavButton to="/" icon={Home} label={t('nav.fortune')} />
+                  <NavButton to="/checkin" icon={Calendar} label={t('nav.checkin')} />
+                  <NavButton to="/wishes" icon={Heart} label={t('nav.wishes')} />
+                  <NavButton to="/faq" icon={HelpCircle} label={t('nav.faq')} />
+                  <NavButton to="/profile" icon={User} label={t('nav.profile')} />
                 </>
               ) : (
                 <button
@@ -71,9 +75,10 @@ function AuthWrapper() {
                   className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium text-white transition-all duration-300 text-sm sm:text-base touch-target"
                 >
                   <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>登录</span>
+                  <span>{t('auth.login')}</span>
                 </button>
               )}
+              <LanguageSwitcher />
             </div>
           </div>
         </nav>
@@ -91,21 +96,23 @@ function AuthWrapper() {
               <Route path="/checkin" element={<DailyCheckin />} />
               <Route path="/wishes" element={<WishWall />} />
               <Route path="/faq" element={<FAQ />} />
+              <Route path="/gacha" element={<LuckyGacha />} />
               <Route path="/growth" element={<GrowthRecord />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/reminders" element={<FortuneReminders />} />
                 <Route path="/master" element={<MasterConsultation />} />
                 <Route path="/report" element={<ReportShare />} />
-                <Route path="/profile" element={
-                  <ProfileProvider>
-                    <UserProfile />
-                  </ProfileProvider>
-                } />
+              <Route path="/profile" element={
+                <ProfileProvider>
+                  <UserProfile />
+                </ProfileProvider>
+              } />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           ) : (
             <Routes>
               <Route path="/" element={<GuestHome onShowAuth={() => setShowAuth(true)} />} />
+              <Route path="/gacha" element={<LuckyGacha />} />
               <Route path="/profile" element={
                 <ProfileProvider>
                   <UserProfile />
@@ -158,6 +165,13 @@ function NavButton({ to, icon: Icon, label }: { to: string; icon: any; label: st
 }
 
 function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const goGacha = () => {
+    navigate('/gacha')
+    window.history.pushState({}, '', '/gacha')
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
   return (
     <div className="max-w-4xl mx-auto px-3 sm:px-4">
       <NetworkStatus />
@@ -170,8 +184,31 @@ function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
         <Sparkles className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-6 sm:mb-8 text-yellow-400" />
 
         <p className="text-lg sm:text-xl text-purple-200 mb-6 sm:mb-8 leading-relaxed px-4">
-          加入我们，开启您的神秘之旅
+          {t('guest.headline')}
         </p>
+
+        {/* Spotlight: Destiny Gacha accessible before login */}
+        <div className="relative overflow-hidden rounded-2xl border border-pink-400/30 bg-gradient-to-r from-pink-700/40 via-purple-700/40 to-indigo-700/40 p-6 mb-8">
+          <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 p-4 animate-pulse">
+                <Sparkles className="w-full h-full text-white" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-2xl font-bold text-white">{t('gacha.title')}</h3>
+                <p className="text-purple-200 mt-1">{t('gacha.subtitle')}</p>
+              </div>
+            </div>
+            <a
+              href="/gacha"
+              onClick={goGacha}
+              className="relative z-10 px-6 py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95"
+            >
+              {t('home.action.start')}
+            </a>
+          </div>
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-pink-500/20 blur-2xl pointer-events-none z-0"></div>
+        </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
         <div className="bg-purple-900/50 rounded-lg p-4 sm:p-6 border border-purple-400/30">
@@ -227,31 +264,28 @@ function GuestHome({ onShowAuth }: { onShowAuth: () => void }) {
           onClick={onShowAuth}
           className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold text-white text-base sm:text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 touch-target"
         >
-          立即开始占卜之旅
+          {t('guest.cta')}
          </button>
-       </div>
- 
-     </div>
+      </div>
+
+    </div>
   )
 }
 
 export default function AppWithAuth() {
+  const { t } = useTranslation()
   if (!isSupabaseConfigured) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-purple-900/50 rounded-lg p-6 border border-purple-400/30 text-center">
           <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
-          <h2 className="text-2xl font-bold text-white mb-4">配置提示</h2>
-          <p className="text-purple-200 mb-4">
-            请配置 Supabase 环境变量以启用完整功能：
-          </p>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('config.title')}</h2>
+          <p className="text-purple-200 mb-4">{t('config.supabaseTip')}</p>
           <div className="text-left bg-black/30 rounded p-3 mb-4 text-sm font-mono">
             <div className="text-green-400">VITE_SUPABASE_URL=your_supabase_url</div>
             <div className="text-green-400">VITE_SUPABASE_ANON_KEY=your_anon_key</div>
           </div>
-          <p className="text-purple-200 text-sm">
-            配置完成后重新启动应用即可使用登录、签到、许愿墙等功能。
-          </p>
+          <p className="text-purple-200 text-sm">{t('config.doneTip')}</p>
         </div>
       </div>
     )

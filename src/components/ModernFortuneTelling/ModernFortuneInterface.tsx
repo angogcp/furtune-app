@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../../styles/modern-fortune.css';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface FortuneMethod {
   id: string;
@@ -113,6 +114,7 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   selectedMethodId, 
   onBack 
 }) => {
+  const { t, i18n } = useTranslation();
   const { profile, isProfileComplete, updateProfile } = useProfile();
   const [step, setStep] = useState<'input' | 'processing' | 'result'>('input');
   const [question, setQuestion] = useState('');
@@ -130,13 +132,20 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   const [drawnJiaobei, setDrawnJiaobei] = useState<{result: string, meaning: string} | null>(null);
   const [consultationType, setConsultationType] = useState<string>('');
   const navigate = useNavigate();
+  const dateLocale = i18n.language.startsWith('ja') ? 'ja-JP' : (i18n.language.startsWith('en') ? 'en-US' : 'zh-CN');
+  const selectedMethod = fortuneMethods[selectedMethodId];
+  const displayMethodTitle = selectedMethod ? (t(`home.methods.${selectedMethodId}.title`) || selectedMethod.title) : '';
 
   const drawJiaobei = () => {
-    const results = ['聖筊', '笑筊', '陰筊'];
-    const meanings = {
-      '聖筊': '一正一反，神明同意您的请求',
-      '笑筊': '两个平面向上，神明在笑，并没有表示同意',
-      '陰筊': '平面朝下，表示请求驳回'
+    const results = [
+      t('modern.jiaobei.results.sheng'),
+      t('modern.jiaobei.results.xiao'),
+      t('modern.jiaobei.results.yin')
+    ];
+    const meanings: Record<string, string> = {
+      [t('modern.jiaobei.results.sheng')]: t('modern.jiaobei.meanings.sheng'),
+      [t('modern.jiaobei.results.xiao')]: t('modern.jiaobei.meanings.xiao'),
+      [t('modern.jiaobei.results.yin')]: t('modern.jiaobei.meanings.yin')
     };
     const randomResult = results[Math.floor(Math.random() * results.length)];
     setDrawnJiaobei({result: randomResult, meaning: meanings[randomResult]});
@@ -224,43 +233,19 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   };
 
   // Tarot cards data
-  const tarotCards = {
-    '愚者': '愚者',
-    '魔术师': '魔术师', 
-    '女教皇': '女教皇',
-    '皇后': '皇后',
-    '皇帝': '皇帝',
-    '教皇': '教皇',
-    '恋人': '恋人',
-    '战车': '战车',
-    '力量': '力量',
-    '隐者': '隐者',
-    '命运之轮': '命运之轮',
-    '正义': '正义',
-    '倒吊人': '倒吊人',
-    '死神': '死神',
-    '节制': '节制',
-    '恶魔': '恶魔',
-    '塔': '塔',
-    '星星': '星星',
-    '月亮': '月亮',
-    '太阳': '太阳',
-    '审判': '审判',
-    '世界': '世界'
-  };
-
-  const selectedMethod = fortuneMethods[selectedMethodId];
+  const tarotCards = t('modern.cards.names', { returnObjects: true }) as Record<string, string>;
+  const tarotMeanings = t('modern.cards.meanings', { returnObjects: true }) as Record<string, string>;
 
   if (!selectedMethod) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
         <div className="text-center text-white">
-          <p>未找到选择的占卜方法</p>
+          <p>{t('modern.notFound')}</p>
           <button 
             onClick={onBack}
             className="mt-4 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg"
           >
-            返回选择
+            {t('common.back')}
           </button>
         </div>
       </div>
@@ -340,106 +325,62 @@ const ModernFortuneInterface: React.FC<ModernFortuneInterfaceProps> = ({
   // Generate lottery-specific fortune result based on drawn lottery and question
   const generateLotteryFallback = (drawnLottery: {number: string, poem: string, meaning: string, interpretation: string}, question: string, method: string) => {
     const lotteryNumber = drawnLottery.number;
-    const poem = drawnLottery.poem;
-    const meaning = drawnLottery.meaning;
+    const poems = (t('modern.lottery.poems', { returnObjects: true }) as Record<string, string>) || {};
+    const meaningsMap = (t('modern.lottery.meanings', { returnObjects: true }) as Record<string, string>) || {};
+    const poem = poems[lotteryNumber] || drawnLottery.poem;
+    const meaning = meaningsMap[lotteryNumber] || drawnLottery.meaning;
     const interpretation = drawnLottery.interpretation;
-    
-    // Generate contextual advice based on the question and lottery
-    let contextualAdvice = '';
-    const lowercaseQuestion = question.toLowerCase();
-    
-    if (lowercaseQuestion.includes('感情') || lowercaseQuestion.includes('爱情')) {
-      contextualAdvice = '此签在感情方面显示，您需要保持耐心和真诚，美好的姻缘正在向您靠近。';
-    } else if (lowercaseQuestion.includes('工作') || lowercaseQuestion.includes('事业')) {
-      contextualAdvice = '事业方面，此签提示您要把握当前机会，专心致志地努力，成功指日可待。';
-    } else if (lowercaseQuestion.includes('财运') || lowercaseQuestion.includes('金钱')) {
-      contextualAdvice = '财运方面，此签建议您要脚踏实地，通过正当途径积累财富，切忌投机取巧。';
-    } else if (lowercaseQuestion.includes('健康') || lowercaseQuestion.includes('身体')) {
-      contextualAdvice = '健康方面，此签提醒您要注意身体保养，保持良好的生活习惯，身体会逐渐好转。';
-    } else if (lowercaseQuestion.includes('学业') || lowercaseQuestion.includes('考试')) {
-      contextualAdvice = '学业方面，此签显示您的努力会有回报，但需要持之以恒，不可半途而废。';
-    } else {
-      contextualAdvice = '观音慈悲，此签为您指明了前进的方向，请虔心体会其中的深意。';
-    }
-    
-    return `🙏 **观音灵签第${lotteryNumber}签解析**
 
-针对您的问题"${question}"，您抽取到了${meaning}，观音菩萨为您送来如下指引：
+    const qLower = question.toLowerCase();
+    let contextualAdvice = t('modern.lottery.advice.generic');
+    if (qLower.includes('love') || qLower.includes('恋') || qLower.includes('感情')) contextualAdvice = t('modern.lottery.advice.love');
+    else if (qLower.includes('work') || qLower.includes('career') || qLower.includes('事业') || qLower.includes('工作')) contextualAdvice = t('modern.lottery.advice.career');
+    else if (qLower.includes('wealth') || qLower.includes('money') || qLower.includes('财') || qLower.includes('金')) contextualAdvice = t('modern.lottery.advice.wealth');
+    else if (qLower.includes('health') || qLower.includes('身体') || qLower.includes('病')) contextualAdvice = t('modern.lottery.advice.health');
+    else if (qLower.includes('study') || qLower.includes('学业') || qLower.includes('考试')) contextualAdvice = t('modern.lottery.advice.study');
 
-📜 **签文解读：**
+    return `🙏 ${t('modern.lottery.fallbackTitle', { number: lotteryNumber })}
+
+${t('modern.lottery.fallbackIntro', { question, meaning })}
+
+📜 ${t('modern.lottery.poemTitle')}
 "${poem}"
 
-🔰 **签意诠释：**
+🔰 ${t('modern.lottery.meaningTitle')}
 ${interpretation}
 
-✨ **针对性指导：**
+✨ ${t('modern.lottery.adviceTitle')}
 ${contextualAdvice}
 
-🌟 **行动指引：**
-1. 虔心祈祷，保持善念，观音菩萨会庇佑您
-2. 按照签文指引调整心态和行为方式
-3. 多行善事，积累功德，增强正能量
-4. 在重要时刻想起签文的智慧，指引决策
+🌟 ${t('modern.lottery.actionsTitle')}
+1. ${t('modern.lottery.actions.1')}
+2. ${t('modern.lottery.actions.2')}
+3. ${t('modern.lottery.actions.3')}
+4. ${t('modern.lottery.actions.4')}
 
-🎯 **时机提醒：**
-此签的能量将在农历每月的初一、十五特别强烈，这些日子适合重要决定或新的开始。
+🎯 ${t('modern.lottery.timingTitle')}
+${t('modern.lottery.timingHint')}
 
-🌙 **观音寄语：**
-心诚则灵，善者天佑。观音菩萨已听到您的祈求，请保持虔诚之心，按签文指引前行，必得善果。
-
-南无观世音菩萨！🙏`;
+🌙 ${t('modern.lottery.blessingTitle')}
+${t('modern.lottery.blessingHint')}`;
   };
 
   // Generate tarot-specific fortune result based on selected cards and question
   const generateTarotFallback = (selectedCards: string[], question: string, method: string) => {
-    // Basic tarot card meanings
-    const cardMeanings: Record<string, string> = {
-      '愚者': '新的开始、冒险、天真、潜力',
-      '魔术师': '意志力、技能、创造力、行动',
-      '女教皇': '直觉、智慧、神秘、内在知识',
-      '皇后': '丰饶、母性、创造力、关爱',
-      '皇帝': '权威、结构、控制、领导力',
-      '教皇': '传统、精神指引、学习、信仰',
-      '恋人': '爱情、关系、选择、和谐',
-      '战车': '意志力、控制、胜利、决心',
-      '力量': '内在力量、勇气、耐心、自控',
-      '隐者': '内省、指引、智慧、寻找真理',
-      '命运之轮': '命运、变化、周期、机遇',
-      '正义': '公正、真理、法律、因果',
-      '倒吊人': '牺牲、等待、新视角、暂停',
-      '死神': '结束、转变、重生、释放',
-      '节制': '平衡、调和、治愈、耐心',
-      '恶魔': '束缚、诱惑、依赖、阴影',
-      '塔': '突然变化、破坏、启示、解放',
-      '星星': '希望、灵感、指引、治愈',
-      '月亮': '幻想、潜意识、不确定、恐惧',
-      '太阳': '成功、活力、快乐、真理',
-      '审判': '觉醒、重生、内在呼唤、宽恕',
-      '世界': '完成、成就、整体性、实现'
-    };
-    
     const interpretations = selectedCards.map(card => {
-      const meaning = cardMeanings[card] || '神秘的力量';
-      return `🃏 **${card}**: ${meaning}`;
+      const name = (tarotCards && tarotCards[card]) || card;
+      const meaning = (tarotMeanings && tarotMeanings[card]) || t('modern.tarot.meaningDefault');
+      return `🃏 **${name}**: ${meaning}`;
     }).join('\n\n');
-    
-    // Generate contextual advice based on the question
-    let contextualAdvice = '';
-    const lowercaseQuestion = question.toLowerCase();
-    
-    if (lowercaseQuestion.includes('感情') || lowercaseQuestion.includes('爱情')) {
-      contextualAdvice = '感情方面，塔罗牌显示您需要倾听内心的声音，真诚面对自己的情感。';
-    } else if (lowercaseQuestion.includes('工作') || lowercaseQuestion.includes('事业')) {
-      contextualAdvice = '事业方面，塔罗牌提示您要保持耐心和专注，机会正在向您靠近。';
-    } else if (lowercaseQuestion.includes('财运') || lowercaseQuestion.includes('金钱')) {
-      contextualAdvice = '财运方面，塔罗牌建议您要谨慎理财，避免冲动的投资决定。';
-    } else if (lowercaseQuestion.includes('健康') || lowercaseQuestion.includes('身体')) {
-      contextualAdvice = '健康方面，塔罗牌提醒您要注意身心平衡，适当休息很重要。';
-    } else {
-      contextualAdvice = '塔罗牌为您揭示了当前生活的重要信息，请仔细体会这些指引。';
-    }
-    
-    return `针对您的问题"${question}"，塔罗牌为您揭示以下信息：\n\n🔮 **抽取的塔罗牌解读：**\n\n${interpretations}\n\n✨ **综合解读：**\n\n您抽取的这${selectedCards.length}张牌显示了一个重要的信息。${contextualAdvice}\n\n🌟 **行动指引：**\n\n1. 相信您的直觉和内在智慧\n2. 保持开放的心态迎接变化\n3. 平衡理性与感性的思考\n4. 在关键时刻做出勇敢的选择\n\n🎯 **特别提醒：**\n\n塔罗牌的能量将在未来一周内特别强烈，这是采取行动的好时机。请留意您周围出现的同步性信号。\n\n愿塔罗的智慧为您照亮前路！`;
+
+    const qLower = question.toLowerCase();
+    let contextualAdvice = t('modern.tarot.advice.generic');
+    if (qLower.includes('love') || qLower.includes('恋') || qLower.includes('感情')) contextualAdvice = t('modern.tarot.advice.love');
+    else if (qLower.includes('work') || qLower.includes('career') || qLower.includes('事业') || qLower.includes('工作')) contextualAdvice = t('modern.tarot.advice.career');
+    else if (qLower.includes('wealth') || qLower.includes('money') || qLower.includes('财') || qLower.includes('金')) contextualAdvice = t('modern.tarot.advice.wealth');
+    else if (qLower.includes('health') || qLower.includes('身体') || qLower.includes('病')) contextualAdvice = t('modern.tarot.advice.health');
+
+    return `${t('modern.tarot.fallbackIntro', { question })}\n\n🔮 **${t('modern.tarot.listTitle')}**\n\n${interpretations}\n\n✨ **${t('modern.tarot.summaryTitle')}**\n\n${t('modern.tarot.summaryText', { count: selectedCards.length })} ${contextualAdvice}\n\n🌟 **${t('modern.tarot.actionsTitle')}**\n\n1. ${t('modern.tarot.actions.1')}\n2. ${t('modern.tarot.actions.2')}\n3. ${t('modern.tarot.actions.3')}\n4. ${t('modern.tarot.actions.4')}\n\n🎯 **${t('modern.tarot.reminderTitle')}**\n\n${t('modern.tarot.reminderText')}`;
   };
 
   // Generate contextual fortune result based on question and method
@@ -544,48 +485,40 @@ ${specificAdvice}
       33: '大师教师、无私奉献'
     };
     
-    const lifePathMeaning = numberMeanings[lifePathNumber] || '神秘的力量';
-    const nameMeaning = numberMeanings[nameNumber] || '独特的能量';
+    const lifePathMeaning = numberMeanings[lifePathNumber] || t('modern.numerology.meaningDefault');
+    const nameMeaning = numberMeanings[nameNumber] || t('modern.numerology.energyDefault');
     
     // Generate contextual advice based on the question
-    let contextualAdvice = '';
+    let contextualAdvice = t('modern.numerology.advice.generic');
     const lowercaseQuestion = question.toLowerCase();
     
-    if (lowercaseQuestion.includes('感情') || lowercaseQuestion.includes('爱情')) {
-      contextualAdvice = `您的生命数字${lifePathNumber}在感情方面显示，您需要${lifePathNumber <= 5 ? '主动表达' : '耐心等待'}，真爱正在向您靠近。`;
-    } else if (lowercaseQuestion.includes('工作') || lowercaseQuestion.includes('事业')) {
-      contextualAdvice = `数字${lifePathNumber}提示您在事业上要发挥${lifePathMeaning}的特质，这是您成功的关键。`;
-    } else if (lowercaseQuestion.includes('财运') || lowercaseQuestion.includes('金钱')) {
-      contextualAdvice = `您的财富数字显示，通过${lifePathNumber % 2 === 0 ? '稳健投资' : '创新思维'}可以获得更好的财运。`;
-    } else {
-      contextualAdvice = `您的生命数字${lifePathNumber}为您指明了人生的方向和使命。`;
+    if (lowercaseQuestion.includes('love') || lowercaseQuestion.includes('恋') || lowercaseQuestion.includes('感情')) {
+      contextualAdvice = t('modern.numerology.advice.love', { life: lifePathNumber, mode: lifePathNumber <= 5 ? t('modern.numerology.mode.express') : t('modern.numerology.mode.wait') });
+    } else if (lowercaseQuestion.includes('work') || lowercaseQuestion.includes('career') || lowercaseQuestion.includes('事业') || lowercaseQuestion.includes('工作')) {
+      contextualAdvice = t('modern.numerology.advice.career', { life: lifePathNumber, trait: lifePathMeaning });
+    } else if (lowercaseQuestion.includes('财') || lowercaseQuestion.includes('金') || lowercaseQuestion.includes('wealth') || lowercaseQuestion.includes('money')) {
+      contextualAdvice = t('modern.numerology.advice.wealth', { strategy: lifePathNumber % 2 === 0 ? t('modern.numerology.strategy.steady') : t('modern.numerology.strategy.innovate') });
     }
     
-    return `🔢 **数字命理解析**
+    return `🔢 ${t('modern.numerology.title')}
 
-针对您的问题"${question}"，数字命理为您揭示以下信息：
+${t('modern.numerology.intro', { question })}
 
-📊 **核心数字分析：**
-• 生命路径数字：${lifePathNumber} (${lifePathMeaning})
-• 姓名数字：${nameNumber} (${nameMeaning})
+📊 ${t('modern.numerology.coreTitle')}
+• ${t('modern.numerology.lifePathLabel')}: ${lifePathNumber} (${lifePathMeaning})
+• ${t('modern.numerology.nameLabel')}: ${nameNumber} (${nameMeaning})
 
-🌟 **数字能量解读：**
+🌟 ${t('modern.numerology.energyTitle')}
 ${contextualAdvice}
 
-✨ **生命密码指引：**
-1. 您的生命数字${lifePathNumber}代表着${lifePathMeaning}的能量
-2. 在重要决策时，可以参考数字${lifePathNumber}的特质
-3. 您的幸运数字是${lifePathNumber}、${nameNumber}和${(lifePathNumber + nameNumber) % 9 || 9}
-4. 每月${lifePathNumber}号和${nameNumber}号是您的能量高峰日
+✨ ${t('modern.numerology.guidanceTitle')}
+1. ${t('modern.numerology.guidance.1')}
+2. ${t('modern.numerology.guidance.2')}
+3. ${t('modern.numerology.guidance.3')}
+4. ${t('modern.numerology.guidance.4')}
 
-🎯 **行动建议：**
-• 发挥您数字${lifePathNumber}的天赋优势
-• 在生活中多关注包含您幸运数字的机会
-• 保持与您数字能量相符的生活方式
-• 相信数字的指引，但也要结合实际行动
-
-🌙 **数字祝福：**
-愿数字的神秘力量为您带来好运，指引您走向光明的未来！`;
+🌙 ${t('modern.numerology.blessingTitle')}
+${t('modern.numerology.blessingText')}`;
   };
   
   // Generate life story-specific fortune result based on profile and question
@@ -620,35 +553,31 @@ ${contextualAdvice}
       futureVision = '您的人生将充满精彩的转折和美好的收获';
     }
     
-    return `📖 **${name}的命格小故事**
+    return `📖 ${t('modern.lifestory.title')}
 
-关于您的问题"${question}"，让我为您讲述一个专属的命运故事：
+${t('modern.lifestory.intro', { question })}
 
-🌟 **${storyTheme}篇章**
+🌟 ${t('modern.lifestory.chapterTitle', { theme: storyTheme })}
 
-在${birthPlace}这片神奇的土地上，诞生了一位名叫${name}的特殊之人。从小，${name}就展现出与众不同的气质，仿佛天生就承载着某种使命。
+${t('modern.lifestory.body', { name, birthPlace, occupation })}
 
-作为一名${occupation}，${name}在人生的道路上经历了许多考验。每一次挫折都是成长的阶梯，每一次选择都在塑造着独特的命运轨迹。
+📚 ${t('modern.lifestory.moralTitle')}
+${storyMoral}
 
-命运之神看到了${name}内心的纯真和努力，决定在关键时刻给予指引。正如古老的预言所说："心诚者，天必佑之；努力者，运必随之。"
+🔮 ${t('modern.lifestory.insightTitle')}
+1. ${t('modern.lifestory.insight.1')}
+2. ${t('modern.lifestory.insight.2')}
+3. ${t('modern.lifestory.insight.3')}
+4. ${t('modern.lifestory.insight.4')}
 
-📚 **故事寓意：**
-${storyMoral}。${name}的故事告诉我们，命运虽有定数，但通过自己的努力和智慧，完全可以创造出更美好的人生。
+🌈 ${t('modern.lifestory.futureTitle')}
+${futureVision}
 
-🔮 **现实启示：**
-1. 相信自己的内在力量和独特价值
-2. 在困难面前保持乐观和坚韧
-3. 善待他人，积累人生的正能量
-4. 抓住机遇，勇敢地追求梦想
+✨ ${t('modern.lifestory.messageTitle')}
+${t('modern.lifestory.messageText')}
 
-🌈 **未来展望：**
-${futureVision}。就像故事中的主人公一样，您也将在人生的舞台上书写属于自己的精彩篇章。
-
-✨ **命运寄语：**
-每个人都是自己人生故事的主角，${name}的传奇还在继续书写。愿您的故事充满爱、智慧和成功！
-
-📝 **故事续集预告：**
-下一章将是关于突破和收获的故事，请期待命运为您安排的精彩情节！`;
+📝 ${t('modern.lifestory.nextTitle')}
+${t('modern.lifestory.nextText')}`;
   };
 
   // Generate plain language interpretation
@@ -659,87 +588,47 @@ ${futureVision}。就像故事中的主人公一样，您也将在人生的舞�
     let actionSteps = [];
     
     // Analyze question type and provide simple advice
-    if (lowercaseQuestion.includes('感情') || lowercaseQuestion.includes('爱情')) {
-      simpleAdvice = '简单来说，你的感情运势不错，但需要主动一些。';
-      keyPoints = [
-        '保持自信，真诚待人',
-        '主动表达自己的想法',
-        '给彼此一些时间和空间'
-      ];
-      actionSteps = [
-        '多参加社交活动，扩大交友圈',
-        '对喜欢的人勇敢表白',
-        '在感情中学会沟通和理解'
-      ];
-    } else if (lowercaseQuestion.includes('工作') || lowercaseQuestion.includes('事业')) {
-      simpleAdvice = '工作方面有新机会，要抓住机会提升自己。';
-      keyPoints = [
-        '保持学习的心态',
-        '与同事保持良好关系',
-        '对新项目要有耐心'
-      ];
-      actionSteps = [
-        '主动承担更多工作责任',
-        '学习新的技能和知识',
-        '寻找导师或经验分享者'
-      ];
-    } else if (lowercaseQuestion.includes('健康') || lowercaseQuestion.includes('身体')) {
-      simpleAdvice = '身体健康需要更多关注，预防胜于治疗。';
-      keyPoints = [
-        '规律作息很重要',
-        '适当运动有益健康',
-        '保持心情愉快'
-      ];
-      actionSteps = [
-        '每天保证8小时睡眠',
-        '每周至少运动3次',
-        '定期体检，关注身体变化'
-      ];
-    } else if (lowercaseQuestion.includes('财运') || lowercaseQuestion.includes('金钱')) {
-      simpleAdvice = '财运稳中有升，但要理性消费和投资。';
-      keyPoints = [
-        '节约开支，避免浪费',
-        '理性投资，不要投机',
-        '多元化收入来源'
-      ];
-      actionSteps = [
-        '制定每月预算计划',
-        '学习理财知识',
-        '寻找兼职或副业机会'
-      ];
+    if (lowercaseQuestion.includes('love') || lowercaseQuestion.includes('恋') || lowercaseQuestion.includes('感情')) {
+      simpleAdvice = t('modern.plain.advice.love');
+      keyPoints = [t('modern.plain.points.love.1'), t('modern.plain.points.love.2'), t('modern.plain.points.love.3')];
+      actionSteps = [t('modern.plain.actions.love.1'), t('modern.plain.actions.love.2'), t('modern.plain.actions.love.3')];
+    } else if (lowercaseQuestion.includes('work') || lowercaseQuestion.includes('career') || lowercaseQuestion.includes('事业') || lowercaseQuestion.includes('工作')) {
+      simpleAdvice = t('modern.plain.advice.career');
+      keyPoints = [t('modern.plain.points.career.1'), t('modern.plain.points.career.2'), t('modern.plain.points.career.3')];
+      actionSteps = [t('modern.plain.actions.career.1'), t('modern.plain.actions.career.2'), t('modern.plain.actions.career.3')];
+    } else if (lowercaseQuestion.includes('health') || lowercaseQuestion.includes('身体') || lowercaseQuestion.includes('病')) {
+      simpleAdvice = t('modern.plain.advice.health');
+      keyPoints = [t('modern.plain.points.health.1'), t('modern.plain.points.health.2'), t('modern.plain.points.health.3')];
+      actionSteps = [t('modern.plain.actions.health.1'), t('modern.plain.actions.health.2'), t('modern.plain.actions.health.3')];
+    } else if (lowercaseQuestion.includes('wealth') || lowercaseQuestion.includes('money') || lowercaseQuestion.includes('财') || lowercaseQuestion.includes('金')) {
+      simpleAdvice = t('modern.plain.advice.wealth');
+      keyPoints = [t('modern.plain.points.wealth.1'), t('modern.plain.points.wealth.2'), t('modern.plain.points.wealth.3')];
+      actionSteps = [t('modern.plain.actions.wealth.1'), t('modern.plain.actions.wealth.2'), t('modern.plain.actions.wealth.3')];
     } else {
-      simpleAdvice = '总的来说，你正处在一个转变期，要保持积极的心态。';
-      keyPoints = [
-        '相信自己的能力',
-        '把握当前的机会',
-        '保持开放的心态'
-      ];
-      actionSteps = [
-        '制定明确的目标',
-        '一步一步实现计划',
-        '多向他人学习经验'
-      ];
+      simpleAdvice = t('modern.plain.advice.generic');
+      keyPoints = [t('modern.plain.points.generic.1'), t('modern.plain.points.generic.2'), t('modern.plain.points.generic.3')];
+      actionSteps = [t('modern.plain.actions.generic.1'), t('modern.plain.actions.generic.2'), t('modern.plain.actions.generic.3')];
     }
 
-    return `🔍 **${method}大白话解读**
+    return `🔍 ${t('modern.plain.title', { method })}
 
-💡 **一句话总结：**
+💡 ${t('modern.plain.summaryTitle')}
 ${simpleAdvice}
 
-📝 **关键要点：**
+📝 ${t('modern.plain.pointsTitle')}
 ${keyPoints.map((point, index) => `${index + 1}. ${point}`).join('\n')}
 
-🎯 **具体行动：**
+🎯 ${t('modern.plain.actionsTitle')}
 ${actionSteps.map((step, index) => `${index + 1}. ${step}`).join('\n')}
 
-⏰ **最佳时机：**
-未来两周是行动的好时机，特别是周三和周末。
+⏰ ${t('modern.plain.timingTitle')}
+${t('modern.plain.timingText')}
 
-💪 **成功提示：**
-记住，命运掌握在自己手中。占卜只是参考，最重要的是你的努力和行动！
+💪 ${t('modern.plain.successTitle')}
+${t('modern.plain.successText')}
 
-🌟 **幸运建议：**
-多穿亮色衣服，保持微笑，会为你带来好运气！`;
+🌟 ${t('modern.plain.luckTitle')}
+${t('modern.plain.luckText')}`;
   };
 
   // Generate personality-specific fallback result based on user profile and session data
@@ -750,20 +639,9 @@ ${actionSteps.map((step, index) => `${index + 1}. ${step}`).join('\n')}
     const hobbies = profileData?.hobbies || '';
     const selfDescription = profileData?.selfDescription || '';
     
-    const personalityTypes = [
-      '内向思考型', '外向行动型', '感性创意型', '理性分析型',
-      '社交领导型', '独立探索型', '温和协调型', '坚定执行型'
-    ];
-    
-    const strengths = [
-      '善于倾听和理解他人', '具有强烈的责任感', '富有创造力和想象力',
-      '逻辑思维清晰', '沟通能力出色', '适应能力强', '做事认真细致', '乐观积极'
-    ];
-    
-    const suggestions = [
-      '多与他人交流分享想法', '培养新的兴趣爱好', '保持学习和成长的心态',
-      '注重工作与生活的平衡', '发挥自己的优势特长', '勇于面对挑战'
-    ];
+    const personalityTypes = t('modern.personality.types', { returnObjects: true }) as string[];
+    const strengths = t('modern.personality.strengths', { returnObjects: true }) as string[];
+    const suggestions = t('modern.personality.suggestions', { returnObjects: true }) as string[];
     
     // Use question + name for consistent results
     const combinedInput = question + name;
@@ -775,61 +653,61 @@ ${actionSteps.map((step, index) => `${index + 1}. ${step}`).join('\n')}
     // Generate contextual analysis based on provided information
     let personalInfo = '';
     if (occupation && hobbies) {
-      personalInfo = `从事${occupation}工作，平时喜欢${hobbies}，`;
+      personalInfo = t('modern.personality.personal.occupation', { occupation }) + '，' + t('modern.personality.personal.hobbies', { hobbies }) + '，';
     } else if (occupation) {
-      personalInfo = `从事${occupation}工作，`;
+      personalInfo = t('modern.personality.personal.occupation', { occupation }) + '，';
     } else if (hobbies) {
-      personalInfo = `平时喜欢${hobbies}，`;
+      personalInfo = t('modern.personality.personal.hobbies', { hobbies }) + '，';
     }
     
     let selfAnalysis = '';
     if (selfDescription) {
-      selfAnalysis = `您对自己"${selfDescription}"的描述很准确，这体现了良好的自我认知能力。`;
+      selfAnalysis = t('modern.personality.personal.selfDescription', { selfDescription });
     }
     
-    return `🧠 **核心性格特质：**
-${name}，从您的问题"${question}"可以看出，您属于${personalityType}的性格特征。${age ? `在${age}岁这个年龄段，` : ''}您展现出成熟稳重的一面。
+    return `🧠 **${t('modern.personality.section.coreTitle')}**
+${t('modern.personality.core', { name, question, type: personalityType, age })}
 
-💪 **优势与天赋：**
-您的主要优势是${strength}，这使您在人际关系和工作中都能表现出色。${personalInfo}这些都体现了您多元化的兴趣和能力。
+💪 **${t('modern.personality.section.advantagesTitle')}**
+${t('modern.personality.advantages', { strength })}${personalInfo}${t('modern.personality.advantagesSuffix')}
 
-🌱 **成长空间：**
-建议您${suggestion}，这将有助于您的个人发展。${selfAnalysis}继续保持这种自我认知的能力，它是您最大的财富。
+🌱 **${t('modern.personality.section.growthTitle')}**
+${t('modern.personality.growth', { suggestion })} ${selfAnalysis} ${t('modern.personality.growthSuffix')}
 
-🤝 **人际关系模式：**
-您在人际交往中表现出真诚和包容的特质，容易获得他人的信任和好感。建议保持这种积极的人际互动风格。
+🤝 **${t('modern.personality.section.relationsTitle')}**
+${t('modern.personality.relations')}
 
-💼 **职业发展建议：**
-${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势，在团队合作中承担更多责任，将为您带来更好的发展机会。建议多展现自己的独特视角。
+💼 **${t('modern.personality.section.careerTitle')}**
+${occupation ? t('modern.personality.careerOccupation', { occupation }) + ' ' : ''}${t('modern.personality.careerAdvice')}
 
-🎯 **生活建议：**
-保持积极乐观的心态，相信自己的能力，勇敢追求内心的目标。${hobbies ? `继续培养${hobbies}等兴趣爱好，` : ''}这些都能丰富您的人生体验。
+🎯 **${t('modern.personality.section.lifeTitle')}**
+${t('modern.personality.lifeAdvice', { hobbies })}
 
-💡 **特别提醒：**
-性格分析基于您提供的信息和心理学理论，每个人都有自己独特的价值和潜能。记住，性格是可以发展和完善的。`;
+💡 **${t('modern.personality.section.reminderTitle')}**
+${t('modern.personality.reminder')}`;
   };
 
   // Print function
   const handlePrint = () => {
     const printContent = `
       <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
-        <h1 style="text-align: center; color: #4A5568;">${selectedMethod.title}结果</h1>
+        <h1 style="text-align: center; color: #4A5568;">${t('modern.resultTitle', { method: displayMethodTitle })}</h1>
         <div style="margin: 20px 0; padding: 15px; background-color: #F7FAFC; border-left: 4px solid #4299E1;">
           <h3 style="color: #2D3748; margin-bottom: 10px;">您的问题：</h3>
           <p style="color: #4A5568;">${question}</p>
         </div>
         <div style="margin: 20px 0; padding: 15px; background-color: #F7FAFC; border-left: 4px solid #9F7AEA;">
-          <h3 style="color: #2D3748; margin-bottom: 10px;">占卜解读：</h3>
+          <h3 style="color: #2D3748; margin-bottom: 10px;">${t('modern.reading')}：</h3>
           <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${formatDisplayText(result)}</div>
         </div>
         ${showPlainLanguage ? `
         <div style="margin: 20px 0; padding: 15px; background-color: #F0FFF4; border-left: 4px solid #48BB78;">
-          <h3 style="color: #2D3748; margin-bottom: 10px;">大白话解读：</h3>
-          <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${formatDisplayText(plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title))}</div>
+          <h3 style="color: #2D3748; margin-bottom: 10px;">${t('modern.plain.label')}：</h3>
+          <div style="color: #4A5568; white-space: pre-line; line-height: 1.6;">${formatDisplayText(plainLanguageResult || generatePlainLanguageInterpretation(result, question, displayMethodTitle))}</div>
         </div>
         ` : ''}
         <div style="margin-top: 30px; text-align: center; color: #A0AEC0; font-size: 14px;">
-          <p>占卜时间：${new Date().toLocaleString('zh-CN')}</p>
+          <p>${t('modern.generatedAt')}：${new Date().toLocaleString(dateLocale)}</p>
 
         </div>
       </div>
@@ -841,7 +719,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <!DOCTYPE html>
         <html>
         <head>
-          <title>${selectedMethod.title}结果</title>
+          <title>${t('modern.resultTitle', { method: displayMethodTitle })}</title>
           <meta charset="utf-8">
         </head>
         <body>
@@ -874,22 +752,22 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       
       tempDiv.innerHTML = `
         <div style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, 'Microsoft YaHei', '\u5fae\u8f6f\u96c5\u9ed1', sans-serif;">
-          <h1 style="text-align: center; color: #4A5568; margin-bottom: 10px; font-size: 24px;">${selectedMethod.title}结果</h1>
-          <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 12px;">占卜时间：${new Date().toLocaleString('zh-CN')}</p>
+        <h1 style="text-align: center; color: #4A5568; margin-bottom: 10px; font-size: 24px;">${t('modern.resultTitle', { method: displayMethodTitle })}</h1>
+          <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 12px;">${t('modern.generatedAt')}：${new Date().toLocaleString(dateLocale)}</p>
           
           <div style="margin: 20px 0; padding: 15px; background-color: #F7FAFC; border-left: 4px solid #4299E1;">
-            <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">您的问题：</h3>
+            <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">${t('modern.yourQuestion')}：</h3>
             <p style="color: #4A5568; margin: 0; white-space: pre-wrap;">${question}</p>
           </div>
           
           <div style="margin: 20px 0; padding: 15px; background-color: #F7FAFC; border-left: 4px solid #9F7AEA;">
-            <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">占卜解读：</h3>
+            <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">${t('modern.reading')}：</h3>
             <div style="color: #4A5568; white-space: pre-wrap; line-height: 1.6;">${formatDisplayText(result)}</div>
           </div>
           
           ${showPlainLanguage && plainLanguageResult ? `
           <div style="margin: 20px 0; padding: 15px; background-color: #F0FFF4; border-left: 4px solid #48BB78;">
-            <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">大白话解读：</h3>
+            <h3 style="color: #2D3748; margin-bottom: 10px; font-size: 16px;">${t('modern.plain.label')}：</h3>
             <div style="color: #4A5568; white-space: pre-wrap; line-height: 1.6;">${formatDisplayText(plainLanguageResult)}</div>
           </div>
           ` : ''}
@@ -932,7 +810,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       }
       
       // Save the PDF
-      const fileName = `${selectedMethod.title}结果_${new Date().toISOString().slice(0, 10)}.pdf`;
+      const fileName = `${displayMethodTitle}_${new Date().toISOString().slice(0, 10)}.pdf`;
       pdf.save(fileName);
       
     } catch (error) {
@@ -943,13 +821,13 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         
         pdf.setFont('helvetica');
         pdf.setFontSize(20);
-        pdf.text(`${selectedMethod.title} Result`, 20, 30);
+        pdf.text(`${displayMethodTitle} Result`, 20, 30);
         
         pdf.setFontSize(12);
-        pdf.text(`Date: ${new Date().toLocaleString('en-US')}`, 20, 50);
+        pdf.text(`${t('modern.generatedAt')}: ${new Date().toLocaleString(dateLocale)}`, 20, 50);
         
         pdf.setFontSize(14);
-        pdf.text('Your Question:', 20, 70);
+        pdf.text(`${t('modern.yourQuestion')}:`, 20, 70);
         
         pdf.setFontSize(12);
         const questionLines = pdf.splitTextToSize(question, 170);
@@ -957,7 +835,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         
         let currentY = 85 + (questionLines.length * 7) + 10;
         pdf.setFontSize(14);
-        pdf.text('Fortune Reading:', 20, currentY);
+        pdf.text(`${t('modern.reading')}:`, 20, currentY);
         
         currentY += 15;
         pdf.setFontSize(10);
@@ -972,19 +850,19 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           currentY += 6;
         });
         
-        const fileName = `${selectedMethod.title}_Result_${new Date().toISOString().slice(0, 10)}.pdf`;
+        const fileName = `${displayMethodTitle}_Result_${new Date().toISOString().slice(0, 10)}.pdf`;
         pdf.save(fileName);
         
       } catch (fallbackError) {
         console.error('Fallback PDF generation also failed:', fallbackError);
         // Ultimate fallback to text file
-        const pdfContent = `${selectedMethod.title}结果\n\n问题：${question}\n\n解读：\n${result}${showPlainLanguage ? '\n\n大白话解读：\n' + (plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)) : ''}\n\n占卜时间：${new Date().toLocaleString('zh-CN')}`;
+        const pdfContent = `${t('modern.resultTitle', { method: displayMethodTitle })}\n\n${t('modern.yourQuestion')}：${question}\n\n${t('modern.reading')}：\n${result}${showPlainLanguage ? '\n\n' + t('modern.plain.label') + '：\n' + (plainLanguageResult || generatePlainLanguageInterpretation(result, question, displayMethodTitle)) : ''}\n\n${t('modern.generatedAt')}：${new Date().toLocaleString(dateLocale)}`;
         
         const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${selectedMethod.title}结果_${new Date().toISOString().slice(0, 10)}.txt`;
+        link.download = `${displayMethodTitle}_${new Date().toISOString().slice(0, 10)}.txt`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -999,23 +877,20 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       if (llmService.isConfigured()) {
         console.log('🔍 Generating plain language interpretation via LLM...');
         
-        const plainLanguagePrompt = `请将以下占卜结果转换为大白话解读，要求：
+        const plainLanguagePrompt = `${t('modern.plain.simplifiedIntro')}
 
-1. 用简单易懂的语言重新解释
-2. 提供3-5个具体的行动建议
-3. 说明最佳时机和注意事项
-4. 语言要亲切、实用、鼓励性
-5. 避免玄学术语，多用生活化表达
+${t('modern.plain.originalLabel')}
+${originalResult}
 
-原始占卜结果：${originalResult}
+${t('modern.plain.questionLabel')}
+${question}
 
-问题：${question}
+${t('modern.plain.methodLabel')}
+${method}
 
-占卜方法：${method}
-
-请生成大白话版本的解读：`;
+${t('modern.plain.keyPointsIntro')}`;
         
-        const response = await llmService.callAPI(plainLanguagePrompt, `${method}大白话解读`, {});
+        const response = await llmService.callAPI(plainLanguagePrompt, t('modern.plain.title', { method }), {});
         return response.reading;
       } else {
         console.log('⚠️ LLM not configured, using local plain language generation');
@@ -1053,7 +928,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       // Prepare data for API call
       const apiData = {
         question,
-        method: selectedMethod.title,
+        method: displayMethodTitle,
         profile,
         cards: selectedMethodId === 'tarot' ? selectedCards : undefined,
         lottery: selectedMethodId === 'lottery' ? drawnLottery : undefined
@@ -1070,84 +945,88 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           enhancedQuestion = `我抽取了以下塔罗牌：${selectedCards.join('、')}。问题：${question}`;
         } else if (selectedMethodId === 'lottery' && drawnLottery) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运程',
-            'health': '健康状况',
-            'study': '学业考试',
-            'general': '综合运势'
-          };
-          enhancedQuestion = `我想咨询${typeLabels[consultationType] || consultationType}方面的问题。我抽取了第${drawnLottery.number}签，签文："${drawnLottery.poem}"，签意：${drawnLottery.meaning}。问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            general: t('modern.types.general')
+          } as Record<string, string>;
+          const lotteryPoems = (t('modern.lottery.poems', { returnObjects: true }) as Record<string, string>) || {};
+          const lotteryMeanings = (t('modern.lottery.meanings', { returnObjects: true }) as Record<string, string>) || {};
+          const poemText = lotteryPoems[drawnLottery.number] || drawnLottery.poem;
+          const meaningText = lotteryMeanings[drawnLottery.number] || drawnLottery.meaning;
+          enhancedQuestion = `${t('modern.askPrefix', { type: typeLabels[consultationType] || consultationType })} ${t('modern.lotteryPicked', { number: drawnLottery.number, poem: poemText, meaning: meaningText })} ${t('modern.askSuffix', { question })}`;
         } else if (selectedMethodId === 'bazi' && consultationType) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运程',
-            'health': '健康状况',
-            'study': '学业考试',
-            'general': '综合运势'
-          };
-          enhancedQuestion = `我想咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            general: t('modern.types.general')
+          } as Record<string, string>;
+          enhancedQuestion = `${t('modern.askPrefix', { type: typeLabels[consultationType] || consultationType })} ${t('modern.askOnly', { question })}`;
         }
         
         if (selectedMethodId === 'tarot' && consultationType) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运势',
-            'health': '健康状况',
-            'study': '学业考试',
-            'comprehensive': '综合运势'
-          };
-          enhancedQuestion = `我想通过塔罗牌咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            comprehensive: t('modern.types.comprehensive')
+          } as Record<string, string>;
+          enhancedQuestion = `${t('modern.askViaTarot', { type: typeLabels[consultationType] || consultationType, question })}`;
         }
         
         if (selectedMethodId === 'astrology' && consultationType) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运势',
-            'health': '健康状况',
-            'study': '学业考试',
-            'comprehensive': '综合运势'
-          };
-          enhancedQuestion = `我想通过星座占星咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            comprehensive: t('modern.types.comprehensive')
+          } as Record<string, string>;
+          enhancedQuestion = `${t('modern.askViaAstrology', { type: typeLabels[consultationType] || consultationType, question })}`;
         }
         
         if (selectedMethodId === 'jiaobei' && consultationType) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运势',
-            'health': '健康状况',
-            'study': '学业考试',
-            'comprehensive': '综合运势'
-          };
-          enhancedQuestion = `我想通过擲筊问卜咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            comprehensive: t('modern.types.comprehensive')
+          } as Record<string, string>;
+          enhancedQuestion = `${t('modern.askViaJiaobei', { type: typeLabels[consultationType] || consultationType, question })}`;
         }
         
         if (selectedMethodId === 'numerology' && consultationType) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运势',
-            'health': '健康状况',
-            'study': '学业考试',
-            'comprehensive': '综合运势'
-          };
-          enhancedQuestion = `我想通过数字命理咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            comprehensive: t('modern.types.comprehensive')
+          } as Record<string, string>;
+          enhancedQuestion = `${t('modern.askViaNumerology', { type: typeLabels[consultationType] || consultationType, question })}`;
         }
         
         if (selectedMethodId === 'ziwei' && consultationType) {
           const typeLabels = {
-            'love': '感情运势',
-            'career': '事业发展', 
-            'wealth': '财富运势',
-            'health': '健康状况',
-            'study': '学业考试',
-            'comprehensive': '综合运势'
-          };
-          enhancedQuestion = `我想通过紫微斗数咨询${typeLabels[consultationType] || consultationType}方面的问题：${question}`;
+            love: t('modern.types.love'),
+            career: t('modern.types.career'),
+            wealth: t('modern.types.wealth'),
+            health: t('modern.types.health'),
+            study: t('modern.types.study'),
+            comprehensive: t('modern.types.comprehensive')
+          } as Record<string, string>;
+          enhancedQuestion = `${t('modern.askViaZiwei', { type: typeLabels[consultationType] || consultationType, question })}`;
         }
         
         const response = await llmService.callAPI(
@@ -1236,7 +1115,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className={`w-20 h-20 mx-auto mb-4 rounded-xl bg-gradient-to-r ${selectedMethod.color} p-5 shadow-2xl`}>
           <IconComponent className="w-full h-full text-white" />
         </div>
-        <h2 className="text-3xl font-bold text-white mb-2">{selectedMethod.title}</h2>
+        <h2 className="text-3xl font-bold text-white mb-2">{displayMethodTitle}</h2>
         <p className="text-purple-200 text-lg">{selectedMethod.description}</p>
       </div>
 
@@ -1245,40 +1124,36 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className="mb-8 p-6 bg-purple-800/30 rounded-xl border border-purple-400/30">
           <div className="flex items-center mb-4">
             <User className="w-5 h-5 text-purple-300 mr-2" />
-            <h3 className="text-lg font-semibold text-white">被占卜人信息</h3>
+            <h3 className="text-lg font-semibold text_white">{t('modern.input.profile.title')}</h3>
             {!isProfileComplete && (
-              <span className="ml-2 text-xs bg-yellow-500 text-black px-2 py-1 rounded">
-                资料不完整
-              </span>
+              <span className="ml-2 text-xs bg-yellow-500 text-black px-2 py-1 rounded">{t('modern.input.profile.incomplete')}</span>
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-center text-purple-200">
-              <span className="text-yellow-400 mr-2">姓名:</span>
-              {profile.name || '未设置'}
+              <span className="text-yellow-400 mr-2">{t('modern.input.profile.name')}:</span>
+              {profile.name || t('modern.common.unknown')}
             </div>
             <div className="flex items-center text-purple-200">
-              <span className="text-yellow-400 mr-2">出生:</span>
-              {profile.birthDate || '未设置'}
+              <span className="text-yellow-400 mr-2">{t('modern.input.profile.birthDate')}:</span>
+              {profile.birthDate || t('modern.common.unknown')}
             </div>
             <div className="flex items-center text-purple-200">
-              <span className="text-yellow-400 mr-2">时间:</span>
-              {profile.birthTime || '未设置'}
+              <span className="text-yellow-400 mr-2">{t('modern.input.profile.birthTime')}:</span>
+              {profile.birthTime || t('modern.common.unknown')}
             </div>
             <div className="flex items-center text-purple-200">
-              <span className="text-yellow-400 mr-2">地点:</span>
-              {profile.birthPlace || '未设置'}
+              <span className="text-yellow-400 mr-2">{t('modern.input.profile.birthPlace')}:</span>
+              {profile.birthPlace || t('modern.common.unknown')}
             </div>
             <div className="flex items-center text-purple-200">
-              <span className="text-yellow-400 mr-2">性别:</span>
-              {profile.gender === 'male' ? '男' : profile.gender === 'female' ? '女' : '未设置'}
+              <span className="text-yellow-400 mr-2">{t('modern.input.profile.gender')}:</span>
+              {profile.gender === 'male' ? t('profile.ft.male') : profile.gender === 'female' ? t('profile.ft.female') : t('modern.common.unknown')}
             </div>
           </div>
           {!isProfileComplete && (
             <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-400/30 rounded-lg">
-              <p className="text-yellow-200 text-sm">
-                💡 完善个人资料可获得更精准的占卜结果
-              </p>
+              <p className="text-yellow-200 text-sm">💡 {t('modern.input.profile.tip')}</p>
             </div>
           )}
         </div>
@@ -1289,20 +1164,18 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className="mb-8 p-6 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-xl border border-yellow-400/30">
           <div className="flex items-center mb-4">
             <Crown className="w-5 h-5 text-yellow-300 mr-2" />
-            <h3 className="text-lg font-semibold text-white">咨询类型</h3>
-            <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-200 px-2 py-1 rounded">
-              必选
-            </span>
+            <h3 className="text-lg font-semibold text-white">{t('modern.bazi.type.title')}</h3>
+            <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-200 px-2 py-1 rounded">{t('modern.common.required')}</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
-              { value: 'love', label: '感情运势', icon: '💕', desc: '恋爱、婚姻、感情发展' },
-              { value: 'career', label: '事业发展', icon: '💼', desc: '工作、升职、事业规划' },
-              { value: 'wealth', label: '财富运程', icon: '💰', desc: '财运、投资、收入状况' },
-              { value: 'health', label: '健康状况', icon: '🏥', desc: '身体健康、疾病预防' },
-              { value: 'study', label: '学业考试', icon: '📚', desc: '学习、考试、升学' },
-              { value: 'general', label: '综合运势', icon: '✨', desc: '整体运势、人生走向' }
+              { value: 'love', label: t('modern.types.love'), icon: '💕', desc: t('modern.bazi.typeDesc.love') },
+              { value: 'career', label: t('modern.types.career'), icon: '💼', desc: t('modern.bazi.typeDesc.career') },
+              { value: 'wealth', label: t('modern.types.wealth'), icon: '💰', desc: t('modern.bazi.typeDesc.wealth') },
+              { value: 'health', label: t('modern.types.health'), icon: '🏥', desc: t('modern.bazi.typeDesc.health') },
+              { value: 'study', label: t('modern.types.study'), icon: '📚', desc: t('modern.bazi.typeDesc.study') },
+              { value: 'general', label: t('modern.types.general'), icon: '✨', desc: t('modern.bazi.typeDesc.general') }
             ].map((type) => (
               <button
                 key={type.value}
@@ -1323,9 +1196,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           </div>
           
           {!consultationType && (
-            <div className="mt-4 text-center text-yellow-400 text-sm bg-yellow-900/20 rounded-lg p-3 border border-yellow-400/30">
-              ⚠️ 请选择一个咨询类型以获得更精准的八字分析
-            </div>
+            <div className="mt-4 text-center text-yellow-400 text-sm bg-yellow-900/20 rounded-lg p-3 border border-yellow-400/30">⚠️ {t('modern.bazi.type.warning')}</div>
           )}
         </div>
       )}
@@ -1335,47 +1206,39 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className="mb-8 p-6 bg-gradient-to-r from-emerald-900/30 to-teal-900/30 rounded-xl border border-emerald-400/30">
           <div className="flex items-center mb-4">
             <User className="w-5 h-5 text-emerald-300 mr-2" />
-            <h3 className="text-lg font-semibold text-white">本次占卜信息</h3>
-            <span className="ml-2 text-xs bg-emerald-500/20 text-emerald-200 px-2 py-1 rounded">
-              可选填
-            </span>
+            <h3 className="text-lg font-semibold text_white">{t('modern.personality.session.title')}</h3>
+            <span className="ml-2 text-xs bg-emerald-500/20 text-emerald-200 px-2 py-1 rounded">{t('modern.common.optional')}</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-emerald-200 mb-2">
-                职业
-              </label>
+              <label className="block text-sm font-medium text-emerald-200 mb-2">{t('modern.personality.session.occupationLabel')}</label>
               <input
                 type="text"
                 value={sessionData.occupation}
                 onChange={(e) => handleSessionDataChange('occupation', e.target.value)}
-                placeholder="例如：教师、工程师、学生等"
+                placeholder={t('modern.personality.session.occupationPlaceholder')}
                 className="w-full p-3 bg-emerald-800/30 border border-emerald-600/50 rounded-lg text-white placeholder-emerald-400 focus:border-emerald-400 focus:outline-none transition-colors"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-emerald-200 mb-2">
-                兴趣爱好
-              </label>
+              <label className="block text-sm font-medium text-emerald-200 mb-2">{t('modern.personality.session.hobbiesLabel')}</label>
               <input
                 type="text"
                 value={sessionData.hobbies}
                 onChange={(e) => handleSessionDataChange('hobbies', e.target.value)}
-                placeholder="例如：读书、运动、音乐等"
+                placeholder={t('modern.personality.session.hobbiesPlaceholder')}
                 className="w-full p-3 bg-emerald-800/30 border border-emerald-600/50 rounded-lg text-white placeholder-emerald-400 focus:border-emerald-400 focus:outline-none transition-colors"
               />
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-emerald-200 mb-2">
-                性格自我描述
-              </label>
+              <label className="block text_sm font-medium text-emerald-200 mb-2">{t('modern.personality.session.selfLabel')}</label>
               <textarea
                 value={sessionData.selfDescription}
                 onChange={(e) => handleSessionDataChange('selfDescription', e.target.value)}
-                placeholder="简单描述您的性格特点，例如：性格开朗、喜欢交朋友、做事认真负责等"
+                placeholder={t('modern.personality.session.selfPlaceholder')}
                 rows={3}
                 className="w-full p-3 bg-emerald-800/30 border border-emerald-600/50 rounded-lg text-white placeholder-emerald-400 focus:border-emerald-400 focus:outline-none resize-none transition-colors"
               />
@@ -1383,9 +1246,9 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           </div>
           
           <div className="mt-4 p-3 bg-emerald-900/20 border border-emerald-400/30 rounded-lg">
-            <p className="text-emerald-200 text-sm flex items-center">
+            <p className="text-emerald-200 text-sm flex items_center">
               <Lightbulb className="w-4 h-4 mr-2" />
-              这些信息仅用于本次占卜分析，不会保存到您的个人资料中
+              {t('modern.personality.session.note')}
             </p>
           </div>
         </div>
@@ -1413,7 +1276,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={compatibilityData.person1.name}
                   onChange={(e) => handleCompatibilityDataChange('person1', 'name', e.target.value)}
-                  placeholder="请输入您的姓名"
+                  placeholder={t('modern.form.namePlaceholder')}
                   className="w-full p-3 bg-purple-800/30 border border-purple-600/50 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1426,7 +1289,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="number"
                   value={compatibilityData.person1.age}
                   onChange={(e) => handleCompatibilityDataChange('person1', 'age', e.target.value)}
-                  placeholder="请输入您的年龄"
+                  placeholder={t('modern.form.agePlaceholder')}
                   className="w-full p-3 bg-purple-800/30 border border-purple-600/50 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1453,7 +1316,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => handleCompatibilityDataChange('person1', 'birthTime', e.target.value)}
                   className="w-full p-3 bg-purple-800/30 border border-purple-600/50 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
                 >
-                  <option value="">请选择时辰</option>
+                  <option value="">{t('modern.form.timeSelect')}</option>
                   <option value="子时">子时 (23:00-01:00)</option>
                   <option value="丑时">丑时 (01:00-03:00)</option>
                   <option value="寅时">寅时 (03:00-05:00)</option>
@@ -1478,7 +1341,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => handleCompatibilityDataChange('person1', 'gender', e.target.value)}
                   className="w-full p-3 bg-purple-800/30 border border-purple-600/50 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
                 >
-                  <option value="">请选择性别</option>
+                  <option value="">{t('modern.form.genderSelect')}</option>
                   <option value="男">男</option>
                   <option value="女">女</option>
                 </select>
@@ -1492,7 +1355,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={compatibilityData.person1.birthPlace}
                   onChange={(e) => handleCompatibilityDataChange('person1', 'birthPlace', e.target.value)}
-                  placeholder="请输入出生地"
+                  placeholder={t('modern.form.birthPlacePlaceholder')}
                   className="w-full p-3 bg-purple-800/30 border border-purple-600/50 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1518,7 +1381,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={compatibilityData.person1.hobbies}
                   onChange={(e) => handleCompatibilityDataChange('person1', 'hobbies', e.target.value)}
-                  placeholder="请输入您的兴趣爱好"
+                  placeholder={t('modern.form.hobbiesPlaceholder')}
                   className="w-full p-3 bg-purple-800/30 border border-purple-600/50 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1530,9 +1393,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="flex items-center mb-4">
               <Heart className="w-5 h-5 text-pink-300 mr-2" />
               <h3 className="text-lg font-semibold text-white">💕 对方信息</h3>
-              <span className="ml-2 text-xs bg-pink-500/20 text-pink-200 px-2 py-1 rounded">
-                必填
-              </span>
+              <span className="ml-2 text-xs bg-pink-500/20 text-pink-200 px-2 py-1 rounded">{t('modern.common.required')}</span>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1544,7 +1405,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={compatibilityData.person2.name}
                   onChange={(e) => handleCompatibilityDataChange('person2', 'name', e.target.value)}
-                  placeholder="请输入对方的姓名"
+                  placeholder={t('modern.form.partnerNamePlaceholder')}
                   className="w-full p-3 bg-pink-800/30 border border-pink-600/50 rounded-lg text-white placeholder-pink-400 focus:border-pink-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1557,7 +1418,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="number"
                   value={compatibilityData.person2.age}
                   onChange={(e) => handleCompatibilityDataChange('person2', 'age', e.target.value)}
-                  placeholder="请输入对方的年龄"
+                  placeholder={t('modern.form.partnerAgePlaceholder')}
                   className="w-full p-3 bg-pink-800/30 border border-pink-600/50 rounded-lg text-white placeholder-pink-400 focus:border-pink-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1584,7 +1445,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => handleCompatibilityDataChange('person2', 'birthTime', e.target.value)}
                   className="w-full p-3 bg-pink-800/30 border border-pink-600/50 rounded-lg text-white focus:border-pink-400 focus:outline-none transition-colors"
                 >
-                  <option value="">请选择时辰</option>
+                  <option value="">{t('modern.form.timeSelect')}</option>
                   <option value="子时">子时 (23:00-01:00)</option>
                   <option value="丑时">丑时 (01:00-03:00)</option>
                   <option value="寅时">寅时 (03:00-05:00)</option>
@@ -1609,7 +1470,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => handleCompatibilityDataChange('person2', 'gender', e.target.value)}
                   className="w-full p-3 bg-pink-800/30 border border-pink-600/50 rounded-lg text-white focus:border-pink-400 focus:outline-none transition-colors"
                 >
-                  <option value="">请选择性别</option>
+                  <option value="">{t('modern.form.genderSelect')}</option>
                   <option value="男">男</option>
                   <option value="女">女</option>
                 </select>
@@ -1623,7 +1484,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={compatibilityData.person2.birthPlace}
                   onChange={(e) => handleCompatibilityDataChange('person2', 'birthPlace', e.target.value)}
-                  placeholder="请输入出生地"
+                  placeholder={t('modern.form.birthPlacePlaceholder')}
                   className="w-full p-3 bg-pink-800/30 border border-pink-600/50 rounded-lg text-white placeholder-pink-400 focus:border-pink-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1649,7 +1510,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={compatibilityData.person2.hobbies}
                   onChange={(e) => handleCompatibilityDataChange('person2', 'hobbies', e.target.value)}
-                  placeholder="请输入对方的兴趣爱好"
+                  placeholder={t('modern.form.partnerHobbiesPlaceholder')}
                   className="w-full p-3 bg-pink-800/30 border border-pink-600/50 rounded-lg text-white placeholder-pink-400 focus:border-pink-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1676,7 +1537,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => handleCompatibilityRelationChange('relationshipType', e.target.value)}
                   className="w-full p-3 bg-indigo-800/30 border border-indigo-600/50 rounded-lg text-white focus:border-indigo-400 focus:outline-none transition-colors"
                 >
-                  <option value="">请选择关系类型</option>
+                  <option value="">{t('modern.form.relationSelect')}</option>
                   <option value="恋人">恋人</option>
                   <option value="夫妻">夫妻</option>
                   <option value="朋友">朋友</option>
@@ -1716,10 +1577,10 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className="mb-8 p-6 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-xl border border-blue-400/30">
           <div className="flex items-center mb-4">
             <User className="w-5 h-5 text-blue-300 mr-2" />
-            <h3 className="text-lg font-semibold text-white">增强占卜精度</h3>
+            <h3 className="text-lg font-semibold text_white">{t('modern.form.enhanceTitle')}</h3>
           </div>
           <p className="text-blue-200 text-sm mb-4">
-            完善您的个人资料（姓名、出生日期等）可以获得更个性化和精准的占卜分析结果。
+            {t('modern.form.enhanceDesc')}
           </p>
           <button
             onClick={() => navigate('/profile')}
@@ -1754,7 +1615,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => {
                      updateProfile({ occupation: e.target.value });
                    }}
-                  placeholder="请输入您的职业，如：程序员、教师、医生等"
+                  placeholder={t('modern.form.occupationPlaceholder')}
                   className="w-full p-3 bg-teal-800/30 border border-teal-600/50 rounded-lg text-white placeholder-teal-400 focus:border-teal-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1806,7 +1667,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="mt-4 p-3 bg-teal-900/20 border border-teal-400/30 rounded-lg">
               <p className="text-teal-200 text-sm flex items-center">
                 <Lightbulb className="w-4 h-4 mr-2" />
-                提供越详细的信息，生成的命格小故事就越个性化和精准
+                {t('modern.form.storyHint')}
               </p>
             </div>
           </div>
@@ -1860,7 +1721,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   type="text"
                   value={profile?.birthPlace || ''}
                   onChange={(e) => updateProfile({ birthPlace: e.target.value })}
-                  placeholder="请输入出生城市"
+                  placeholder={t('modern.form.birthCityPlaceholder')}
                   className="w-full p-3 bg-blue-800/30 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:border-blue-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -1874,7 +1735,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onChange={(e) => updateProfile({ gender: e.target.value })}
                   className="w-full p-3 bg-blue-800/30 border border-blue-600/50 rounded-lg text-white focus:border-blue-400 focus:outline-none transition-colors"
                 >
-                  <option value="">请选择性别</option>
+                  <option value="">{t('modern.form.genderSelect')}</option>
                   <option value="男">男</option>
                   <option value="女">女</option>
                 </select>
@@ -2087,13 +1948,13 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
       <div className="mb-8">
         <label className="block text-lg font-semibold text-white mb-4">
           <Wand2 className="w-5 h-5 inline mr-2" />
-          您想要咨询的问题
+          {t('modern.form.questionTitle')}
         </label>
         <div className="relative">
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="请描述您想要了解的问题，例如：健康、感情、工作、财运、学业等，或者详细描述具体情况..."
+            placeholder={t('modern.form.questionPlaceholder')}
             className="w-full h-32 p-4 bg-purple-900/50 border border-purple-400/30 rounded-xl text-white placeholder-purple-400 focus:border-yellow-400 focus:outline-none resize-none"
           />
           <div className="absolute bottom-3 right-3 text-purple-400 text-sm">
@@ -2106,7 +1967,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           <div className="mt-3 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg">
             <p className="text-blue-300 text-sm flex items-center">
               <Wand2 className="w-4 h-4 mr-2" />
-              请输入您的问题，例如“健康”、“感情”、“工作”等
+              {t('modern.form.questionExamples')}
             </p>
           </div>
         )}
@@ -2115,7 +1976,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           <div className="mt-3 p-3 bg-yellow-900/20 border border-yellow-400/30 rounded-lg">
             <p className="text-yellow-300 text-sm flex items-center">
               <span className="mr-2">⚠️</span>
-              请至少输入2个字符来描述您的问题
+              {t('modern.validation.tooShort')}
             </p>
           </div>
         )}
@@ -2424,13 +2285,13 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-gradient-to-br from-blue-900/60 to-indigo-900/60 rounded-xl border border-blue-400/30 p-6">
               <div className="text-center mb-4">
                 <h4 className="text-xl font-bold text-blue-300 mb-2">
-                  🎲 掷筊结果：{drawnJiaobei.result}
+                  🎲 {t('modern.jiaobei.resultLabel')}：{drawnJiaobei.result}
                 </h4>
               </div>
               
               <div className="space-y-4">
                 <div className="bg-blue-800/30 rounded-lg p-4">
-                  <h5 className="text-blue-300 font-semibold mb-2">🔮 结果含义：</h5>
+          <h5 className="text-blue-300 font-semibold mb-2">{t('modern.jiaobei.meaningTitle')}</h5>
                   <p className="text-blue-100 leading-relaxed">
                     {drawnJiaobei.meaning}
                   </p>
@@ -2442,7 +2303,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
                   onClick={() => setDrawnJiaobei(null)}
                   className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-all duration-300 transform hover:scale-105"
                 >
-                  🔄 重新掷筊
+                  🔄 {t('modern.jiaobei.redraw')}
                 </button>
               </div>
             </div>
@@ -2457,7 +2318,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             {llmService.isConfigured() ? (
               <>
                 <Wifi className="w-4 h-4 text-green-400" />
-                <span className="text-green-400">AI分析已配置</span>
+                <span className="text-green-400">{t('modern.aiConfigured')}</span>
               </>
             ) : (
               <>
@@ -2468,14 +2329,14 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           </div>
           <div className="text-indigo-300 text-xs">
             {llmService.isConfigured() 
-              ? '将使用真实AI分析 (开发模式)' 
+              ? t('modern.devUsingRealAI') 
               : '配置 .env 文件启用AI - 查看 LLM_SETUP.md'
             }
           </div>
         </div>
         {!llmService.isConfigured() && (
           <div className="mt-2 text-xs text-blue-300 bg-blue-900/20 rounded p-2">
-            💡 提示：当前使用智能模板生成结果。要启用真实AI分析，请在 .env 文件中配置 VITE_LLM_API_KEY
+            {t('modern.templateTip')}
           </div>
         )}
         {llmService.isConfigured() && (
@@ -2493,7 +2354,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
           className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl font-bold text-white text-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 mx-auto"
         >
           <Sparkles className="w-6 h-6" />
-          <span>开始{selectedMethod.title}</span>
+          <span>{t('modern.startMethod', { method: displayMethodTitle })}</span>
           <ChevronRight className="w-5 h-5" />
         </button>
         
@@ -2501,7 +2362,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className="mt-4">
           {!question.trim() && (
             <div className="text-center">
-              <p className="text-purple-300 text-sm">输入问题后即可开始{selectedMethod.title}</p>
+              <p className="text-purple-300 text-sm">{t('modern.inputHint', { method: displayMethodTitle })}</p>
             </div>
           )}
           
@@ -2509,7 +2370,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-yellow-900/20 border border-yellow-400/30 rounded-lg p-3">
               <p className="text-yellow-300 text-sm text-center flex items-center justify-center">
                 <span className="mr-2">⚠️</span>
-                输入内容不足：请至少输入2个字符来描述您的问题
+                {t('modern.validation.tooShort')}
               </p>
             </div>
           )}
@@ -2518,7 +2379,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-yellow-900/20 border border-yellow-400/30 rounded-lg p-3">
               <p className="text-yellow-300 text-sm text-center flex items-center justify-center">
                 <Star className="w-4 h-4 mr-2" />
-                请选择至少一张塔罗牌
+                {t('modern.validation.selectCards')}
               </p>
             </div>
           )}
@@ -2536,7 +2397,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-orange-900/20 border border-orange-400/30 rounded-lg p-3">
               <p className="text-orange-300 text-sm text-center flex items-center justify-center">
                 <Sun className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -2554,7 +2415,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-3">
               <p className="text-purple-300 text-sm text-center flex items-center justify-center">
                 <Heart className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -2572,7 +2433,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-3">
               <p className="text-blue-300 text-sm text-center flex items-center justify-center">
                 <Star className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -2581,7 +2442,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-amber-900/20 border border-amber-400/30 rounded-lg p-3">
               <p className="text-amber-300 text-sm text-center flex items-center justify-center">
                 <Gem className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -2590,7 +2451,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
               <p className="text-green-300 text-sm text-center flex items-center justify-center">
                 <Hash className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -2599,7 +2460,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-3">
               <p className="text-purple-300 text-sm text-center flex items-center justify-center">
                 <Star className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -2624,7 +2485,7 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
               <p className="text-green-300 text-sm text-center flex items-center justify-center">
                 <span className="mr-2">✅</span>
-                已准备就绪，点击上方按钮开始{selectedMethod.title}
+                {t('modern.ready', { method: displayMethodTitle })}
               </p>
             </div>
           )}
@@ -2647,8 +2508,8 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
             <Loader2 className="w-8 h-8 absolute top-4 left-4 text-yellow-400" />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">正在为您{selectedMethod.title}中...</h2>
-        <p className="text-purple-200">AI大师正在深度分析您的问题，请耐心等待</p>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('modern.processing')}</h2>
+        <p className="text-purple-200">{t('modern.processing')}</p>
       </div>
 
       <div className="space-y-3 text-purple-300 text-sm">
@@ -2660,12 +2521,12 @@ ${occupation ? `在${occupation}这个领域，` : ''}发挥您的性格优势�
         <div className="flex items-center justify-center opacity-80 transition-all duration-500 delay-1000">
           <div className="w-2 h-2 bg-blue-400 rounded-full mr-3 animate-pulse"></div>
           <Target className="w-4 h-4 mr-2" />
-          <span>分析问题核心...</span>
+          <span>{t('modern.step.analyzing')}</span>
         </div>
         <div className="flex items-center justify-center opacity-60 transition-all duration-500 delay-2000">
           <div className="w-2 h-2 bg-pink-400 rounded-full mr-3 animate-pulse"></div>
           <Sparkles className="w-4 h-4 mr-2" />
-          <span>生成专属指引...</span>
+          <span>{t('modern.step.generating')}</span>
         </div>
       </div>
     </div>
@@ -2679,7 +2540,7 @@ const renderResult = () => (
         <div className={`w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-r ${selectedMethod.color} p-4 shadow-xl`}>
           <IconComponent className="w-full h-full text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">{selectedMethod.title}结果</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('modern.resultTitle', { method: displayMethodTitle })}</h2>
         <div className="flex items-center justify-center text-purple-300 text-sm space-x-4">
           <div className="flex items-center">
             <Clock className="w-4 h-4 mr-1" />
@@ -2689,7 +2550,7 @@ const renderResult = () => (
             {isUsingAI ? (
               <>
                 <Wifi className="w-4 h-4 mr-1 text-green-400" />
-                <span className="text-green-400">AI分析</span>
+                <span className="text-green-400">{t('modern.aiAnalysis')}</span>
               </>
             ) : (
               <>
@@ -2708,7 +2569,7 @@ const renderResult = () => (
 
       {/* Your Question */}
       <div className="mb-6 p-4 bg-purple-800/30 rounded-xl border border-purple-400/30">
-        <h3 className="text-lg font-semibold text-yellow-400 mb-2">您的问题</h3>
+        <h3 className="text-lg font-semibold text-yellow-400 mb-2">{t('modern.yourQuestion')}</h3>
         <p className="text-purple-200">{question}</p>
       </div>
 
@@ -2716,7 +2577,7 @@ const renderResult = () => (
       <div className="mb-8 p-6 bg-gradient-to-br from-purple-900/60 to-indigo-900/60 rounded-xl border border-purple-400/30 animate-scale-in">
         <h3 className="text-xl font-bold text-white mb-4 flex items-center">
           <BookOpen className="w-5 h-5 mr-2" />
-          占卜解读
+          {t('modern.reading')}
         </h3>
         <div className="text-purple-100 leading-relaxed whitespace-pre-line animate-fade-in">
           {formatDisplayText(result)}
@@ -2739,10 +2600,10 @@ const renderResult = () => (
             {isGeneratingPlainLanguage ? (
               <div className="flex items-center space-x-2">
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>正在生成大白话解读，请稍候...</span>
+                <span>{t('modern.plain.generating')}</span>
               </div>
             ) : (
-              formatDisplayText(plainLanguageResult || '点击"大白话解读"按钮生成简化版本')
+              formatDisplayText(plainLanguageResult || t('modern.plain.clickToGenerate'))
             )}
           </div>
         </div>
@@ -2764,7 +2625,7 @@ const renderResult = () => (
           className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold text-white transition-all duration-300 flex items-center space-x-2 hover:scale-105 hover:shadow-lg"
         >
           <Shuffle className="w-5 h-5" />
-          <span>重新占卜</span>
+          <span>{t('modern.retry')}</span>
         </button>
 
         
@@ -2774,13 +2635,13 @@ const renderResult = () => (
               // Generate plain language interpretation when toggling on
               setIsGeneratingPlainLanguage(true);
               try {
-                const plainResult = await generatePlainLanguageAnalysis(result, question, selectedMethod.title);
+                const plainResult = await generatePlainLanguageAnalysis(result, question, displayMethodTitle);
                 setPlainLanguageResult(plainResult);
                 setShowPlainLanguage(true);
               } catch (error) {
                 console.error('Failed to generate plain language interpretation:', error);
                 // Fallback to local generation
-                setPlainLanguageResult(generatePlainLanguageInterpretation(result, question, selectedMethod.title));
+                setPlainLanguageResult(generatePlainLanguageInterpretation(result, question, displayMethodTitle));
                 setShowPlainLanguage(true);
               } finally {
                 setIsGeneratingPlainLanguage(false);
@@ -2799,13 +2660,13 @@ const renderResult = () => (
             <Lightbulb className="w-5 h-5" />
           )}
           <span>
-            {isGeneratingPlainLanguage ? '正在生成...' : (showPlainLanguage ? '隐藏大白话' : '大白话解读')}
+            {isGeneratingPlainLanguage ? t('modern.generating') : (showPlainLanguage ? t('modern.plain.hide') : t('modern.plain.show'))}
           </span>
         </button>
         
         <button
           onClick={() => {
-            const text = `${selectedMethod.title}结果\n\n问题：${question}\n\n解读：\n${formatDisplayText(result)}${showPlainLanguage ? '\n\n大白话解读：\n' + formatDisplayText(plainLanguageResult || generatePlainLanguageInterpretation(result, question, selectedMethod.title)) : ''}\n\n占卜时间：${new Date().toLocaleString('zh-CN')}`;
+            const text = `${t('modern.resultTitle', { method: displayMethodTitle })}\n\n${t('modern.yourQuestion')}：${question}\n\n${t('modern.reading')}：\n${formatDisplayText(result)}${showPlainLanguage ? '\n\n' + t('modern.plain.label') + '：\n' + formatDisplayText(plainLanguageResult || generatePlainLanguageInterpretation(result, question, displayMethodTitle)) : ''}\n\n${t('modern.generatedAt')}：${new Date().toLocaleString(dateLocale)}`;
             navigator.clipboard.writeText(text);
             setShowCopySuccess(true);
             setTimeout(() => setShowCopySuccess(false), 2000);
@@ -2813,7 +2674,7 @@ const renderResult = () => (
           className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-semibold text-white transition-all duration-300 flex items-center space-x-2 hover:scale-105 hover:shadow-lg relative"
         >
           <Download className="w-5 h-5" />
-          <span>{showCopySuccess ? '已复制!' : '复制结果'}</span>
+          <span>{showCopySuccess ? t('common.copied') : t('common.copy')}</span>
           {showCopySuccess && (
             <div className="absolute -top-2 -right-2 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
           )}
@@ -2839,7 +2700,7 @@ const renderResult = () => (
           onClick={() => {
             if (navigator.share) {
               navigator.share({
-                title: `${selectedMethod.title}结果`,
+                title: `${t('modern.resultTitle', { method: displayMethodTitle })}`,
                 text: formatDisplayText(result).slice(0, 100) + '...'
               });
             }
@@ -2847,7 +2708,7 @@ const renderResult = () => (
           className="px-6 py-3 bg-teal-600 hover:bg-teal-700 rounded-lg font-semibold text-white transition-all duration-300 flex items-center space-x-2 hover:scale-105 hover:shadow-lg"
         >
           <Share2 className="w-5 h-5" />
-          <span>分享结果</span>
+          <span>{t('common.share')}</span>
         </button>
       </div>
 
@@ -2865,7 +2726,7 @@ const renderResult = () => (
             className="flex items-center space-x-2 px-4 py-2 bg-purple-800/50 hover:bg-purple-700/50 rounded-lg transition-all duration-300 hover:scale-105"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>返回选择</span>
+            <span>{t('common.back')}</span>
           </button>
           
           <div className="flex items-center space-x-2">

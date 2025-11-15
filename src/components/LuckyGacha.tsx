@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Gift, RotateCcw, Copy, Save, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-hot-toast'
+import i18n from '../i18n'
 
 // Custom styles for enhanced UI
 const customStyles = `
@@ -318,11 +321,11 @@ const PREDICTIONS = getPredictions();
 const RARITY_WEIGHTS = { common: 70, uncommon: 20, rare: 8, epic: 2 };
 
 const CATEGORY_LABELS = {
-  love: '爱情',
-  career: '事业',
-  wealth: '财富',
-  health: '健康',
-  luck: '幸运提示'
+  love: 'gacha.categories.love',
+  career: 'gacha.categories.career',
+  wealth: 'gacha.categories.wealth',
+  health: 'gacha.categories.health',
+  luck: 'gacha.categories.luck'
 };
 
 const RARITY_STYLES = {
@@ -351,8 +354,9 @@ const LuckyGacha: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState<ConfettiPiece[]>([]);
-  const [copyText, setCopyText] = useState('复制');
-  const [saveText, setSaveText] = useState('保存到历史');
+  const { t } = useTranslation()
+  const [copyText, setCopyText] = useState(t('gacha.copy'));
+  const [saveText, setSaveText] = useState(t('gacha.saveToHistory'));
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
@@ -492,6 +496,8 @@ const LuckyGacha: React.FC = () => {
     
     setIsSpinning(true);
     setShowResult(false);
+    toast.dismiss()
+    toast(t('gacha.spinning'))
     
     // Simulate spinning animation
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -547,12 +553,12 @@ const LuckyGacha: React.FC = () => {
   const handleCopy = async () => {
     if (!currentPrediction) return;
     
-    const text = `【扭蛋预言】${currentPrediction.text}\n类别：${CATEGORY_LABELS[currentPrediction.cat]} · 稀有度：${currentPrediction.rarity.toUpperCase()}`;
+    const text = `【${t('gacha.copyTitle')}】${currentPrediction.text}\n${t('gacha.copyCategory')}: ${t(CATEGORY_LABELS[currentPrediction.cat])} · ${t('gacha.copyRarity')}: ${currentPrediction.rarity.toUpperCase()}`;
     
     try {
       await navigator.clipboard.writeText(text);
-      setCopyText('已复制');
-      setTimeout(() => setCopyText('复制'), 1200);
+      setCopyText(t('gacha.copied'));
+      setTimeout(() => setCopyText(t('gacha.copy')), 1200);
     } catch (e) {
       console.error('Failed to copy:', e);
     }
@@ -573,12 +579,12 @@ const LuckyGacha: React.FC = () => {
     };
     
     saveToHistory(historyItem);
-    setSaveText('已保存');
-    setTimeout(() => setSaveText('保存到历史'), 1000);
+    setSaveText(t('gacha.saved'));
+    setTimeout(() => setSaveText(t('gacha.saveToHistory')), 1000);
   };
 
   const clearHistory = () => {
-    if (confirm('确定要清除历史记录吗？')) {
+    if (confirm(t('gacha.clearConfirm'))) {
       setHistory([]);
       localStorage.removeItem('gacha_history_v1');
     }
@@ -603,17 +609,17 @@ const LuckyGacha: React.FC = () => {
               🎰
             </div>
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              命运扭蛋机
+              {t('gacha.title')}
             </h1>
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-2xl animate-bounce delay-300">
               ✨
             </div>
           </div>
-          <p className="text-lg text-purple-200 mb-2">轻轻一扭，收获今日神秘小启示</p>
+          <p className="text-lg text-purple-200 mb-2">{t('gacha.subtitle')}</p>
           <div className="flex items-center justify-center gap-2 text-sm text-purple-300 mb-4">
-            <span className="px-3 py-1 bg-purple-800/30 rounded-full border border-purple-500/30">🎲 随机预测</span>
-            <span className="px-3 py-1 bg-pink-800/30 rounded-full border border-pink-500/30">🎁 盲盒式体验</span>
-            <span className="px-3 py-1 bg-indigo-800/30 rounded-full border border-indigo-500/30">⭐ 稀有度系统</span>
+            <span className="px-3 py-1 bg-purple-800/30 rounded-full border border-purple-500/30">🎲 {t('gacha.pill.random')}</span>
+            <span className="px-3 py-1 bg-pink-800/30 rounded-full border border-pink-500/30">🎁 {t('gacha.pill.blind')}</span>
+            <span className="px-3 py-1 bg-indigo-800/30 rounded-full border border-indigo-500/30">⭐ {t('gacha.pill.rarity')}</span>
           </div>
           
           {/* 每周主题显示 */}
@@ -621,7 +627,7 @@ const LuckyGacha: React.FC = () => {
             <span className="text-2xl animate-pulse">{getCurrentTheme().emoji}</span>
             <div className="text-center">
               <div className="text-sm font-semibold text-indigo-300">{getCurrentTheme().name}</div>
-              <div className="text-xs text-indigo-400/70">第{getCurrentWeek()}周 • 特殊运势加成中</div>
+              <div className="text-xs text-indigo-400/70">{t('gacha.weekLabel', { week: getCurrentWeek() })}</div>
             </div>
             <span className="text-2xl animate-pulse">{getCurrentTheme().emoji}</span>
           </div>
@@ -647,7 +653,7 @@ const LuckyGacha: React.FC = () => {
               
               <div className="absolute top-6 left-6 flex items-center gap-2 text-sm text-purple-200 bg-purple-900/50 px-3 py-2 rounded-full border border-purple-400/30">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                扭蛋机运行中
+                {t('gacha.running')}
               </div>
               
               <div className="flex flex-col items-center justify-center h-full relative z-10">
@@ -671,9 +677,13 @@ const LuckyGacha: React.FC = () => {
                   </div>
                   
                   {/* Main Capsule with Anime Effects */}
-                  <div className={`relative w-32 h-32 md:w-36 lg:w-44 md:h-36 lg:h-44 rounded-full bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 flex items-center justify-center text-2xl md:text-3xl font-bold text-white shadow-2xl border-2 md:border-4 border-white/20 transition-all duration-700 ${
-                    isSpinning ? 'anime-rotate scale-95 shadow-pink-500/50 anime-glow' : 'hover:scale-105 shadow-purple-500/30 anime-float'
-                  }`}>
+                  <div
+                    onClick={handlePull}
+                    role="button"
+                    aria-disabled={isSpinning}
+                    className={`relative w-32 h-32 md:w-36 lg:w-44 md:h-36 lg:h-44 rounded-full bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 flex items-center justify-center text-2xl md:text-3xl font-bold text-white shadow-2xl border-2 md:border-4 border-white/20 transition-all duration-700 ${
+                      isSpinning ? 'anime-rotate scale-95 shadow-pink-500/50 anime-glow cursor-not-allowed' : 'hover:scale-105 shadow-purple-500/30 anime-float cursor-pointer'
+                    }`}>
                     {/* Inner magical glow */}
                     <div className="absolute inset-2 rounded-full bg-gradient-to-br from-pink-400/30 to-purple-400/30 backdrop-blur-sm"></div>
                     
@@ -742,7 +752,7 @@ const LuckyGacha: React.FC = () => {
                            currentPrediction.rarity === 'rare' ? '⭐' :
                            currentPrediction.rarity === 'uncommon' ? '🔮' : '🎯'}
                         </span>
-                        {currentPrediction.rarity.toUpperCase()}
+                        {t(`gacha.rarity.${currentPrediction.rarity}`)}
                       </div>
                       <div className="text-sm text-purple-200 opacity-75">
                         {new Date().toLocaleDateString()}
@@ -754,19 +764,19 @@ const LuckyGacha: React.FC = () => {
                       <div className="flex items-center gap-3 mb-3">
                         <span className="text-3xl anime-float">{currentPrediction.emoji || '🎯'}</span>
                         <div className="flex flex-col">
-                          <span className="text-sm text-purple-300 opacity-75">{getCurrentTheme().name}</span>
-                          <span className="text-xs text-purple-400 opacity-60">第 {getCurrentWeek()} 周特别预测</span>
+                          <span className="text-sm text-purple-300 opacity-75">{t(`gacha.weekThemes.${themeNameMap[getCurrentTheme().name] || 'adventure'}`)}</span>
+                          <span className="text-xs text-purple-400 opacity-60">{t('gacha.weekSpecial', { week: getCurrentWeek() })}</span>
                         </div>
                       </div>
                       <div className="text-lg md:text-xl font-bold mb-3 leading-relaxed md:leading-relaxed text-white">
-                        {currentPrediction.text}
+                        {localizedText(currentPrediction.text)}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-purple-200">
                         <span className="px-3 py-1.5 bg-purple-700/50 rounded-full border border-purple-500/30 backdrop-blur-sm">
-                          {currentPrediction.category || CATEGORY_LABELS[currentPrediction.cat]}
+                          {t(CATEGORY_LABELS[currentPrediction.cat])}
                         </span>
                         <span className="px-2 py-1 bg-slate-700/50 rounded-full text-xs opacity-75">
-                          {CATEGORY_LABELS[currentPrediction.cat]}
+                          {t(CATEGORY_LABELS[currentPrediction.cat])}
                         </span>
                       </div>
                     </div>
@@ -778,7 +788,7 @@ const LuckyGacha: React.FC = () => {
                       >
                         <Copy size={18} className="md:w-4 md:h-4" />
                         <span className="hidden sm:inline">{copyText}</span>
-                        <span className="sm:hidden">复制</span>
+                        <span className="sm:hidden">{t('gacha.copy')}</span>
                       </button>
                       <button 
                         onClick={handleSave}
@@ -786,7 +796,7 @@ const LuckyGacha: React.FC = () => {
                       >
                         <Save size={18} className="md:w-4 md:h-4" />
                         <span className="hidden sm:inline">{saveText}</span>
-                        <span className="sm:hidden">保存</span>
+                        <span className="sm:hidden">{t('gacha.save')}</span>
                       </button>
                     </div>
                   </div>
@@ -826,7 +836,7 @@ const LuckyGacha: React.FC = () => {
                           isSpinning ? 'anime-rotate' : 'anime-float'
                         }`}>{isSpinning ? '🎴' : '🎰'}</span>
                         <span className="text-lg font-black tracking-wider">
-                          {isSpinning ? '✨ 魔法中...' : '🎯 扭一下'}
+                          {isSpinning ? t('gacha.spinning') : t('gacha.pull')}
                         </span>
                       </div>
                       
@@ -931,7 +941,7 @@ const LuckyGacha: React.FC = () => {
                       <Sparkles size={18} className={`relative z-10 ${
                         isSpinning ? 'anime-rotate' : 'anime-sparkle'
                       }`} />
-                      <span className="relative z-10">连抽 x5</span>
+                      <span className="relative z-10">{t('gacha.multiPull')}</span>
                       <span className="relative z-10 text-xs bg-white/20 px-2 py-1 rounded-full anime-bounce">🎁</span>
                       
                       {/* Button sparkles */}
@@ -954,7 +964,7 @@ const LuckyGacha: React.FC = () => {
                     <button 
                       onClick={clearHistory}
                       className="relative px-5 md:px-4 py-5 md:py-4 bg-gradient-to-r from-slate-700/80 to-slate-800/80 border border-slate-500/50 rounded-xl text-sm font-medium transition-all duration-300 transform shadow-lg backdrop-blur-sm group overflow-hidden hover:scale-110 hover:bg-slate-600/80 hover:shadow-slate-500/30 active:scale-95 anime-float touch-manipulation"
-                      title="清除历史记录"
+                      title={t('gacha.clearHistoryTitle')}
                     >
                       {/* Button inner glow */}
                       <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-xl"></div>
@@ -972,7 +982,7 @@ const LuckyGacha: React.FC = () => {
                 <div className="border-t border-purple-500/20 pt-6">
                   <h3 className="flex items-center gap-2 text-sm font-bold text-purple-200 mb-4">
                     <span className="text-lg">📜</span>
-                    历史记录
+                    {t('gacha.historyTitle')}
                     {history.length > 0 && (
                       <span className="bg-purple-600/30 text-purple-200 px-2 py-1 rounded-full text-xs">
                         {history.length}
@@ -983,8 +993,8 @@ const LuckyGacha: React.FC = () => {
                     {history.length === 0 ? (
                       <div className="text-center py-8">
                         <div className="text-4xl mb-2">🎲</div>
-                        <div className="text-sm text-slate-400">还没有历史记录</div>
-                        <div className="text-xs text-purple-400 mt-1">开始扭蛋，收集你的预言吧！</div>
+                        <div className="text-sm text_slate-400">{t('gacha.historyEmpty')}</div>
+                        <div className="text-xs text-purple-400 mt-1">{t('gacha.historyHint')}</div>
                       </div>
                     ) : (
                       history.map((item, index) => (
@@ -1036,19 +1046,19 @@ const LuckyGacha: React.FC = () => {
             <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm md:text-sm text-purple-300">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                <span>实时运行</span>
+                <span>{t('gacha.footer.realtime')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-yellow-400">⚡</span>
-                <span>即时反馈</span>
+                <span>{t('gacha.footer.instant')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-pink-400">🎨</span>
-                <span>精美动效</span>
+                <span>{t('gacha.footer.effects')}</span>
               </div>
             </div>
             <div className="text-xs md:text-sm text-purple-400 bg-purple-900/20 px-3 md:px-4 py-2 rounded-full border border-purple-500/20 inline-block max-w-full">
-              ✨ 内含随机与趣味成分，纯娱乐体验 — 别把小扭蛋当作严肃决策依据哦 😉
+              ✨ {t('gacha.disclaimer')}
             </div>
           </div>
         </div>
@@ -1058,3 +1068,92 @@ const LuckyGacha: React.FC = () => {
 };
 
 export default LuckyGacha;
+  const themeNameMap: Record<string, string> = {
+    '魔法奇迹周': 'magic',
+    '幸运财富周': 'wealth',
+    '爱情浪漫周': 'love',
+    '事业成功周': 'career',
+    '健康活力周': 'health',
+    '创意灵感周': 'creativity',
+    '友谊社交周': 'friendship',
+    '冒险探索周': 'adventure'
+  }
+
+  const cn2ja: Record<string, string> = {
+    '今天有人会对你暗暗好感，微笑回应即可。': '今日はあなたに好意を寄せる人がいるかも。笑顔で返しましょう。',
+    '你的直觉很准，跟着感觉去做一件小决定。': '直感が冴えています。感覚に従って小さな決断を。',
+    '钱包里有惊喜，别忘了检查口袋。': '財布に嬉しいサプライズ。ポケットの確認も忘れずに。',
+    '午休 15 分钟，会让你精力翻倍。': '15分の昼休みで元気倍増。',
+    '今天适合尝试新事物，惊喜常在小改变里。': '今日は新しいことに挑戦を。小さな変化に喜びが宿ります。',
+    '今天会是平静而美好的一天，享受这份宁静。': '穏やかで素敵な一日。静けさを楽しんで。',
+    '保持耐心，一切都会按最好的计划进行。': '忍耐を保てば、すべては最善の計画通りに進みます。',
+    '今天适合整理思绪和制定未来的计划。': '思考を整理し、将来の計画を立てるのに適した日。',
+    '小心谨慎会为你避免不必要的麻烦。': '慎重さが不要なトラブルを避けてくれます。',
+    '今天是反思和总结的好时机，回顾过往收获智慧。': '振り返りと総括に最適な時。過去から学びを得ましょう。',
+    '保持健康的生活习惯很重要，身体是革命的本钱。': '健康的な生活習慣が大切。体は何よりの資本です。',
+    '今天适合与家人共度温馨时光，珍惜亲情。': '家族と温かな時間を。絆を大切に。',
+    '简单的快乐往往最珍贵，学会知足常乐。': 'シンプルな幸せが一番尊い。足るを知る心を。',
+    '今天记得多喝水，照顾好自己的身体。': '今日は水分をしっかりとって、体をいたわりましょう。',
+    '温和的阳光会为你带来好心情。': '柔らかな陽光が良い気分を連れてきます。',
+    '喜欢的人可能会发来意外消息，保持镇定。': '好きな人から思わぬ連絡があるかも。落ち着いて。',
+    '你会在工作中发现可以简化流程的好主意。': '仕事で手順を簡素化する良いアイデアが見つかります。',
+    '小额投资或理财阅读会给你新的方向。': '少額投資やマネー記事が新たな方向性を示します。',
+    '今晚适合做一次放松拉伸或热水泡脚。': '今夜はストレッチや足湯でリラックスを。',
+    '路上的一场小乌龙将变成笑谈，别放在心上。': '道中の小さなハプニングは笑い話に。気にしすぎないで。',
+    '一个意外的电话将带来好消息。': '意外な電話が良い知らせを運びます。',
+    '保持积极的心态，好事正在悄悄向你靠近。': '前向きな心が幸運を静かに呼び寄せます。',
+    '你的笑容将感染身边的每一个人，成为他们的阳光。': 'あなたの笑顔が周りを照らします。',
+    '今天是学习新技能的好日子，你的学习能力超乎想象。': '新しいスキル習得に最適な日。学習力は想像以上。',
+    '一个小小的改变将带来大大的不同，勇敢迈出第一步。': '小さな変化が大きな違いに。勇気ある一歩を。',
+    '今天你会发现生活中被忽略的小美好。': '見過ごしていた小さな美しさに気づけます。',
+    '相信自己的能力，你比想象中更强大更有潜力。': '自分の力を信じて。可能性は想像以上。',
+    '有人会在你最不经意时为你撑腰，记住感恩。': '思いがけない支えに感謝を忘れずに。',
+    '有机会参加对你长远有利的项目，主动出击。': '長期的利益につながる案件に参加するチャンス。主体的に。',
+    '你会得到一笔意外之财（可能是退税或报销）。': '臨時収入あり（返金や精算の可能性）。',
+    '你的精神状态会有明显提升，适合开始新习惯。': '精神状態が向上。新しい習慣を始める好機。',
+    '一件旧事将得到圆满的结局，庆祝一下吧。': '古い件が円満に決着。少し祝おう。',
+    '今天是展现你才华的绝佳时机，所有人都会被你的能力所震撼。': '才能を示す絶好の機会。周囲を驚かせます。',
+    '一个重要的决定将为你打开通往成功的新道路。': '重要な決断が成功への新しい道を開きます。',
+    '你的努力即将得到应有的回报，收获的季节已经到来。': '努力に見合う成果が近づいています。収穫の季節。',
+    '新的友谊将为你的生活带来意想不到的色彩和机会。': '新しい友情が予想外の彩りと機会をもたらします。',
+    '一个重要的人将在关键时刻给你指导。': '大切な人が要所で指針を示してくれます。',
+    '命运之门对你短暂开启：大胆说出你的心意吧。': '運命の扉が一時開きます。思いを大胆に伝えて。',
+    '你将遇到改变职业轨迹的关键人物，把握时机。': 'キャリア軌道を変える重要人物に出会います。好機を逃さず。',
+    '财富星高照：一个长期目标将迎来关键突破。': '財運の星が輝く。長期目標が大きく前進。',
+    '健康能量爆棚，适合挑战自我并获显著回报。': '健康エネルギーが満ちています。挑戦に大きな成果。',
+    '极其罕见的好运：今天可能是你记忆中的幸运日。': '非常に稀な幸運。今日は記憶に残るラッキーな日かも。',
+    '今天你将遇到改变人生的重要机会！宇宙的能量正在为你排列最完美的时机。': '人生を変える重要なチャンスに遭遇！宇宙のエネルギーが最良のタイミングを整えています。',
+    '意外之财即将降临！一个神秘的财富机会正在向你招手，准备好迎接惊喜吧！': '臨時収入が近づいています！神秘的な財の機会に備えて。',
+    '真爱就在不远处等待着你的到来，今天可能就是命运安排的相遇之日。': '真実の愛がすぐそばに。今日は運命的な出会いの日かも。',
+    '你的创意将获得巨大成功和认可！今天是展现天赋的绝佳时机。': '創意が大成功と評価を得ます！才能を示す絶好の時。',
+    '✨ 魔法奇迹周：今天你身上散发着神秘的魔法光芒，奇迹即将发生！': '✨ 魔法奇跡ウィーク：あなたに神秘の光が宿り、奇跡が起こりそう！',
+    '✨ 魔法能量正在你周围聚集，准备施展你的魔法吧！': '✨ 魔法のエネルギーが集まっています。魔法をかける準備を！',
+    '✨ 今天你的愿望有特殊的实现力量。': '✨ 今日は願いが特別に叶いやすい日。',
+    '💰 财富之神正在眷顾你，金钱运势达到顶峰！': '💰 財の神が微笑みます。金運は最高潮！',
+    '💰 今天是投资和理财的黄金时机。': '💰 投資や資産管理の黄金タイミング。',
+    '💰 小额意外收入正在路上。': '💰 少額の臨時収入がやってきます。',
+    '💕 爱神丘比特的箭正瞄准你，真爱即将降临！': '💕 キューピッドの矢があなたへ。真実の愛が近づいています！',
+    '💕 今天你的魅力值爆表，桃花运旺盛。': '💕 魅力が最大限。恋愛運が好調。',
+    '💕 一个温暖的拥抱正在等待你。': '💕 温かなハグがあなたを待っています。',
+    '🚀 事业火箭即将发射，成功的轨道已经锁定！': '🚀 仕事のロケットが発射準備完了。成功の軌道へ。',
+    '🚀 今天你的工作表现将获得上级认可。': '🚀 業務の評価が上がります。',
+    '🚀 一个职场机会正在向你招手。': '🚀 職場で新たな機会が手招き。',
+    '🌟 生命能量达到巅峰，你将拥有超人般的活力！': '🌟 生命エネルギーが頂点へ。驚異的な活力！',
+    '🌟 今天你的身体状态特别好，适合运动。': '🌟 今日の体調は特に良好。運動に適しています。',
+    '🌟 一个健康的新习惯将改善你的生活。': '🌟 新しい健康習慣が生活を改善します。',
+    '🎨 创意之神附体，你将创造出惊世之作！': '🎨 創意の神が降臨。傑作を生み出すでしょう！',
+    '🎨 今天你的想象力无限，灵感如泉涌。': '🎨 想像力が無限。インスピレーションが湧きます。',
+    '🎨 一个小小的创意将带来大大的惊喜。': '🎨 小さなアイデアが大きな驚きを。',
+    '🤝 友谊之花将绽放出最美丽的光芒，贵人相助！': '🤝 友情の花が最も美しく咲き、支援者が現れます！',
+    '🤝 今天你会结识一个重要的朋友。': '🤝 重要な友人と出会えます。',
+    '🤝 朋友圈将为你带来好消息。': '🤝 友人の輪が良い知らせを運びます。',
+    '🗺️ 冒险之路将引领你发现人生的宝藏！': '🗺️ 冒険の道が人生の宝物へ導きます！',
+    '🗺️ 今天适合尝试从未做过的事情。': '🗺️ 未経験のことに挑戦するのに最適な日。',
+    '🗺️ 一次小小的探索将带来新发现。': '🗺️ 小さな探索が新発見をもたらします。'
+  }
+
+  const localizedText = (text: string) => {
+    const lang = (i18n.language || 'en').toLowerCase()
+    if (lang.startsWith('ja') && cn2ja[text]) return cn2ja[text]
+    return text
+  }

@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { Calendar, Gift, Star, Flame, Trophy } from 'lucide-react'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 
 interface CheckinData {
   hasCheckedToday: boolean
@@ -13,6 +14,7 @@ interface CheckinData {
 
 export default function DailyCheckin() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [checkinData, setCheckinData] = useState<CheckinData>({
     hasCheckedToday: false,
     streak: 0,
@@ -70,21 +72,14 @@ export default function DailyCheckin() {
   }
 
   const generateDailyFortune = () => {
-    const fortunes = [
-      '今日运势极佳，适合做重要决定，贵人运旺盛。',
-      '财运亨通，投资理财有收获，但需谨慎行事。',
-      '感情运势上升，单身者有望遇到心仪对象。',
-      '事业运势稳定，工作中会有新的机遇出现。',
-      '健康运势良好，适合开始新的健身计划。',
-      '学习运势旺盛，是充实自己的好时机。',
-      '人际关系和谐，朋友会给你带来好消息。',
-      '创意灵感丰富，艺术创作会有突破。',
-      '旅行运势佳，适合外出游玩或出差。',
-      '家庭运势温馨，与家人共度美好时光。'
+    const fortunes = t('daily.fortunes', { returnObjects: true }) as string[]
+    const list = Array.isArray(fortunes) && fortunes.length > 0 ? fortunes : []
+    const fallback = [
+      '今日运势良好，保持积极心态。'
     ]
-    
-    const randomIndex = Math.floor(Math.random() * fortunes.length)
-    return fortunes[randomIndex]
+    const pool = list.length ? list : fallback
+    const randomIndex = Math.floor(Math.random() * pool.length)
+    return pool[randomIndex]
   }
 
   const handleCheckin = async () => {
@@ -165,29 +160,29 @@ export default function DailyCheckin() {
     <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-lg p-6 border border-purple-400/30">
       <div className="text-center mb-6">
         <Calendar className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
-        <h2 className="text-2xl font-bold text-white mb-2">每日签到</h2>
-        <p className="text-purple-200">坚持签到，获取每日运势</p>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('daily.title')}</h2>
+        <p className="text-purple-200">{t('daily.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-purple-800/30 rounded-lg p-4 text-center">
           <Flame className="w-8 h-8 mx-auto mb-2 text-orange-400" />
           <div className="text-2xl font-bold text-white">{checkinData.streak}</div>
-          <div className="text-sm text-purple-200">连续签到</div>
+          <div className="text-sm text-purple-200">{t('daily.stats.streak')}</div>
         </div>
         
         <div className="bg-purple-800/30 rounded-lg p-4 text-center">
           <Trophy className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
           <div className="text-2xl font-bold text-white">{checkinData.totalCheckins}</div>
-          <div className="text-sm text-purple-200">累计签到</div>
+          <div className="text-sm text-purple-200">{t('daily.stats.total')}</div>
         </div>
         
         <div className="bg-purple-800/30 rounded-lg p-4 text-center">
           <Star className="w-8 h-8 mx-auto mb-2 text-pink-400" />
           <div className="text-2xl font-bold text-white">
-            {checkinData.hasCheckedToday ? '已签到' : '未签到'}
+            {checkinData.hasCheckedToday ? t('daily.status.checked') : t('daily.status.notChecked')}
           </div>
-          <div className="text-sm text-purple-200">今日状态</div>
+          <div className="text-sm text-purple-200">{t('daily.stats.status')}</div>
         </div>
       </div>
 
@@ -197,10 +192,10 @@ export default function DailyCheckin() {
           disabled={checking}
           className="w-full py-3 px-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed mb-4"
         >
-          {checking ? '签到中...' : (
+          {checking ? t('daily.checking') : (
             <>
               <Gift className="w-5 h-5 inline mr-2" />
-              立即签到获取今日运势
+              {t('daily.checkButton')}
             </>
           )}
         </button>
@@ -208,7 +203,7 @@ export default function DailyCheckin() {
         <div className="bg-green-900/50 border border-green-500 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-center text-green-200">
             <Gift className="w-5 h-5 mr-2" />
-            今日已签到！
+            {t('daily.checkedToday')}
           </div>
         </div>
       )}
@@ -217,7 +212,7 @@ export default function DailyCheckin() {
         <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/50 rounded-lg p-4">
           <h3 className="text-lg font-semibold text-yellow-400 mb-2 flex items-center">
             <Star className="w-5 h-5 mr-2" />
-            今日运势
+            {t('daily.fortuneTitle')}
           </h3>
           <p className="text-yellow-100">{checkinData.todaysFortune}</p>
         </div>

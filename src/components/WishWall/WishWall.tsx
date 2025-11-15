@@ -3,15 +3,18 @@ import { useAuth } from '../../contexts/AuthContext'
 import { supabase, type Wish } from '../../lib/supabase'
 import { Heart, MessageCircle, Send, Star, Sparkles } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { zhCN, ja, enUS } from 'date-fns/locale'
+import { useTranslation } from 'react-i18next'
 
 export default function WishWall() {
   const { user } = useAuth()
+  const { t, i18n } = useTranslation()
   const [wishes, setWishes] = useState<Wish[]>([])
   const [newWish, setNewWish] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(true)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const dfLocale = i18n.language.startsWith('ja') ? ja : (i18n.language.startsWith('en') ? enUS : zhCN)
 
   useEffect(() => {
     loadWishes()
@@ -118,8 +121,8 @@ export default function WishWall() {
     <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-lg p-6 border border-purple-400/30">
       <div className="text-center mb-6">
         <Sparkles className="w-12 h-12 mx-auto mb-4 text-pink-400" />
-        <h2 className="text-2xl font-bold text-white mb-2">许愿墙</h2>
-        <p className="text-purple-200">在这里许下心愿，让宇宙听见你的声音</p>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('wish.title')}</h2>
+        <p className="text-purple-200">{t('wish.subtitle')}</p>
       </div>
 
       {/* Wish Input */}
@@ -128,7 +131,7 @@ export default function WishWall() {
           <textarea
             value={newWish}
             onChange={(e) => setNewWish(e.target.value)}
-            placeholder="写下你的心愿..."
+            placeholder={t('wish.placeholder')}
             className="w-full p-3 bg-purple-700/50 border border-purple-600 rounded-lg text-white placeholder-purple-400 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 resize-none"
             rows={3}
             maxLength={200}
@@ -142,7 +145,7 @@ export default function WishWall() {
                 onChange={(e) => setIsAnonymous(e.target.checked)}
                 className="mr-2 rounded"
               />
-              匿名许愿
+              {t('wish.anonymous')}
             </label>
             
             <div className="flex items-center space-x-2">
@@ -155,7 +158,7 @@ export default function WishWall() {
                 className="px-4 py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-medium text-white transition-all duration-300 disabled:cursor-not-allowed flex items-center"
               >
                 <Send className="w-4 h-4 mr-1" />
-                {submitting ? '发送中...' : '许愿'}
+                {submitting ? t('wish.sending') : t('wish.submit')}
               </button>
             </div>
           </div>
@@ -167,7 +170,7 @@ export default function WishWall() {
         {wishes.length === 0 ? (
           <div className="text-center py-8">
             <Star className="w-16 h-16 mx-auto mb-4 text-purple-400 opacity-50" />
-            <p className="text-purple-300">还没有人许愿，成为第一个许愿的人吧！</p>
+            <p className="text-purple-300">{t('wish.empty')}</p>
           </div>
         ) : (
           wishes.map((wish, index) => (
@@ -179,13 +182,13 @@ export default function WishWall() {
                 <div className="flex items-center space-x-2">
                   <MessageCircle className="w-5 h-5 text-purple-300" />
                   <span className="text-sm text-purple-200">
-                    {wish.is_anonymous ? '匿名用户' : '用户'}
+                    {wish.is_anonymous ? t('wish.anonymousUser') : t('wish.user')}
                   </span>
                 </div>
                 <span className="text-xs text-purple-300">
                   {formatDistanceToNow(new Date(wish.created_at), {
                     addSuffix: true,
-                    locale: zhCN
+                    locale: dfLocale
                   })}
                 </span>
               </div>
@@ -203,7 +206,7 @@ export default function WishWall() {
                 
                 <div className="flex items-center space-x-1 text-yellow-300">
                   <Star className="w-4 h-4" />
-                  <span className="text-sm">愿望成真</span>
+                  <span className="text-sm">{t('wish.wishComeTrue')}</span>
                 </div>
               </div>
             </div>
@@ -213,7 +216,7 @@ export default function WishWall() {
 
       {wishes.length >= 50 && (
         <div className="text-center mt-6">
-          <p className="text-purple-300 text-sm">显示最新50条愿望</p>
+          <p className="text-purple-300 text-sm">{t('wish.showLatest')}</p>
         </div>
       )}
     </div>

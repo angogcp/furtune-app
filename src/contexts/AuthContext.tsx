@@ -124,12 +124,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       )
 
       if (error) {
-        // Handle specific error cases
         if (error.code === 'PGRST116') {
           console.log('User profile not found, this might be expected for new users')
           return
         }
-        
+        const msg = (error.message || '').toLowerCase()
+        if (msg.includes('relation "users" does not exist')) {
+          console.warn('Users table missing in Supabase')
+          return
+        }
         throw error
       }
 
@@ -138,7 +141,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: any) {
       console.error('Error fetching user profile:', error)
-      
+      const msg = (error?.message || '').toLowerCase()
+      if (msg.includes('relation "users" does not exist')) {
+        return
+      }
       // Retry logic for network errors
       if (retryCount < maxRetries && networkManager.getState().isSupabaseConnected) {
         const delay = 1000 * Math.pow(2, retryCount)
@@ -149,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }, delay)
       } else if (retryCount === 0) {
         // Only show error on first attempt to avoid spam
-        networkManager.showNetworkError('无法获取用户资料，请检查网络连接')
+        networkManager.showNetworkError('需要在Supabase创建必需的表（users），请在SQL编辑器运行 database/init.sql')
       }
     }
   }
@@ -161,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       await networkManager.executeWithRetry(async () => {
-        // Check if username already exists
+        // Check if username already exists (skip if table missing)
         const { data: existingUser, error: checkError } = await supabase
           .from('users')
           .select('username')
@@ -169,7 +175,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .single()
 
         if (checkError && checkError.code !== 'PGRST116') {
-          throw checkError
+          const msg = (checkError.message || '').toLowerCase()
+          if (!msg.includes('relation "users" does not exist')) {
+            throw checkError
+          }
         }
 
         if (existingUser) {
@@ -256,6 +265,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {}
     } catch (error: any) {
       console.error('Sign in error:', error)
+      const msg = (error.message || '').toLowerCase()
+      const state = networkManager.getState()
+      const isNetwork = msg.includes('failed to fetch') || msg.includes('name_not_resolved') || !state.isSupabaseConnected || !state.isOnline
+      if (isNetwork) {
+        const offlineId = `anon-${Math.random().toString(36).slice(2, 10)}`
+        const offlineUser = {
+          id: offlineId,
+          app_metadata: { provider: 'offline' },
+          user_metadata: { username: 'guest' },
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+          role: 'authenticated'
+        } as any
+        setUser(offlineUser)
+        setUserProfile({
+          id: offlineId,
+          email: 'guest@offline.local',
+          username: 'guest',
+          created_at: new Date().toISOString(),
+          sign_in_streak: 0,
+          total_sign_ins: 0
+        })
+        networkManager.showNetworkSuccess('已进入离线游客模式')
+        return {}
+      }
       const errorMessage = error.message || '登录失败，请重试'
       networkManager.showNetworkError(errorMessage)
       return { error: errorMessage }
@@ -278,6 +312,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {}
     } catch (error: any) {
       console.error('Anonymous sign in error:', error)
+      const msg = (error.message || '').toLowerCase()
+      const state = networkManager.getState()
+      const isNetwork = msg.includes('failed to fetch') || !state.isSupabaseConnected || !state.isOnline
+      if (isNetwork) {
+        const offlineId = `anon-${Math.random().toString(36).slice(2, 10)}`
+        const offlineUser = {
+          id: offlineId,
+          app_metadata: { provider: 'offline' },
+          user_metadata: { username: 'guest' },
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+          role: 'authenticated'
+        } as any
+        setUser(offlineUser)
+        setUserProfile({
+          id: offlineId,
+          email: 'guest@offline.local',
+          username: 'guest',
+          created_at: new Date().toISOString(),
+          sign_in_streak: 0,
+          total_sign_ins: 0
+        })
+        networkManager.showNetworkSuccess('已进入离线游客模式')
+        return {}
+      }
       const errorMessage = error.message || '游客登录失败，请重试'
       networkManager.showNetworkError(errorMessage)
       return { error: errorMessage }

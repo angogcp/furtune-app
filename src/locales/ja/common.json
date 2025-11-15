@@ -1,0 +1,647 @@
+{
+  "brand": "占い楽",
+  "appName": "占い楽",
+  "loading": "読み込み中...",
+  "nav": {
+    "fortune": "占い",
+    "checkin": "チェックイン",
+    "wishes": "願いの壁",
+    "faq": "FAQ",
+    "profile": "プロフィール"
+  },
+  "auth": {
+    "login": "ログイン",
+    "loggingIn": "ログイン中...",
+    "guestLogin": "ゲストで試す",
+    "guestLoggingIn": "ゲストモードに入っています...",
+    "welcomeBack": "おかえりなさい",
+    "loginSubtitle": "アカウントにログイン、またはゲストで続行",
+    "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力",
+    "noAccount": "アカウントがありませんか？",
+    "registerNow": "今すぐ登録",
+    "createAccount": "アカウント作成",
+    "registerSubtitle": "占いコミュニティに参加しましょう",
+    "username": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "confirmPassword": "パスワード確認",
+    "confirmPasswordPlaceholder": "もう一度入力",
+    "register": "登録",
+    "registering": "登録中...",
+    "hasAccount": "すでにアカウントがありますか？",
+    "loginNow": "今すぐログイン"
+  },
+  "guest": {
+    "headline": "参加して、神秘の旅を始めましょう",
+    "cta": "今すぐ占いの旅を始める"
+  },
+  "config": {
+    "title": "設定のヒント",
+    "supabaseTip": "Supabaseの環境変数を設定して機能を有効にしてください：",
+    "doneTip": "設定後にアプリを再起動すると、ログイン、チェックイン、願いの壁を使用できます。"
+  },
+  "home": {
+    "tagline": "今日は占いましたか？一緒に楽しみましょう！",
+    "browse": "カテゴリーで探す",
+    "difficulty": {
+      "beginner": "初級",
+      "intermediate": "中級",
+      "advanced": "上級",
+      "unknown": "不明"
+    },
+    "notFoundTitle": "該当する占い方法が見つかりません",
+    "notFoundDesc": "他のキーワードを試すか、別のカテゴリを選択してください",
+    "action": { "start": "始める" },
+    "disclaimer": "✨ 占い結果は参考情報です。重要な決定は理性的に ✨",
+    "categories": {
+      "traditional": { "title": "伝統的な占い", "description": "古来の方法で深く解析" },
+      "modern": { "title": "現代占い", "description": "トレンディで楽しい、気軽に体験" },
+      "quick": { "title": "クイックテスト", "description": "すぐに体験、素早く答え" },
+      "relationship": { "title": "恋愛・関係", "description": "恋愛運、関係分析" }
+    },
+    "methods": {
+      "bazi": { "title": "四柱推命", "description": "伝統的な四柱推命で人生の格局を洞察", "tags": ["深掘り", "伝統", "専門"] },
+      "ziwei": { "title": "紫微斗数", "description": "紫微の命盤を読み取り、運命の軌跡を予測", "tags": ["命盤", "予測", "専門"] },
+      "lottery": { "title": "観音籤", "description": "誠心で祈り、霊籤で導きを得る", "tags": ["祈願", "導き", "簡単"] },
+      "jiaobei": { "title": "擲筊", "description": "神様に問い、明確な答えを得る", "tags": ["問答", "神様", "簡単"] },
+      "tarot": { "title": "タロット", "description": "タロットの神秘で人生の指針を得る", "tags": ["タロット", "神秘", "指針"] },
+      "astrology": { "title": "占星術", "description": "星の運行があなたに与える影響を読み解く", "tags": ["星座", "星", "運勢"] },
+      "numerology": { "title": "数秘術", "description": "数字のエネルギーで運命のコードを解く", "tags": ["数字", "エネルギー", "数秘"] },
+      "personality": { "title": "性格テスト", "description": "性格特性を深く分析し、真の自分を知る", "tags": ["性格", "心理", "簡単"] },
+      "lifestory": { "title": "命運ストーリー", "description": "専用の運命物語を生成し、楽しく軌跡を知る", "tags": ["物語", "楽しい", "創造"] },
+      "compatibility": { "title": "相性スコア", "description": "二人の縁の指数をテストし、相性を分析", "tags": ["相性", "縁", "恋愛"] },
+      "gacha": { "title": "運命ガチャ", "description": "ブラインドボックス風の予言をくるっと一回で", "tags": ["ガチャ", "ランダム", "楽しい"] }
+    }
+  }
+  ,
+  "faq": {
+    "title": "よくある質問",
+    "subtitle": "占いに関するご質問への回答",
+    "searchPlaceholder": "質問を検索...",
+    "notFoundTitle": "関連する質問が見つかりません",
+    "notFoundDesc": "別のキーワードを試すか、他のカテゴリを選択してください",
+    "categories": {
+      "all": "すべて",
+      "basics": "基本",
+      "guide": "ガイド",
+      "privacy": "プライバシー",
+      "tips": "コツ",
+      "features": "機能"
+    },
+    "items": {
+      "1": {"question": "占い結果は正確ですか？", "answer": "結果は入力情報と選択した方法に基づいて分析されます。人生の指針として、理性的な判断と併せて参考にしてください。"},
+      "2": {"question": "適切な占い方法の選び方は？", "answer": "質問により適した方法が異なります：\n• 四柱推命：人生の格局を深く分析\n• タロット：感情・人間関係\n• 観音籤：導きを求める\n• 占星術：特性や運勢\nニーズに応じて選びましょう。"},
+      "3": {"question": "個人情報は保護されますか？", "answer": "プライバシーを重視しています：\n• 暗号化保存\n• 第三者への提供なし\n• いつでも編集・削除可能\n• 記録は本人のみ閲覧"},
+      "4": {"question": "占いはどのくらい時間がかかりますか？", "answer": "所要時間は方法により異なります：\n• クイックテスト：1–2分\n• タロット：3–5分\n• 四柱推命：5–10分\n• 紫微斗数：8–15分\n複雑さやネット状況に依存します。"},
+      "5": {"question": "同じ質問を繰り返してもいいですか？", "answer": "短期間での繰り返しは避けましょう。状況が変化した場合、または十分な時間が経過した場合（目安：1か月以上）に再度占うのがおすすめです。"},
+      "6": {"question": "精度を高めるには？", "answer": "精度向上のため：\n• プロフィールを充実\n• 具体的な質問\n• 誠実な態度\n• 適切なタイミング\n• 詳細な状況説明"},
+      "7": {"question": "結果で運命は変わりますか？", "answer": "占いは現状の傾向分析であり運命の固定ではありません。方向性を理解することで：\n• 賢明な選択\n• 事前準備\n• 好機の把握\n• 心構えと行動の調整\n変化はあなたの行動から生まれます。"},
+      "8": {"question": "チェックインと願いの壁の目的は？", "answer": "チェックイン：\n• 毎日のポイント\n• 連続ボーナス\n• ポイントで機能解放\n願いの壁：\n• 願いの記録\n• ポジティブ共有\n• 実現状況の定期確認"}
+    },
+    "moreQuestionsTitle": "他に質問がありますか？",
+    "moreQuestionsDesc": "回答が見つからない場合は質問を送信してください。早急に対応します。",
+    "labelQuestion": "ご質問",
+    "placeholderQuestion": "質問を詳しく入力してください...",
+    "labelEmail": "メール（任意）",
+    "placeholderEmail": "your@email.com",
+    "submitButton": "質問を送信",
+    "submitSuccess": "メールクライアントを開きました。送信してください！",
+    "submitEmpty": "質問を入力してください",
+    "mailSubject": "占い楽 - ユーザー質問",
+    "mailBody": "ユーザー質問：\n{{question}}\n\nメール：{{email}}",
+    "mailEmailMissing": "未提供"
+  }
+  ,
+  "daily": {
+    "title": "毎日チェックイン",
+    "subtitle": "継続してチェックインして、今日の運勢を受け取りましょう",
+    "stats": {
+      "streak": "連続",
+      "total": "累計",
+      "status": "今日"
+    },
+    "status": {
+      "checked": "チェック済み",
+      "notChecked": "未チェック"
+    },
+    "checking": "チェック中...",
+    "checkButton": "今すぐチェックインして今日の運勢を受け取る",
+    "checkedToday": "今日はチェックしました！",
+    "fortuneTitle": "今日の運勢",
+    "fortunes": [
+      "今日は好調、重要な決断に適し、援助者に恵まれます。",
+      "金運良好、投資や資産運用に収穫あり。ただし慎重に。",
+      "恋愛運上昇中。シングルの方は素敵な出会いがあるかも。",
+      "仕事運は安定。職場で新たなチャンスが現れる可能性。",
+      "健康運良好。新しいフィットネス計画を始めるのに最適。",
+      "学習運が強い。自己成長にぴったりのタイミング。",
+      "人間関係は調和的。友人から良い知らせが届くかも。",
+      "創造力が豊か。アートやアイデアでブレイクスルー。",
+      "旅行運は吉。遊びにも出張にも良い一日。",
+      "家庭運は温かい。家族と素敵な時間を過ごせます。"
+    ]
+  }
+  ,
+  "wish": {
+    "title": "願いの壁",
+    "subtitle": "ここで願いを込めて、宇宙に届けましょう",
+    "placeholder": "願い事を入力...",
+    "anonymous": "匿名で投稿",
+    "sending": "送信中...",
+    "submit": "願いを投稿",
+    "empty": "まだ願いはありません。最初の投稿者になりましょう！",
+    "anonymousUser": "匿名",
+    "user": "ユーザー",
+    "wishComeTrue": "願いが叶いますように",
+    "showLatest": "最新の50件を表示しています"
+  }
+  ,
+  "profile": {
+    "common": {
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "キャンセル",
+      "notSet": "未設定"
+    },
+    "login": {
+      "title": "ログインして機能を解放",
+      "desc": "ログイン後はチェックイン報酬、実績バッジ、履歴などを利用できます",
+      "backHome": "ホームに戻ってログイン"
+    },
+    "account": {
+      "editUsername": "ユーザー名を編集",
+      "streak": "連続",
+      "total": "累計チェックイン",
+      "days": "参加日数",
+      "joinedAt": "参加日",
+      "lastSignIn": "最終ログイン",
+      "badges": "実績バッジ",
+      "signOut": "ログアウト"
+    },
+    "badges": {
+      "firstSignIn": "初回チェックイン",
+      "weekStreak": "1週間連続",
+      "monthStreak": "1か月連続",
+      "master": "チェックイン達人"
+    },
+    "ft": {
+      "title": "占いプロフィール",
+      "edit": "占いプロフィールを編集",
+      "name": "氏名",
+      "namePlaceholder": "氏名を入力",
+      "birthDate": "生年月日",
+      "birthTime": "出生時刻",
+      "birthTimeHint": "出生時刻は四柱推命などに重要です",
+      "birthPlace": "出生地",
+      "birthPlacePlaceholder": "例：東京",
+      "gender": "性別",
+      "male": "男性",
+      "female": "女性",
+      "genderSelect": "性別を選択",
+      "completeHint": "占いプロフィールを完成させると、より正確な結果が得られます",
+      "setButton": "占いプロフィールを設定"
+    }
+  }
+  ,
+  "common": {
+    "back": "戻る",
+    "share": "共有",
+    "copy": "結果をコピー",
+    "copied": "コピーしました！"
+  },
+  "modern": {
+    "notFound": "選択した占い方法が見つかりません",
+    "aiConfigured": "AI分析が設定されています",
+    "devUsingRealAI": "実際のAI分析を使用（開発モード）",
+    "templateTip": "ヒント：スマートテンプレートを使用中。実AIを有効にするには .env で VITE_LLM_API_KEY を設定してください",
+    "startMethod": "{{method}} を開始",
+    "inputHint": "質問を入力して {{method}} を開始",
+    "validation": {
+      "tooShort": "入力が短すぎます：2文字以上で質問を入力してください",
+      "selectCards": "少なくとも1枚のタロットを選択してください",
+      "selectType": "相談タイプを選択してください"
+    },
+    "ready": "準備完了。上のボタンを押して {{method}} を開始",
+    "processing": "AIマスターが質問を分析しています。少々お待ちください",
+    "step": {
+      "analyzing": "質問の核心を分析中...",
+      "generating": "パーソナライズされた指針を生成中..."
+    },
+    "resultTitle": "{{method}} の結果",
+    "aiAnalysis": "AI分析",
+    "yourQuestion": "あなたの質問",
+    "reading": "解読",
+    "retry": "再占い",
+    "generating": "生成中...",
+    "plain": {
+      "generating": "わかりやすい表現を生成中...",
+      "clickToGenerate": "「わかりやすい解説」をクリックして簡易版を生成",
+      "show": "わかりやすい解説",
+      "hide": "解説を隠す",
+      "label": "わかりやすい解説"
+    }
+    ,
+    "generatedAt": "生成日時",
+    "jiaobei": {
+      "meaningTitle": "結果の意味"
+      ,
+      "results": {
+        "sheng": "聖筊",
+        "xiao": "笑筊",
+        "yin": "陰筊"
+      },
+      "meanings": {
+        "sheng": "一正一反—神様の承認",
+        "xiao": "平面が上—神様の笑み、明確な承認なし",
+        "yin": "平面が下—願いは却下"
+      },
+      "resultLabel": "擲筊の結果",
+      "redraw": "もう一度擲筊"
+    }
+    ,
+    "cards": {
+      "names": {
+        "愚者": "愚者",
+        "魔术师": "魔術師",
+        "女教皇": "女教皇",
+        "皇后": "女帝",
+        "皇帝": "皇帝",
+        "教皇": "法王",
+        "恋人": "恋人",
+        "战车": "戦車",
+        "力量": "力",
+        "隐者": "隠者",
+        "命运之轮": "運命の輪",
+        "正义": "正義",
+        "倒吊人": "吊るされた男",
+        "死神": "死神",
+        "节制": "節制",
+        "恶魔": "悪魔",
+        "塔": "塔",
+        "星星": "星",
+        "月亮": "月",
+        "太阳": "太陽",
+        "审判": "審判",
+        "世界": "世界"
+      },
+      "meanings": {
+        "愚者": "新しい始まり、冒険、可能性",
+        "魔术师": "具現化、技術、意思",
+        "女教皇": "直感、神秘、内なる知恵",
+        "皇后": "育み、豊かさ、創造",
+        "皇帝": "権威、構造、指導",
+        "教皇": "伝統、学び、導き",
+        "恋人": "愛、選択、調和",
+        "战车": "推進、勝利、制御",
+        "力量": "勇気、忍耐、均衡",
+        "隐者": "孤独、内省、導き",
+        "命运之轮": "循環、変化、運命",
+        "正义": "公平、真実、判断",
+        "倒吊人": "視点、委ねる、停止",
+        "死神": "変容、終わり、再生",
+        "节制": "節度、調和、癒し",
+        "恶魔": "束縛、誘惑、気づき",
+        "塔": "急変、啓示、解放",
+        "星星": "希望、刷新、インスピレーション",
+        "月亮": "不確実、夢、直感",
+        "太阳": "成功、喜び、活力",
+        "审判": "目覚め、評価、召命",
+        "世界": "完結、全体、旅"
+      }
+    }
+    ,
+    "form": {
+      "namePlaceholder": "氏名を入力",
+      "agePlaceholder": "年齢を入力",
+      "timeSelect": "出生時刻を選択",
+      "genderSelect": "性別を選択",
+      "birthPlacePlaceholder": "出生地を入力",
+      "hobbiesPlaceholder": "趣味を入力",
+      "partnerNamePlaceholder": "相手の氏名を入力",
+      "partnerAgePlaceholder": "相手の年齢を入力",
+      "partnerHobbiesPlaceholder": "相手の趣味を入力",
+      "relationSelect": "関係タイプを選択",
+      "enhanceTitle": "精度を高める",
+      "enhanceDesc": "プロフィール（氏名、生年月日など）を充実させると、より個別で正確な結果が得られます。",
+      "occupationPlaceholder": "職業を入力（例：エンジニア、教師、医師）",
+      "storyHint": "詳しい情報ほど、命運ストーリーが個別で正確になります",
+      "birthCityPlaceholder": "出生都市を入力",
+      "questionTitle": "ご質問",
+      "questionPlaceholder": "質問を記述（健康、恋愛、仕事、財運、学業、または詳細な状況など）",
+      "questionExamples": "例：\"健康\"、\"恋愛\"、\"仕事\""
+    }
+    ,
+    "types": {
+      "love": "恋愛",
+      "career": "仕事",
+      "wealth": "財運",
+      "health": "健康",
+      "study": "学業",
+      "general": "総合",
+      "comprehensive": "総合"
+    },
+    "askPrefix": "{{type}} について相談したいです：",
+    "askOnly": "質問：{{question}}",
+    "askSuffix": "質問：{{question}}",
+    "askViaTarot": "タロットで {{type}} について相談したいです：{{question}}",
+    "askViaAstrology": "占星術で {{type}} について相談したいです：{{question}}",
+    "askViaJiaobei": "擲筊で {{type}} について相談したいです：{{question}}",
+    "askViaNumerology": "数秘術で {{type}} について相談したいです：{{question}}",
+    "askViaZiwei": "紫微斗数で {{type}} について相談したいです：{{question}}",
+    "lotteryPicked": "第{{number}}番を引きました — 詩：\"{{poem}}\"、意味：{{meaning}}",
+    "lottery": {
+      "poems": {
+        "1": "春風が新たな始まりを運ぶ／朝日に向けて帆を上げよ",
+        "2": "一歩一歩で安全な港へ／忍耐は実りを熟させる",
+        "3": "雲が晴れて月が現れる／疑いの後に明晰が来る",
+        "4": "雨は畑を潤す／勤勉な手は豊穣を得る",
+        "5": "山道は険しい／揺るがぬ心は頂へ届く",
+        "6": "二羽の鶴が舞う／調和が道を導く",
+        "7": "夜の提灯／小さな灯りが遠くへ導く",
+        "8": "川は穏やかに流れる／流れに逆らわず進め",
+        "9": "雪に咲く梅／忍耐は喜びをもたらす",
+        "10": "朝の鐘が鳴る／早く動けば日をつかめる"
+      },
+      "meanings": {
+        "1": "大吉／徳をもって大胆に始めよ",
+        "2": "吉／着実に進み、焦らないこと",
+        "3": "明らかになる／判断がしやすくなる",
+        "4": "努力は報われる／勤勉に耕せ",
+        "5": "試練あり／忍耐で乗り越えられる",
+        "6": "協力が成功を呼ぶ／真心で協働せよ",
+        "7": "小さな前進が積もる／一歩を大切に",
+        "8": "順風に乗れ／無理を避けよ",
+        "9": "耐えれば花開く／信念を保て",
+        "10": "朝に行動せよ／時機が成果を生む"
+      },
+      "fallbackTitle": "観音籤 第{{number}}番",
+      "fallbackIntro": "ご質問「{{question}}」に対して、{{meaning}} を引きました。以下が導きです：",
+      "poemTitle": "詩",
+      "meaningTitle": "意味",
+      "adviceTitle": "指針",
+      "advice": {
+        "generic": "慈悲が道を示します。誠実に省みて進みましょう。",
+        "love": "恋愛では忍耐と誠実さを。良き縁が近づいています。",
+        "career": "仕事では今の機会を掴み、集中して努力を。成功は近いです。",
+        "wealth": "財運では着実に。投機は避けましょう。",
+        "health": "生活習慣を整えれば健康は好転します。",
+        "study": "学業は継続が鍵。中途半端は避けて。"
+      },
+      "actionsTitle": "行動の指針",
+      "actions": {
+        "1": "誠心誠意で祈り、善念を保つ",
+        "2": "詩の導きに沿って心構えと行動を調整",
+        "3": "善行を重ねて徳を積み、正のエネルギーを高める",
+        "4": "重要な場面で詩の智慧を思い出し、意思決定へ"
+      },
+      "timingTitle": "タイミング",
+      "timingHint": "旧暦の一日と十五日はエネルギーが強く、開始や決断に適しています。",
+      "blessingTitle": "加護",
+      "blessingHint": "誠は天に通じます。信心を保ち導きに従えば良き結果が訪れます。"
+    }
+    ,
+    "tarot": {
+      "fallbackIntro": "ご質問「{{question}}」に対して、タロットは次のことを示しています：",
+      "listTitle": "カードの解釈",
+      "summaryTitle": "総合解説",
+      "summaryText": "これら {{count}} 枚のカードは重要な示唆を強調しています。",
+      "actionsTitle": "行動の指針",
+      "actions": {
+        "1": "直感と内なる知恵を信じる",
+        "2": "変化を受け入れる心を保つ",
+        "3": "理性と感情の均衡を取る",
+        "4": "要所で勇気ある選択を"
+      },
+      "reminderTitle": "リマインダー",
+      "reminderText": "タロットのエネルギーは今後一週間特に強まります。偶然の一致に目を向けてください。",
+      "advice": {
+        "generic": "今の生活で意味のあるテーマが示されています。省みて行動しましょう。",
+        "love": "心の声に耳を傾け、感情に正直に。",
+        "career": "忍耐と集中を保ちましょう。好機が近づいています。",
+        "wealth": "資金管理は慎重に。衝動的な投資は避けて。",
+        "health": "心身のバランスを整え、休息を大事に。"
+      },
+      "meaningDefault": "神秘的な示唆"
+    },
+    "common": { "unknown": "未設定" },
+    "numerology": {
+      "title": "数秘術解析",
+      "intro": "ご質問「{{question}}」に対して、数秘術は次を示しています：",
+      "coreTitle": "核心の数字",
+      "lifePathLabel": "ライフパス",
+      "nameLabel": "姓名数",
+      "energyTitle": "エネルギー解読",
+      "guidanceTitle": "指針",
+      "guidance": {
+        "1": "前向きな心を保つ",
+        "2": "明確な目標と計画を立てる",
+        "3": "内面の成長に目を向ける",
+        "4": "ポジティブな人々と繋がる"
+      },
+      "blessingTitle": "祝福",
+      "blessingText": "数秘の智慧が歩みを導きますように。",
+      "meaningDefault": "神秘のエネルギー",
+      "energyDefault": "独自のエネルギー",
+      "advice": {
+        "generic": "あなたのライフナンバーは目的と方向性を示します。",
+        "love": "ライフナンバー {{life}} は恋愛で{{mode}}が鍵—良縁が近づいています。",
+        "career": "数字 {{life}} は{{trait}}を強調—成功の鍵に。",
+        "wealth": "{{strategy}} によって財運が改善します。",
+        "health": "バランスと休息を大切に。",
+        "study": "継続が結果を生みます。"
+      },
+      "mode": { "express": "自己表現", "wait": "忍耐" },
+      "strategy": { "steady": "堅実な投資", "innovate": "創造的思考" },
+      "baseTitle": "基本情報",
+      "base": { "name": "氏名", "birthDate": "生年月日" }
+    },
+    "lifestory": {
+      "title": "命運ストーリー",
+      "intro": "ご質問「{{question}}」に関する、あなたのための物語：",
+      "chapterTitle": "章：{{theme}}",
+      "body": "{{birthPlace}}で生まれた{{name}}は、独自の気質で成長。{{occupation}}として試練を糧に、選択が軌跡を描いていく。",
+      "moralTitle": "寓意",
+      "insightTitle": "現実の示唆",
+      "insight": {
+        "1": "内なる力を信じる",
+        "2": "楽観と忍耐を保つ",
+        "3": "善意を積み、正のエネルギーを高める",
+        "4": "機会を掴み、勇気を持って歩む"
+      },
+      "futureTitle": "未来展望",
+      "messageTitle": "メッセージ",
+      "messageText": "誰もが自分の物語の主人公です。",
+      "nextTitle": "次章予告",
+      "nextText": "突破と収穫の章が待っています。",
+      "placeholderName": "友人",
+      "placeholderDate": "ある日"
+    },
+    "plain": {
+      "title": "{{method}}—わかりやすい解説",
+      "summaryTitle": "ひと言まとめ",
+      "pointsTitle": "要点",
+      "actionsTitle": "具体的行動",
+      "timingTitle": "最適なタイミング",
+      "timingText": "今後二週間が好機。特に水曜と週末が吉です。",
+      "successTitle": "成功のヒント",
+      "successText": "運命は行動で導かれます。占いは参考であり、努力が鍵です。",
+      "luckTitle": "幸運アドバイス",
+      "luckText": "明るい色を身に着け、微笑みを忘れずに。運気が上がります。",
+      "simplifiedIntro": "以下は簡易版の解説です。",
+      "keyPointsIntro": "短い段落で核心を示してください：",
+      "originalLabel": "原文：",
+      "questionLabel": "質問：",
+      "methodLabel": "方法："
+    }
+    ,
+    "personality": {
+      "types": ["内向思考型","外向行動型","感性創意型","理性分析型","社交リーダー型","独立探求型","温和調整型","確固執行型"],
+      "strengths": ["傾聴力が高い","強い責任感","創造力と想像力","論理が明晰","コミュニケーションが上手","適応力が高い","丁寧で慎重","楽観的"],
+      "suggestions": ["他者とアイデアを共有","新しい趣味を育てる","成長マインドを保つ","仕事と生活のバランスを取る","強みを活かす","挑戦に向き合う"],
+      "section": {
+        "coreTitle": "核心の性格特性",
+        "advantagesTitle": "強みと才能",
+        "growthTitle": "成長の余地",
+        "relationsTitle": "人間関係のスタイル",
+        "careerTitle": "職業の助言",
+        "lifeTitle": "生活の助言",
+        "reminderTitle": "注意"
+      },
+      "core": "{{name}}は質問「{{question}}」から、{{type}}の傾向が見られます。{{age}}",
+      "advantages": "主な強みは {{strength}} で、人間関係や仕事で光ります。",
+      "advantagesSuffix": "多様な興味と能力を反映しています。",
+      "growth": "{{suggestion}} が役立ちます。",
+      "growthSuffix": "自己認識を保つことは大きな資産です。",
+      "relations": "真誠で包容的な傾向。前向きな交流スタイルを維持しましょう。",
+      "careerOccupation": "{{occupation}} の分野で強みを活かし、責任を担いましょう。",
+      "careerAdvice": "独自の視点を示すことで機会が広がります。",
+      "lifeAdvice": "楽観を保ち、目標を追求しましょう。{{hobbies}} は人生を豊かにします。",
+      "reminder": "性格分析は入力と心理学に基づきます。誰もが独自の価値と潜在力を持ちます。",
+      "personal": {
+        "occupation": "{{occupation}} として働く",
+        "hobbies": "{{hobbies}} を好む",
+        "selfDescription": "自己記述「{{selfDescription}}」は高い自己認識を示します。"
+      }
+    },
+    "input": {
+      "profile": {
+        "title": "相談者情報",
+        "incomplete": "未完成",
+        "name": "氏名",
+        "birthDate": "生まれ",
+        "birthTime": "時刻",
+        "birthPlace": "場所",
+        "gender": "性別",
+        "hobbies": "趣味",
+        "tip": "プロフィールを充実させると、より正確な結果になります"
+      }
+    },
+    "common": { "unknown": "未設定", "required": "必須", "optional": "任意" },
+    "bazi": {
+      "type": { "title": "相談タイプ", "warning": "より正確な四柱推命のためにタイプを選択してください" },
+      "typeDesc": {
+        "love": "恋愛・結婚・関係",
+        "career": "仕事・昇進・計画",
+        "wealth": "財運・投資・収入",
+        "health": "健康・予防",
+        "study": "学業・試験・進学",
+        "general": "総合運・人生の方向"
+      }
+    },
+    "personality": {
+      "session": {
+        "title": "セッション情報",
+        "occupationLabel": "職業",
+        "occupationPlaceholder": "例：教師、エンジニア、学生",
+        "hobbiesLabel": "趣味",
+        "hobbiesPlaceholder": "例：読書、スポーツ、音楽",
+        "selfLabel": "自己記述",
+        "selfPlaceholder": "性格を簡単に記述（例：社交的、友好的、真面目）",
+        "note": "この情報は今回のセッションにのみ使用され、保存されません"
+      }
+    },
+    "compat": {
+      "selfTitle": "自分の情報",
+      "relationshipTitle": "関係情報",
+      "relationshipType": "関係タイプ",
+      "option": { "lover": "恋人", "spouse": "夫婦", "friend": "友人" },
+      "personalityLabel": "性格",
+      "personalityPlaceholder": "性格的特徴を記述してください"
+    },
+    "form": {
+      "ageLabel": "年齢",
+      "birthDateLabel": "生年月日",
+      "birthDatePlaceholder": "例：1992-05-15",
+      "birthTimeLabel": "出生時刻",
+      "birthPlaceLabel": "出生地"
+    }
+  }
+  ,
+  "gacha": {
+    "title": "運命ガチャ",
+    "subtitle": "くるっと一回、今日の神秘のヒントを受け取る",
+    "pill": {
+      "random": "ランダム予言",
+      "blind": "ブラインドボックス体験",
+      "rarity": "レア度システム"
+    },
+    "weekLabel": "第{{week}}週・特別運勢ブースト中",
+    "running": "ガチャ機は稼働中",
+    "categories": {
+      "love": "恋愛",
+      "career": "仕事",
+      "wealth": "財運",
+      "health": "健康",
+      "luck": "幸運のヒント"
+    },
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "save": "保存",
+    "saveToHistory": "履歴に保存",
+    "saved": "保存しました",
+    "copyTitle": "ガチャ予言",
+    "copyCategory": "カテゴリ",
+    "copyRarity": "レア度",
+    "multiPull": "連抽 x5",
+    "clearHistoryTitle": "履歴をクリア",
+    "clearConfirm": "履歴を削除しますか？",
+    "historyTitle": "履歴",
+    "historyEmpty": "まだ履歴はありません",
+    "historyHint": "ガチャを始めて、予言を集めましょう！",
+    "footer": {
+      "realtime": "リアルタイム稼働",
+      "instant": "即時フィードバック",
+      "effects": "美しいアニメ"
+    },
+    "disclaimer": "ランダムと遊びの要素を含む純粋なエンタメ体験です。重要な判断の根拠にはしないでください 🙂",
+    "rarity": {
+      "common": "一般",
+      "uncommon": "まれ",
+      "rare": "レア",
+      "epic": "エピック"
+    },
+      "weekThemes": {
+        "magic": "魔法奇跡ウィーク",
+        "wealth": "幸運財運ウィーク",
+        "love": "恋愛ロマンティックウィーク",
+        "career": "仕事成功ウィーク",
+        "health": "健康活力ウィーク",
+        "creativity": "創意とインスピレーションのウィーク",
+        "friendship": "友情と社交のウィーク",
+        "adventure": "冒険探索ウィーク"
+      },
+      "controls": {
+        "categoryPref": "カテゴリの好み",
+        "all": "すべてのカテゴリ",
+        "sliderTitle": "レア度ブースト ({{bonus}}%)",
+        "sliderHint": "右へスライドするとレア予言が少し出やすくなります",
+        "level": { "common": "一般", "rare": "レア", "epic": "エピック" }
+      },
+      "pull": "引く",
+      "spinning": "魔法中...",
+      "weekSpecial": "第{{week}}週・特別予言",
+      "noteMulti": "連抽"
+    }
+}

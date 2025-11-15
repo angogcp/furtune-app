@@ -1,0 +1,633 @@
+{
+  "brand": "Fortune Fun",
+  "appName": "Fortune Fun",
+  "loading": "Loading...",
+  "nav": {
+    "fortune": "Fortune",
+    "checkin": "Check-in",
+    "wishes": "Wish Wall",
+    "faq": "FAQ",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login": "Login",
+    "loggingIn": "Logging in...",
+    "guestLogin": "Try as guest",
+    "guestLoggingIn": "Entering guest mode...",
+    "welcomeBack": "Welcome back",
+    "loginSubtitle": "Sign in to your account or continue as guest",
+    "email": "Email",
+    "emailPlaceholder": "Enter email address",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "noAccount": "No account?",
+    "registerNow": "Register now",
+    "createAccount": "Create Account",
+    "registerSubtitle": "Join our fortune community",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter password",
+    "register": "Register",
+    "registering": "Registering...",
+    "hasAccount": "Already have an account?",
+    "loginNow": "Login now"
+  },
+  "guest": {
+    "headline": "Join us and start your mystical journey",
+    "cta": "Start fortune journey now"
+  },
+  "config": {
+    "title": "Configuration",
+    "supabaseTip": "Configure Supabase environment variables to enable full features:",
+    "doneTip": "Restart the app after configuration to use login, check-in, wish wall."
+  },
+  "home": {
+    "tagline": "Have you divined today? Let's have some fun!",
+    "browse": "Browse by category",
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "unknown": "Unknown"
+    },
+    "notFoundTitle": "No matching methods found",
+    "notFoundDesc": "Try other keywords or choose a different category",
+    "action": { "start": "Start" },
+    "disclaimer": "✨ Results are for reference only; make important decisions rationally ✨",
+    "categories": {
+      "traditional": { "title": "Traditional Divination", "description": "Classical methods, deep analysis" },
+      "modern": { "title": "Modern Divination", "description": "Trendy and fun, easy experience" },
+      "quick": { "title": "Quick Tests", "description": "Instant experience, fast answers" },
+      "relationship": { "title": "Love & Relationships", "description": "Love fortune, relationship analysis" }
+    },
+    "methods": {
+      "bazi": { "title": "BaZi Numerology", "description": "Classical BaZi analysis to understand life patterns", "tags": ["Deep", "Traditional", "Pro"] },
+      "ziwei": { "title": "Ziwei Doushu", "description": "Ziwei chart reading to forecast destiny", "tags": ["Chart", "Forecast", "Pro"] },
+      "lottery": { "title": "Guanyin Fortune Sticks", "description": "Pray sincerely and draw divine guidance", "tags": ["Blessing", "Guidance", "Easy"] },
+      "jiaobei": { "title": "Jiaobei (Divination Blocks)", "description": "Ask deities and get clear answers", "tags": ["Q&A", "Deity", "Easy"] },
+      "tarot": { "title": "Tarot", "description": "Gain life guidance through tarot mystery", "tags": ["Tarot", "Mystery", "Guidance"] },
+      "astrology": { "title": "Astrology", "description": "Interpret celestial influence on you", "tags": ["Zodiac", "Stars", "Fortune"] },
+      "numerology": { "title": "Numerology", "description": "Reveal destiny code through number energy", "tags": ["Numbers", "Energy", "Numerology"] },
+      "personality": { "title": "Personality Test", "description": "Deep analysis of traits to know yourself", "tags": ["Personality", "Psychology", "Easy"] },
+      "lifestory": { "title": "Life Story", "description": "Generate a fun destiny story about your path", "tags": ["Story", "Fun", "Creative"] },
+      "compatibility": { "title": "Compatibility Score", "description": "Test fate index and analyze match", "tags": ["Match", "Fate", "Love"] },
+      "gacha": { "title": "Destiny Gacha", "description": "Mystery blind-box prophecy with a twist", "tags": ["Gacha", "Random", "Fun"] }
+    }
+  }
+  ,
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Answers to your questions about divination",
+    "searchPlaceholder": "Search questions...",
+    "notFoundTitle": "No related questions found",
+    "notFoundDesc": "Try different keywords or choose another category",
+    "categories": {
+      "all": "All",
+      "basics": "Basics",
+      "guide": "Guide",
+      "privacy": "Privacy",
+      "tips": "Tips",
+      "features": "Features"
+    },
+    "items": {
+      "1": {"question": "Are divination results accurate?", "answer": "Results are analyzed based on your inputs and chosen method. Please combine them with rational thinking as one reference for life guidance."},
+      "2": {"question": "How to choose the right method?", "answer": "Different methods suit different questions:\n• BaZi: deep life pattern analysis\n• Tarot: emotions and relationships\n• Guanyin sticks: seeking guidance\n• Astrology: traits and fortune\nChoose according to your needs."},
+      "3": {"question": "Is my personal information protected?", "answer": "We value privacy:\n• Encrypted storage\n• No third-party sharing\n• You can modify/delete data\n• Records are visible only to you"},
+      "4": {"question": "How long does a reading take?", "answer": "Durations vary:\n• Quick tests: 1–2 min\n• Tarot: 3–5 min\n• BaZi: 5–10 min\n• Ziwei: 8–15 min\nDepends on complexity and network."},
+      "5": {"question": "Can I repeat the same question?", "answer": "Avoid repeating in a short time. If circumstances change or enough time has passed (suggest ≥1 month), you can ask again."},
+      "6": {"question": "How to improve accuracy?", "answer": "To improve results:\n• Complete your profile\n• Ask a specific question\n• Be sincere\n• Choose good timing\n• Describe details"},
+      "7": {"question": "Can results change destiny?", "answer": "Divination analyzes current trends, not fixed fate. Understanding directions helps you:\n• Make informed choices\n• Prepare for challenges\n• Seize opportunities\n• Adjust mindset and actions\nChange comes from your actions."},
+      "8": {"question": "What are check-in and wish wall for?", "answer": "Check-in:\n• Daily points\n• Streak bonuses\n• Unlock features with points\nWish wall:\n• Record wishes\n• Share positivity\n• Review progress regularly"}
+    },
+    "moreQuestionsTitle": "More questions?",
+    "moreQuestionsDesc": "If you didn’t find the answer, submit your question and we’ll respond soon.",
+    "labelQuestion": "Your question",
+    "placeholderQuestion": "Please describe your question in detail...",
+    "labelEmail": "Your email (optional)",
+    "placeholderEmail": "your@email.com",
+    "submitButton": "Submit question",
+    "submitSuccess": "Mail client opened. Please send the email!",
+    "submitEmpty": "Please enter your question",
+    "mailSubject": "Fortune Fun - User Question",
+    "mailBody": "Question:\n{{question}}\n\nEmail: {{email}}",
+    "mailEmailMissing": "Not provided"
+  }
+  ,
+  "daily": {
+    "title": "Daily Check-in",
+    "subtitle": "Keep checking in to get your daily fortune",
+    "stats": {
+      "streak": "Streak",
+      "total": "Total",
+      "status": "Today"
+    },
+    "status": {
+      "checked": "Checked",
+      "notChecked": "Not checked"
+    },
+    "checking": "Checking...",
+    "checkButton": "Check in now to get today’s fortune",
+    "checkedToday": "Checked today!",
+    "fortuneTitle": "Today’s Fortune",
+    "fortunes": [
+      "Excellent fortune today—good for important decisions; benefactors abound.",
+      "Wealth flows; gains in investment possible—act prudently.",
+      "Love rises; singles may meet someone special.",
+      "Stable career; new opportunities may appear at work.",
+      "Good health fortune; perfect time to start a fitness plan.",
+      "Strong study fortune; great time to learn and grow.",
+      "Harmonious relationships; friends bring good news.",
+      "Creative inspiration; breakthroughs in art and ideas.",
+      "Great for travel—enjoy a trip or productive business journey.",
+      "Warm family fortune; spend quality time with loved ones."
+    ]
+  }
+  ,
+  "wish": {
+    "title": "Wish Wall",
+    "subtitle": "Make a wish here and let the universe hear you",
+    "placeholder": "Write your wish...",
+    "anonymous": "Post anonymously",
+    "sending": "Sending...",
+    "submit": "Make a wish",
+    "empty": "No wishes yet — be the first to make one!",
+    "anonymousUser": "Anonymous",
+    "user": "User",
+    "wishComeTrue": "Wish come true",
+    "showLatest": "Showing the latest 50 wishes"
+  }
+  ,
+  "profile": {
+    "common": {
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "notSet": "Not set"
+    },
+    "login": {
+      "title": "Sign in to unlock more features",
+      "desc": "Enjoy check-in rewards, achievement badges, history, and more after sign-in",
+      "backHome": "Back to Home to Sign In"
+    },
+    "account": {
+      "editUsername": "Edit username",
+      "streak": "Streak",
+      "total": "Total check-ins",
+      "days": "Days since joined",
+      "joinedAt": "Joined",
+      "lastSignIn": "Last sign-in",
+      "badges": "Achievement Badges",
+      "signOut": "Sign out"
+    },
+    "badges": {
+      "firstSignIn": "First check-in",
+      "weekStreak": "One-week streak",
+      "monthStreak": "One-month streak",
+      "master": "Check-in master"
+    },
+    "ft": {
+      "title": "Fortune Profile",
+      "edit": "Edit fortune profile",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "birthDate": "Birth date",
+      "birthTime": "Birth time",
+      "birthTimeHint": "Birth time is important for methods like BaZi",
+      "birthPlace": "Birth place",
+      "birthPlacePlaceholder": "e.g., Tokyo",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "genderSelect": "Select gender",
+      "completeHint": "Complete your fortune profile for more accurate readings",
+      "setButton": "Set fortune profile"
+    }
+  }
+  ,
+  "common": {
+    "back": "Back",
+    "share": "Share",
+    "copy": "Copy result",
+    "copied": "Copied!"
+  },
+  "modern": {
+    "notFound": "Selected method not found",
+    "aiConfigured": "AI analysis configured",
+    "devUsingRealAI": "Using real AI analysis (dev mode)",
+    "templateTip": "Tip: Using smart template. To enable real AI, configure VITE_LLM_API_KEY in .env",
+    "startMethod": "Start {{method}}",
+    "inputHint": "Enter your question to start {{method}}",
+    "validation": {
+      "tooShort": "Input too short: please enter at least 2 characters",
+      "selectCards": "Please select at least one tarot card",
+      "selectType": "Please select a consultation type"
+    },
+    "ready": "Ready. Click the button above to start {{method}}",
+    "processing": "AI master is analyzing your question. Please wait",
+    "step": {
+      "analyzing": "Analyzing core of the question...",
+      "generating": "Generating personalized guidance..."
+    },
+    "resultTitle": "{{method}} Result",
+    "aiAnalysis": "AI Analysis",
+    "yourQuestion": "Your Question",
+    "reading": "Reading",
+    "retry": "Retry",
+    "generating": "Generating...",
+    "plain": {
+      "generating": "Generating plain language...",
+      "clickToGenerate": "Click \"Plain language\" to generate a simplified version",
+      "show": "Plain language",
+      "hide": "Hide plain language",
+      "label": "Plain language"
+    }
+    ,
+    "generatedAt": "Generated at",
+    "jiaobei": {
+      "meaningTitle": "Result meaning",
+      "results": {
+        "sheng": "Sheng-jiao",
+        "xiao": "Xiao-jiao",
+        "yin": "Yin-jiao"
+      },
+      "meanings": {
+        "sheng": "One up, one down — approval from deities",
+        "xiao": "Both flat sides up — deities smile, no clear approval",
+        "yin": "Flat side down — request rejected"
+      },
+      "resultLabel": "Jiaobei result"
+    },
+    "cards": {
+      "names": {
+        "愚者": "The Fool",
+        "魔术师": "The Magician",
+        "女教皇": "The High Priestess",
+        "皇后": "The Empress",
+        "皇帝": "The Emperor",
+        "教皇": "The Hierophant",
+        "恋人": "The Lovers",
+        "战车": "The Chariot",
+        "力量": "Strength",
+        "隐者": "The Hermit",
+        "命运之轮": "Wheel of Fortune",
+        "正义": "Justice",
+        "倒吊人": "The Hanged Man",
+        "死神": "Death",
+        "节制": "Temperance",
+        "恶魔": "The Devil",
+        "塔": "The Tower",
+        "星星": "The Star",
+        "月亮": "The Moon",
+        "太阳": "The Sun",
+        "审判": "Judgement",
+        "世界": "The World"
+      },
+      "meanings": {
+        "愚者": "New beginnings, adventure, potential",
+        "魔术师": "Manifestation, skill, willpower",
+        "女教皇": "Intuition, mystery, inner wisdom",
+        "皇后": "Nurture, abundance, creation",
+        "皇帝": "Authority, structure, leadership",
+        "教皇": "Tradition, learning, guidance",
+        "恋人": "Love, choice, harmony",
+        "战车": "Drive, victory, control",
+        "力量": "Courage, patience, balance",
+        "隐者": "Solitude, reflection, guidance",
+        "命运之轮": "Cycles, change, fate",
+        "正义": "Fairness, truth, decisions",
+        "倒吊人": "Perspective, surrender, pause",
+        "死神": "Transformation, endings, rebirth",
+        "节制": "Moderation, harmony, healing",
+        "恶魔": "Bondage, temptation, awareness",
+        "塔": "Sudden change, revelation, release",
+        "星星": "Hope, renewal, inspiration",
+        "月亮": "Uncertainty, dreams, intuition",
+        "太阳": "Success, joy, vitality",
+        "审判": "Awakening, evaluation, calling",
+        "世界": "Completion, wholeness, travel"
+      }
+    },
+    "form": {
+      "namePlaceholder": "Enter your name",
+      "agePlaceholder": "Enter your age",
+      "timeSelect": "Select birth hour",
+      "genderSelect": "Select gender",
+      "birthPlacePlaceholder": "Enter birth place",
+      "hobbiesPlaceholder": "Enter your hobbies",
+      "partnerNamePlaceholder": "Enter partner's name",
+      "partnerAgePlaceholder": "Enter partner's age",
+      "partnerHobbiesPlaceholder": "Enter partner's hobbies",
+      "relationSelect": "Select relationship type",
+      "enhanceTitle": "Enhance accuracy",
+      "enhanceDesc": "Complete your profile (name, birth date, etc.) for more personalized and accurate readings.",
+      "occupationPlaceholder": "Enter your occupation (e.g., engineer, teacher, doctor)",
+      "storyHint": "More detailed info yields more personalized life stories",
+      "birthCityPlaceholder": "Enter birth city",
+      "questionTitle": "Your question",
+      "questionPlaceholder": "Describe your question (health, love, work, wealth, study, or detailed situation)",
+      "questionExamples": "E.g., \"health\", \"love\", \"work\""
+    }
+    ,
+    "types": {
+      "love": "Love",
+      "career": "Career",
+      "wealth": "Wealth",
+      "health": "Health",
+      "study": "Study",
+      "general": "General",
+      "comprehensive": "Comprehensive"
+    },
+    "askPrefix": "I want to consult about {{type}}:",
+    "askOnly": "Question: {{question}}",
+    "askSuffix": "Question: {{question}}",
+    "askViaTarot": "I want to consult via Tarot about {{type}}: {{question}}",
+    "askViaAstrology": "I want to consult via Astrology about {{type}}: {{question}}",
+    "askViaJiaobei": "I want to consult via Jiaobei about {{type}}: {{question}}",
+    "askViaNumerology": "I want to consult via Numerology about {{type}}: {{question}}",
+    "askViaZiwei": "I want to consult via Ziwei Doushu about {{type}}: {{question}}",
+    "lotteryPicked": "I drew sign No.{{number}} — Poem: \"{{poem}}\", Meaning: {{meaning}}",
+    "lottery": {
+      "poems": {
+        "1": "Spring breeze carries new beginnings; set sails to the sunrise.",
+        "2": "Step by step to safe harbor; patience ripens the fruit.",
+        "3": "Clouds part, moon appears; clarity follows doubt.",
+        "4": "Rain nourishes the field; diligent hands reap plenty.",
+        "5": "Mountain path is steep; steady heart reaches summit.",
+        "6": "Two cranes in flight; harmony guides the way.",
+        "7": "Lantern in the night; small light leads far.",
+        "8": "River flows at ease; go with the current, not against.",
+        "9": "Plum blossoms in snow; resilience brings joy.",
+        "10": "Morning bell awakens; act early, seize the day."
+      },
+      "meanings": {
+        "1": "Great fortune; begin boldly with virtue.",
+        "2": "Good fortune; proceed steadily and avoid haste.",
+        "3": "Clarity comes; decisions become easier.",
+        "4": "Effort rewarded; cultivate diligently.",
+        "5": "Challenges present; perseverance overcomes.",
+        "6": "Partnership favors success; cooperate sincerely.",
+        "7": "Small progress accumulates; cherish each step.",
+        "8": "Go with favorable trends; avoid forcing matters.",
+        "9": "Endure and you will bloom; keep faith.",
+        "10": "Act in the morning; timeliness brings results."
+      },
+      "fallbackTitle": "Guanyin Oracle No.{{number}}",
+      "fallbackIntro": "For your question \"{{question}}\", you drew {{meaning}}. Guidance follows:",
+      "poemTitle": "Poem",
+      "meaningTitle": "Meaning",
+      "adviceTitle": "Targeted guidance",
+      "advice": {
+        "generic": "Compassion guides your path—reflect and proceed sincerely.",
+        "love": "In love, be patient and sincere. Good bonds approach.",
+        "career": "In career, seize current chances and focus; success nears.",
+        "wealth": "For wealth, act steadily and avoid speculation.",
+        "health": "Health improves with balanced habits and care.",
+        "study": "Studies reward persistence; avoid giving up midway."
+      },
+      "actionsTitle": "Action guidance",
+      "actions": {
+        "1": "Pray sincerely and keep kind thoughts",
+        "2": "Adjust mindset and actions per the poem",
+        "3": "Do good deeds and cultivate merit",
+        "4": "Recall the wisdom at key decisions"
+      },
+      "timingTitle": "Timing",
+      "timingHint": "Energies are strong on lunar 1st and 15th—good for starts and decisions.",
+      "blessingTitle": "Blessing",
+      "blessingHint": "Sincerity moves heaven. Keep faith and follow guidance for good outcomes."
+    }
+    ,
+    "tarot": {
+      "fallbackIntro": "For your question \"{{question}}\", Tarot reveals:",
+      "listTitle": "Card interpretations",
+      "summaryTitle": "Summary",
+      "summaryText": "These {{count}} cards highlight key insights.",
+      "actionsTitle": "Action guidance",
+      "actions": {
+        "1": "Trust intuition and inner wisdom",
+        "2": "Stay open to change",
+        "3": "Balance reason and feeling",
+        "4": "Choose courage at key moments"
+      },
+      "reminderTitle": "Reminder",
+      "reminderText": "Tarot energy is potent over the next week—watch for synchronicities.",
+      "advice": {
+        "generic": "Tarot points to meaningful current themes—reflect and act.",
+        "love": "Listen to your heart and be honest with feelings.",
+        "career": "Stay patient and focused—opportunities approach.",
+        "wealth": "Handle finances cautiously; avoid impulsive investments.",
+        "health": "Care for mind-body balance; rest matters."
+      },
+      "meaningDefault": "Mystical insight"
+    },
+    "common": {
+      "unknown": "Unknown"
+    },
+    "numerology": {
+      "title": "Numerology Analysis",
+      "intro": "For your question \"{{question}}\", numerology reveals:",
+      "coreTitle": "Core Numbers",
+      "lifePathLabel": "Life Path Number",
+      "nameLabel": "Name Number",
+      "energyTitle": "Energy Reading",
+      "guidanceTitle": "Guidance",
+      "guidance": {
+        "1": "Keep a positive mindset",
+        "2": "Set clear goals and plans",
+        "3": "Focus on inner growth",
+        "4": "Connect with positive people"
+      },
+      "blessingTitle": "Blessing",
+      "blessingText": "May numerology’s wisdom guide you forward.",
+      "meaningDefault": "Mystic energy",
+      "energyDefault": "Unique energy",
+      "advice": {
+        "generic": "Your life number points to purpose and direction.",
+        "love": "Life number {{life}} suggests {{mode}} in love—true bonds approach.",
+        "career": "Number {{life}} highlights {{trait}}—use it for success.",
+        "wealth": "Fortune improves through {{strategy}}.",
+        "health": "Care for balance and rest.",
+        "study": "Persistence brings results."
+      },
+      "mode": { "express": "expressing yourself", "wait": "patient waiting" },
+      "strategy": { "steady": "steady investing", "innovate": "innovative thinking" },
+      "baseTitle": "Basic Info",
+      "base": { "name": "Name", "birthDate": "Birth date" }
+    },
+    "lifestory": {
+      "title": "Fate Story",
+      "intro": "Regarding your question \"{{question}}\", here is a story crafted for you:",
+      "chapterTitle": "Chapter: {{theme}}",
+      "body": "In {{birthPlace}}, a person named {{name}} grew with unique traits. As a {{occupation}}, trials became steps and choices shaped a distinct path.",
+      "moralTitle": "Moral",
+      "insightTitle": "Insights",
+      "insight": {
+        "1": "Trust inner strength",
+        "2": "Stay optimistic and resilient",
+        "3": "Be kind and cultivate positive energy",
+        "4": "Seize opportunities bravely"
+      },
+      "futureTitle": "Future",
+      "messageTitle": "Message",
+      "messageText": "Everyone is the protagonist of their story.",
+      "nextTitle": "Next Chapter",
+      "nextText": "A chapter of breakthrough and harvest awaits.",
+      "placeholderName": "Friend",
+      "placeholderDate": "Some day"
+    },
+    "plain": {
+      "title": "{{method}} – Plain Language",
+      "summaryTitle": "One-sentence summary",
+      "pointsTitle": "Key points",
+      "actionsTitle": "Concrete actions",
+      "timingTitle": "Best timing",
+      "timingText": "The next two weeks are favorable, especially midweek and weekends.",
+      "successTitle": "Success tip",
+      "successText": "Destiny is guided by your actions—readings are reference.",
+      "luckTitle": "Luck advice",
+      "luckText": "Wear bright colors and keep smiling to attract good fortune.",
+      "simplifiedIntro": "Below is a simplified interpretation.",
+      "keyPointsIntro": "Use short paragraphs and highlight core points:",
+      "originalLabel": "Original result:",
+      "questionLabel": "Question:",
+      "methodLabel": "Method:"
+    }
+    ,
+    "personality": {
+      "types": ["Introverted Thinker","Extraverted Actor","Sensitive Creator","Rational Analyst","Social Leader","Independent Explorer","Gentle Coordinator","Determined Executor"],
+      "strengths": ["Good listener","Strong sense of responsibility","Creative imagination","Clear logic","Excellent communication","Adaptable","Detail-oriented","Optimistic"],
+      "suggestions": ["Share ideas with others","Cultivate new hobbies","Keep a growth mindset","Balance work and life","Leverage your strengths","Face challenges bravely"],
+      "section": {
+        "coreTitle": "Core Personality",
+        "advantagesTitle": "Strengths & Talents",
+        "growthTitle": "Growth Space",
+        "relationsTitle": "Relationship Style",
+        "careerTitle": "Career Advice",
+        "lifeTitle": "Life Advice",
+        "reminderTitle": "Reminder"
+      },
+      "core": "{{name}}, based on your question \"{{question}}\", you show traits of {{type}}. {{age}}",
+      "advantages": "Your main strength is {{strength}}, shining in relations and work.",
+      "advantagesSuffix": "These reflect your diverse interests and abilities.",
+      "growth": "It’s helpful to {{suggestion}}.",
+      "growthSuffix": "Keep self-awareness—it’s a great asset.",
+      "relations": "You tend to be sincere and inclusive; keep this positive interaction style.",
+      "careerOccupation": "In {{occupation}}, leverage your strengths and take more responsibility.",
+      "careerAdvice": "Show your unique perspective for better opportunities.",
+      "lifeAdvice": "Stay optimistic and pursue inner goals. {{hobbies}} enrich life experiences.",
+      "reminder": "Personality analysis is based on your inputs and psychology. Everyone has unique value and potential.",
+      "personal": {
+        "occupation": "Working as {{occupation}}",
+        "hobbies": "Enjoys {{hobbies}}",
+        "selfDescription": "Your self-description \"{{selfDescription}}\" shows strong self-awareness."
+      },
+      "session": {
+        "title": "Session Information",
+        "occupationLabel": "Occupation",
+        "occupationPlaceholder": "e.g., teacher, engineer, student",
+        "hobbiesLabel": "Hobbies",
+        "hobbiesPlaceholder": "e.g., reading, sports, music",
+        "selfLabel": "Self description",
+        "selfPlaceholder": "Briefly describe your personality (e.g., outgoing, friendly, diligent)",
+        "note": "This information is only used for this session and not saved"
+      }
+    },
+    "input": {
+      "profile": {
+        "title": "Seeker Information",
+        "incomplete": "Incomplete",
+        "name": "Name",
+        "birthDate": "Birth",
+        "birthTime": "Time",
+        "birthPlace": "Place",
+        "gender": "Gender",
+        "hobbies": "Hobbies",
+        "tip": "Complete your profile for more accurate readings"
+      }
+    },
+    "common": { "unknown": "Unknown", "required": "Required", "optional": "Optional" },
+    "bazi": {
+      "type": { "title": "Consultation Type", "warning": "Please choose a type for more accurate BaZi analysis" },
+      "typeDesc": {
+        "love": "Love, marriage, relationship",
+        "career": "Work, promotion, planning",
+        "wealth": "Fortune, investment, income",
+        "health": "Body health, prevention",
+        "study": "Study, exams, entrance",
+        "general": "Overall fortune, life direction"
+      }
+    },
+    "compat": {
+      "selfTitle": "Your Info",
+      "relationshipTitle": "Relationship Info",
+      "relationshipType": "Relationship Type",
+      "option": { "lover": "Lovers", "spouse": "Spouses", "friend": "Friends" },
+      "personalityLabel": "Personality",
+      "personalityPlaceholder": "Describe personality traits"
+    },
+    "form": {
+      "ageLabel": "Age",
+      "birthDateLabel": "Birth Date",
+      "birthDatePlaceholder": "e.g., 1992-05-15",
+      "birthTimeLabel": "Birth Hour",
+      "birthPlaceLabel": "Birth Place"
+    }
+  }
+  ,
+  "gacha": {
+    "title": "Destiny Gacha",
+    "subtitle": "Spin once to receive today’s mystical hint",
+    "pill": {
+      "random": "Random prediction",
+      "blind": "Blind‑box experience",
+      "rarity": "Rarity system"
+    },
+    "weekLabel": "Week {{week}} • special boost active",
+    "running": "Gacha machine running",
+    "categories": {
+      "love": "Love",
+      "career": "Career",
+      "wealth": "Wealth",
+      "health": "Health",
+      "luck": "Lucky hint"
+    },
+    "copy": "Copy",
+    "copied": "Copied",
+    "save": "Save",
+    "saveToHistory": "Save to history",
+    "saved": "Saved",
+    "copyTitle": "Gacha Prediction",
+    "copyCategory": "Category",
+    "copyRarity": "Rarity",
+    "multiPull": "Multi x5",
+    "clearHistoryTitle": "Clear history",
+    "clearConfirm": "Clear history records?",
+    "historyTitle": "History",
+    "historyEmpty": "No history yet",
+    "historyHint": "Start gacha and collect your predictions!",
+    "footer": {
+      "realtime": "Realtime",
+      "instant": "Instant feedback",
+      "effects": "Beautiful effects"
+    },
+    "disclaimer": "Includes randomness for fun — purely entertainment, not a basis for serious decisions.",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic"
+    },
+    "controls": {
+      "categoryPref": "Category preference",
+      "all": "All categories",
+      "sliderTitle": "Rarity boost ({{bonus}}%)",
+      "sliderHint": "Slide right to slightly increase chance of rare predictions",
+      "level": { "common": "Common", "rare": "Rare", "epic": "Epic" }
+    },
+    "pull": "Pull",
+    "spinning": "Enchanting...",
+    "weekSpecial": "Week {{week}} • special prediction",
+    "noteMulti": "Multi"
+  }
+}

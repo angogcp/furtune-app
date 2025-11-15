@@ -5,6 +5,7 @@ import {
   Clock, Calendar, User, Book, Target, Compass, UserCircle, Settings
 } from 'lucide-react';
 import { useProfile } from '../contexts/ProfileContext';
+import { useTranslation } from 'react-i18next';
 
 interface FortuneMethod {
   id: string;
@@ -194,6 +195,7 @@ interface ImprovedHomepageProps {
 }
 
 const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onNavigateToProfile }) => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('traditional');
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
@@ -210,9 +212,22 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
     }
   };
 
+  const translatedCategories = useMemo(() => categories.map(c => ({
+    ...c,
+    title: t(`home.categories.${c.id}.title`),
+    description: t(`home.categories.${c.id}.description`)
+  })), [t]);
+
+  const translatedMethods = useMemo(() => fortuneMethods.map(m => ({
+    ...m,
+    title: t(`home.methods.${m.id}.title`),
+    description: t(`home.methods.${m.id}.description`),
+    tags: (t(`home.methods.${m.id}.tags`, { returnObjects: true }) as string[]) || m.tags
+  })), [t]);
+
   // 筛选方法
   const filteredMethods = useMemo(() => {
-    let methods = fortuneMethods;
+    let methods = translatedMethods;
     
     if (activeCategory !== 'all') {
       methods = methods.filter(method => method.category === activeCategory);
@@ -231,7 +246,7 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
 
   // 热门推荐（取最受欢迎的4个）
   const popularMethods = useMemo(() => {
-    return fortuneMethods
+    return translatedMethods
       .sort((a, b) => b.popularity - a.popularity)
       .slice(0, 4);
   }, []);
@@ -247,10 +262,10 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
 
   const getDifficultyText = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return '入门';
-      case 'intermediate': return '进阶';
-      case 'advanced': return '专业';
-      default: return '未知';
+      case 'beginner': return t('home.difficulty.beginner');
+      case 'intermediate': return t('home.difficulty.intermediate');
+      case 'advanced': return t('home.difficulty.advanced');
+      default: return t('home.difficulty.unknown');
     }
   };
   
@@ -264,11 +279,42 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="w-8 h-8 text-yellow-400 mr-3" />
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-              算算乐
+              {t('brand')}
             </h1>
             <Sparkles className="w-8 h-8 text-yellow-400 ml-3" />
           </div>
-          <p className="text-xl text-purple-200 mb-6">今天算了吗？一起乐一乐！</p>
+          <p className="text-xl text-purple-200 mb-6">{t('home.tagline')}</p>
+        </div>
+
+        {/* Spotlight: Destiny Gacha */}
+        <div className="mb-10">
+          <div className="relative overflow-hidden rounded-2xl border border-pink-400/30 bg-gradient-to-r from-pink-700/40 via-purple-700/40 to-indigo-700/40 p-6">
+            <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 p-4 animate-pulse">
+                  <Gem className="w-full h-full text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold">{t('home.methods.gacha.title')}</h3>
+                  <p className="text-purple-200 mt-1">{t('home.methods.gacha.description')}</p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {(t('home.methods.gacha.tags', { returnObjects: true }) as string[] || []).map((tag, i) => (
+                      <span key={i} className="px-3 py-1 bg-purple-800/50 rounded-full text-xs text-purple-200 border border-purple-600/30">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => onSelectMethod('gacha')}
+                className="px-6 py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                {t('home.action.start')}
+              </button>
+            </div>
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-pink-500/20 blur-2xl"></div>
+          </div>
         </div>
 
 
@@ -277,11 +323,11 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
         <div className="mb-8">
           <div className="flex items-center mb-6">
             <Filter className="w-6 h-6 text-yellow-400 mr-2" />
-            <h2 className="text-2xl font-bold">分类浏览</h2>
+            <h2 className="text-2xl font-bold">{t('home.browse')}</h2>
           </div>
           
           <div className="flex flex-wrap gap-3 justify-center mb-8">
-            {categories.map((category) => {
+            {translatedCategories.map((category) => {
               const IconComponent = category.icon;
               const isActive = activeCategory === category.id;
               
@@ -311,8 +357,8 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
           {filteredMethods.length === 0 ? (
             <div className="text-center py-12">
               <Search className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-purple-300 mb-2">未找到匹配的占卜方法</h3>
-              <p className="text-purple-400">请尝试其他搜索关键词或选择不同的分类</p>
+              <h3 className="text-xl font-semibold text-purple-300 mb-2">{t('home.notFoundTitle')}</h3>
+              <p className="text-purple-400">{t('home.notFoundDesc')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -371,7 +417,7 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
 
                         {/* Action Button */}
                         <div className="flex items-center justify-center space-x-2 text-purple-300 group-hover:text-yellow-400 transition-colors">
-                          <span className="text-sm font-medium">开始体验</span>
+                          <span className="text-sm font-medium">{t('home.action.start')}</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                         </div>
                       </div>
@@ -387,9 +433,7 @@ const ImprovedHomepage: React.FC<ImprovedHomepageProps> = ({ onSelectMethod, onN
         <div className="text-center py-8 border-t border-purple-400/20">
           {/* Disclaimer */}
           <div className="mb-6">
-            <p className="text-purple-300 text-sm">
-              ✨ 占卜结果仅供参考，重要决定请结合理性思考 ✨
-            </p>
+            <p className="text-purple-300 text-sm">{t('home.disclaimer')}</p>
           </div>
           
           {/* Creator Info */}

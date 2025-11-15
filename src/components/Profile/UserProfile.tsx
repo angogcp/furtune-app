@@ -123,8 +123,8 @@ export default function UserProfile() {
         
         {/* Login Suggestion */}
         <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-lg p-6 border border-purple-400/30 text-center">
-          <h3 className="text-lg font-bold text-white mb-3">登录获得更多功能</h3>
-          <p className="text-purple-200 mb-4">登录后可享受签到奖励、成就徽章、历史记录等更多功能</p>
+          <h3 className="text-lg font-bold text-white mb-3">{t('profile.login.title')}</h3>
+          <p className="text-purple-200 mb-4">{t('profile.login.desc')}</p>
           <button
             onClick={() => {
               // Navigate back to home where login modal can be triggered

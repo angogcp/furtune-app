@@ -50,10 +50,11 @@ export default function AuthDebug() {
         
         console.log('Users table test:', { data: usersData, error: usersError })
 
+        const missingUsersTable = usersError?.message?.toLowerCase().includes('relation "users" does not exist')
         setDebugInfo({
           isConfigured: configured,
           session: session,
-          userTableExists: !usersError,
+          userTableExists: !usersError && !missingUsersTable,
           error: sessionError?.message || usersError?.message || null
         })
         
@@ -118,6 +119,12 @@ export default function AuthDebug() {
               <div>用户ID: {debugInfo.session.user?.id}</div>
               <div>邮箱: {debugInfo.session.user?.email}</div>
             </div>
+          </div>
+        )}
+
+        {!debugInfo.userTableExists && (
+          <div className="mt-3 p-3 bg-yellow-900/40 border border-yellow-400/30 rounded">
+            <div className="text-yellow-300 text-sm">数据库未初始化：请在 Supabase SQL 编辑器运行 repository 中的 <code>database/init.sql</code> 以创建 <code>users</code> 等必需表和触发器。</div>
           </div>
         )}
       </div>

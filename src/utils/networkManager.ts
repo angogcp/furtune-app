@@ -183,10 +183,12 @@ class NetworkManager {
       'Failed to fetch'
     ]
 
-    const errorMessage = error.message || error.toString() || ''
-    return networkErrorPatterns.some(pattern => 
-      errorMessage.toLowerCase().includes(pattern.toLowerCase())
-    )
+    const message = (error.message || error.toString() || '').toLowerCase()
+    if (message.includes('relation "users" does not exist') || message.includes('does not exist')) {
+      return false
+    }
+
+    return networkErrorPatterns.some(pattern => message.includes(pattern.toLowerCase()))
   }
 
   private handleConnectionIssue(errorMessage: string) {
