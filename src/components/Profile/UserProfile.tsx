@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useProfile } from '../../contexts/ProfileContext'
 import { User, Mail, Calendar, Award, Flame, Star, LogOut, Edit, Save, X, UserCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+import { supabase } from '../../lib/supabase'
+import { networkManager } from '../../utils/networkManager'
 
 export default function UserProfile() {
-  const { user, userProfile, signOut } = useAuth()
+  const { user, userProfile, signOut, isSupabaseConfigured } = useAuth()
   const { profile, updateProfile, isProfileComplete } = useProfile()
   
   const [isEditing, setIsEditing] = useState(false)
@@ -21,6 +23,7 @@ export default function UserProfile() {
     birthPlace: profile.birthPlace,
     gender: profile.gender
   })
+  const [fortuneProfileId, setFortuneProfileId] = useState<string | null>(null)
   
   // Update form when profile changes
   React.useEffect(() => {
@@ -32,10 +35,80 @@ export default function UserProfile() {
       gender: profile.gender
     })
   }, [profile])
+
+  // Load fortune profile from Supabase when logged in
+  useEffect(() => {
+    const loadFortuneProfile = async () => {
+      if (!user || !isSupabaseConfigured) return
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single()
+        if (error) {
+          if ((error as any).code === 'PGRST116') {
+            return
+          }
+          const msg = (error.message || '').toLowerCase()
+          if (msg.includes('does not exist')) return
+          throw error
+        }
+        if (data) {
+          setFortuneProfileId(data.id)
+          const loaded = {
+            name: data.name || '',
+            birthDate: data.birth_date || '',
+            birthTime: data.birth_time || '',
+            birthPlace: data.birth_place || '',
+            gender: (data.gender || '') as 'male' | 'female' | '',
+            occupation: data.occupation || '',
+            hobbies: data.hobbies || '',
+            selfDescription: data.self_description || '',
+            personality: data.personality || '',
+            dreams: data.dreams || '',
+            lifeExperience: data.life_experience || ''
+          }
+          updateProfile(loaded)
+          setProfileForm({
+            name: loaded.name,
+            birthDate: loaded.birthDate,
+            birthTime: loaded.birthTime,
+            birthPlace: loaded.birthPlace,
+            gender: loaded.gender
+          })
+        }
+      } catch (e: any) {
+        console.error('Failed to load fortune profile:', e)
+      }
+    }
+    loadFortuneProfile()
+  }, [user, isSupabaseConfigured])
   
   // Profile management functions
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     updateProfile(profileForm)
+    if (user && isSupabaseConfigured) {
+      try {
+        const payload = {
+          user_id: user.id,
+          name: profileForm.name,
+          birth_date: profileForm.birthDate,
+          birth_time: profileForm.birthTime,
+          birth_place: profileForm.birthPlace,
+          gender: profileForm.gender,
+          updated_at: new Date().toISOString()
+        }
+        const { error } = await supabase
+          .from('user_profiles')
+          .upsert(payload, { onConflict: 'user_id' })
+        if (error) throw error
+        networkManager.showNetworkSuccess('占卜资料已保存')
+      } catch (e: any) {
+        console.error('Failed to save fortune profile:', e)
+        networkManager.showNetworkError('保存占卜资料失败')
+      }
+    }
     setIsEditingProfile(false)
   }
   

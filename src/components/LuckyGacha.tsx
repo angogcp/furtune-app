@@ -544,7 +544,7 @@ const LuckyGacha: React.FC = () => {
       const historyItem: HistoryItem = {
         ...result,
         time: Date.now(),
-        note: '连抽'
+        note: t('gacha.noteMulti')
       };
       saveToHistory(historyItem);
     });
@@ -553,7 +553,7 @@ const LuckyGacha: React.FC = () => {
   const handleCopy = async () => {
     if (!currentPrediction) return;
     
-    const text = `【${t('gacha.copyTitle')}】${currentPrediction.text}\n${t('gacha.copyCategory')}: ${t(CATEGORY_LABELS[currentPrediction.cat])} · ${t('gacha.copyRarity')}: ${currentPrediction.rarity.toUpperCase()}`;
+    const text = `【${t('gacha.copyTitle')}】${localizedText(currentPrediction.text)}\n${t('gacha.copyCategory')}: ${t(CATEGORY_LABELS[currentPrediction.cat])} · ${t('gacha.copyRarity')}: ${currentPrediction.rarity.toUpperCase()}`;
     
     try {
       await navigator.clipboard.writeText(text);
@@ -1005,9 +1005,9 @@ const LuckyGacha: React.FC = () => {
                           'from-slate-800/40 to-slate-700/40 border-slate-500/30'
                         }`}>
                           <div className="flex items-start justify-between mb-2">
-                            <div className="font-medium text-base md:text-sm text-white leading-relaxed md:leading-normal flex-1">
-                              {item.text}
-                            </div>
+                          <div className="font-medium text-base md:text-sm text-white leading-relaxed md:leading-normal flex-1">
+                            {localizedText(item.text)}
+                          </div>
                             <div className={`ml-2 px-2 py-1 rounded-full text-xs font-bold shrink-0 ${
                               item.rarity === 'epic' ? 'bg-purple-500 text-white' :
                               item.rarity === 'rare' ? 'bg-yellow-500 text-white' :
@@ -1021,7 +1021,7 @@ const LuckyGacha: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-2 text-sm md:text-xs text-purple-200">
                             <span className="bg-purple-700/50 px-2 py-1 rounded-full text-xs md:text-xs">
-                              {CATEGORY_LABELS[item.cat]}
+                              {t(CATEGORY_LABELS[item.cat])}
                             </span>
                             <span className="opacity-75 text-xs md:text-xs">
                               {new Date(item.time).toLocaleDateString()}

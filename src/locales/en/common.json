@@ -235,14 +235,6 @@
     "reading": "Reading",
     "retry": "Retry",
     "generating": "Generating...",
-    "plain": {
-      "generating": "Generating plain language...",
-      "clickToGenerate": "Click \"Plain language\" to generate a simplified version",
-      "show": "Plain language",
-      "hide": "Hide plain language",
-      "label": "Plain language"
-    }
-    ,
     "generatedAt": "Generated at",
     "jiaobei": {
       "meaningTitle": "Result meaning",
@@ -477,6 +469,11 @@
       "placeholderDate": "Some day"
     },
     "plain": {
+      "generating": "Generating plain language...",
+      "clickToGenerate": "Click \"Plain language\" to generate a simplified version",
+      "show": "Plain language",
+      "hide": "Hide plain language",
+      "label": "Plain language",
       "title": "{{method}} – Plain Language",
       "summaryTitle": "One-sentence summary",
       "pointsTitle": "Key points",

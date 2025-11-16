@@ -235,14 +235,6 @@
     "reading": "解読",
     "retry": "再占い",
     "generating": "生成中...",
-    "plain": {
-      "generating": "わかりやすい表現を生成中...",
-      "clickToGenerate": "「わかりやすい解説」をクリックして簡易版を生成",
-      "show": "わかりやすい解説",
-      "hide": "解説を隠す",
-      "label": "わかりやすい解説"
-    }
-    ,
     "generatedAt": "生成日時",
     "jiaobei": {
       "meaningTitle": "結果の意味"
@@ -479,6 +471,11 @@
       "placeholderDate": "ある日"
     },
     "plain": {
+      "generating": "わかりやすい表現を生成中...",
+      "clickToGenerate": "「わかりやすい解説」をクリックして簡易版を生成",
+      "show": "わかりやすい解説",
+      "hide": "解説を隠す",
+      "label": "わかりやすい解説",
       "title": "{{method}}—わかりやすい解説",
       "summaryTitle": "ひと言まとめ",
       "pointsTitle": "要点",

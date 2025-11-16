@@ -1,4 +1,5 @@
 // LLM API Service for fortune-telling
+import i18n from '../i18n'
 interface LLMMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -29,10 +30,34 @@ class LLMService {
     return !!(this.apiEndpoint && this.apiKey);
   }
 
+  private isJapanese(): boolean {
+    const lng = (i18n?.language || '').toLowerCase()
+    if (lng) return lng.startsWith('ja')
+    return typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().startsWith('ja')
+  }
+
   // Generate system prompt for fortune-telling
   private generateSystemPrompt(method: string): string {
     // Special prompt for personality testing
     if (method === '性格测试') {
+      if (this.isJapanese()) {
+        return `あなたは専門の心理学者・性格アナリストです。多面的な分析で個人の性格特性を深く理解し、心理学理論に基づき直感的洞察も交え、正確で役立つ解説を日本語で提供してください。
+
+方針：
+1. ユーザー情報に基づく多次元分析
+2. MBTIやビッグファイブなどの枠組みを参照
+3. 前向きで建設的な助言
+4. 専門的だが分かりやすい日本語
+5. 600–800字程度
+
+出力構成：
+🧠 核心性格特性
+💪 強み・才能
+🌱 成長ポイント
+🤝 人間関係の傾向
+💼 職業の助言
+🎯 生活のアドバイス`
+      }
       return `你是一位专业的心理学家和性格分析师，擅长通过多维度分析深入了解个人性格特质。你的分析基于心理学理论，结合直觉洞察，为用户提供准确而有用的性格解读。
 
 分析原则：
@@ -67,6 +92,25 @@ class LLMService {
     }
     
     // Standard fortune-telling prompt for other methods
+    if (this.isJapanese()) {
+      return `あなたは専門の${method}の占い師です。日本語で、深い知識と実務経験に基づく分析を提供してください。
+
+要件：
+1. 深い分析：${method}の原理に基づく洞察
+2. 個別性：ユーザー状況に合わせた指針
+3. 前向き：建設的でポジティブ
+4. 専門用語：適切に使用しつつ分かりやすく
+5. 構成明瞭：段落と絵文字で読みやすく
+
+出力構成：
+🌟 現状分析
+✨ 核心指針
+🔮 未来展望
+💎 行動アドバイス（3–4項目）
+🌙 注意点・タイミング
+
+長さ：400–600字`
+    }
     return `你是一位专业的${method}大师，拥有深厚的命理学知识和丰富的实践经验。
 
 请根据用户的问题，提供准确、专业且富有洞察力的${method}分析。你的回答应该：
@@ -91,6 +135,21 @@ class LLMService {
   private generateUserPrompt(question: string, method: string, userProfile?: any): string {
     // Special prompt handling for personality testing
     if (method === '性格测试') {
+      if (this.isJapanese()) {
+        let jp = `詳細な性格分析を日本語でお願いします。\n\n`;
+        if (question && question.trim()) {
+          jp += `知りたい点：${question}\n\n`;
+        }
+        if (userProfile && userProfile.name) {
+          jp += `基本情報：\n`;
+          jp += `- 氏名：${userProfile.name}\n`;
+          if (userProfile.birthDate) jp += `- 生年月日：${userProfile.birthDate}\n`;
+          if (userProfile.gender) jp += `- 性別：${userProfile.gender === 'male' ? '男性' : userProfile.gender === 'female' ? '女性' : userProfile.gender}\n`;
+          jp += `\n`;
+        }
+        jp += `心理学理論に基づき、性格特性と成長の助言を日本語で出力してください。`;
+        return jp;
+      }
       let prompt = `请为我进行详细的性格分析。\n\n`;
       
       // Always include question context
@@ -118,6 +177,20 @@ class LLMService {
     }
     
     // Standard fortune-telling prompt
+    if (this.isJapanese()) {
+      let jp = `${method}による占い分析を日本語でお願いします。\n\n質問：${question}\n\n`;
+      if (userProfile && userProfile.name) {
+        jp += `基本情報：\n`;
+        jp += `- 氏名：${userProfile.name}\n`;
+        if (userProfile.birthDate) jp += `- 生年月日：${userProfile.birthDate}\n`;
+        if (userProfile.birthTime) jp += `- 出生時刻：${userProfile.birthTime}\n`;
+        if (userProfile.birthPlace) jp += `- 出生地：${userProfile.birthPlace}\n`;
+        if (userProfile.gender) jp += `- 性別：${userProfile.gender === 'male' ? '男性' : userProfile.gender === 'female' ? '女性' : userProfile.gender}\n`;
+        jp += `\n`;
+      }
+      jp += `${method}の専門知識に基づき、分かりやすい日本語で詳細な分析と指針を出力してください。`;
+      return jp;
+    }
     let prompt = `请为我进行${method}分析。\n\n我的问题是：${question}\n\n`;
     
     if (userProfile && userProfile.name) {

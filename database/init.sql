@@ -66,6 +66,25 @@ CREATE INDEX IF NOT EXISTS idx_daily_fortunes_user_date ON daily_fortunes(user_i
 CREATE INDEX IF NOT EXISTS idx_wishes_created_at ON wishes(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_divination_history_user ON divination_history(user_id, created_at DESC);
 
+-- Fortune-telling user profile table
+CREATE TABLE IF NOT EXISTS user_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT,
+  birth_date TEXT,
+  birth_time TEXT,
+  birth_place TEXT,
+  gender TEXT CHECK (gender IN ('male','female','')),
+  occupation TEXT,
+  hobbies TEXT,
+  self_description TEXT,
+  personality TEXT,
+  dreams TEXT,
+  life_experience TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- 启用行级安全策略
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sign_ins ENABLE ROW LEVEL SECURITY;
@@ -73,6 +92,7 @@ ALTER TABLE daily_fortunes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wishes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wish_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE divination_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
 -- 用户表策略
 CREATE POLICY "Users can view own profile" ON users
@@ -124,6 +144,16 @@ CREATE POLICY "Users can view own divination history" ON divination_history
 
 CREATE POLICY "Users can insert own divination history" ON divination_history
   FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- user_profiles policies
+CREATE POLICY "Users can view own fortune profile" ON user_profiles
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own fortune profile" ON user_profiles
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own fortune profile" ON user_profiles
+  FOR UPDATE USING (auth.uid() = user_id);
 
 -- 创建触发器函数：自动创建用户资料
 CREATE OR REPLACE FUNCTION public.handle_new_user()

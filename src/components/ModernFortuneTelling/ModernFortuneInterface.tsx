@@ -1757,7 +1757,7 @@ ${t('modern.plain.keyPointsIntro')}`;
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Star className="w-5 h-5 inline mr-2" />
-            选择咨询类型 <span className="text-red-400">*</span>
+            {t('modern.bazi.type.title', { defaultValue: '相談タイプ' })} <span className="text-red-400">*</span>
           </label>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1793,7 +1793,7 @@ ${t('modern.plain.keyPointsIntro')}`;
             <div className="mt-4 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg">
               <p className="text-blue-300 text-sm text-center flex items-center justify-center">
                 <Star className="w-4 h-4 mr-2" />
-                请选择您想要咨询的类型
+                {t('modern.validation.selectType', { defaultValue: '相談タイプを選択してください' })}
               </p>
             </div>
           )}
@@ -1805,7 +1805,7 @@ ${t('modern.plain.keyPointsIntro')}`;
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Gem className="w-5 h-5 inline mr-2" />
-            选择咨询类型 <span className="text-red-400">*</span>
+            {t('modern.bazi.type.title', { defaultValue: '相談タイプ' })} <span className="text-red-400">*</span>
           </label>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1841,7 +1841,7 @@ ${t('modern.plain.keyPointsIntro')}`;
             <div className="mt-4 p-3 bg-amber-900/20 border border-amber-400/30 rounded-lg">
               <p className="text-amber-300 text-sm text-center flex items-center justify-center">
                 <Gem className="w-4 h-4 mr-2" />
-                请选择您想要咨询的类型
+                {t('modern.validation.selectType', { defaultValue: '相談タイプを選択してください' })}
               </p>
             </div>
           )}
@@ -1853,7 +1853,7 @@ ${t('modern.plain.keyPointsIntro')}`;
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Hash className="w-5 h-5 inline mr-2" />
-            选择咨询类型 <span className="text-red-400">*</span>
+            {t('modern.bazi.type.title', { defaultValue: '相談タイプ' })} <span className="text-red-400">*</span>
           </label>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1889,7 +1889,7 @@ ${t('modern.plain.keyPointsIntro')}`;
             <div className="mt-4 p-3 bg-green-900/20 border border-green-400/30 rounded-lg">
               <p className="text-green-300 text-sm text-center flex items-center justify-center">
                 <Hash className="w-4 h-4 mr-2" />
-                请选择您想要咨询的类型
+                {t('modern.validation.selectType', { defaultValue: '相談タイプを選択してください' })}
               </p>
             </div>
           )}
@@ -1901,7 +1901,7 @@ ${t('modern.plain.keyPointsIntro')}`;
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Star className="w-5 h-5 inline mr-2" />
-            选择咨询类型 <span className="text-red-400">*</span>
+            {t('modern.bazi.type.title', { defaultValue: '相談タイプ' })} <span className="text-red-400">*</span>
           </label>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1937,7 +1937,7 @@ ${t('modern.plain.keyPointsIntro')}`;
             <div className="mt-4 p-3 bg-purple-900/20 border border-purple-400/30 rounded-lg">
               <p className="text-purple-300 text-sm text-center flex items-center justify-center">
                 <Star className="w-4 h-4 mr-2" />
-                请选择您想要咨询的类型
+                {t('modern.validation.selectType')}
               </p>
             </div>
           )}
@@ -1948,13 +1948,13 @@ ${t('modern.plain.keyPointsIntro')}`;
       <div className="mb-8">
         <label className="block text-lg font-semibold text-white mb-4">
           <Wand2 className="w-5 h-5 inline mr-2" />
-          {t('modern.form.questionTitle')}
+          {t('modern.form.questionTitle', { defaultValue: 'ご質問' })}
         </label>
         <div className="relative">
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder={t('modern.form.questionPlaceholder')}
+            placeholder={t('modern.form.questionPlaceholder', { defaultValue: '質問を記述（健康、恋愛、仕事、財運、学業、または詳細な状況など）' })}
             className="w-full h-32 p-4 bg-purple-900/50 border border-purple-400/30 rounded-xl text-white placeholder-purple-400 focus:border-yellow-400 focus:outline-none resize-none"
           />
           <div className="absolute bottom-3 right-3 text-purple-400 text-sm">
@@ -1967,7 +1967,7 @@ ${t('modern.plain.keyPointsIntro')}`;
           <div className="mt-3 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg">
             <p className="text-blue-300 text-sm flex items-center">
               <Wand2 className="w-4 h-4 mr-2" />
-              {t('modern.form.questionExamples')}
+              {t('modern.form.questionExamples', { defaultValue: '例："健康"、"恋愛"、"仕事"' })}
             </p>
           </div>
         )}
@@ -1987,7 +1987,7 @@ ${t('modern.plain.keyPointsIntro')}`;
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Heart className="w-5 h-5 inline mr-2" />
-            选择咨询类型 <span className="text-red-400">*</span>
+            {t('modern.bazi.type.title', { defaultValue: '相談タイプ' })} <span className="text-red-400">*</span>
           </label>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -2023,7 +2023,7 @@ ${t('modern.plain.keyPointsIntro')}`;
             <div className="mt-4 p-3 bg-purple-900/20 border border-purple-400/30 rounded-lg">
               <p className="text-purple-300 text-sm text-center flex items-center justify-center">
                 <Heart className="w-4 h-4 mr-2" />
-                请选择您想要咨询的类型
+                {t('modern.validation.selectType', { defaultValue: '相談タイプを選択してください' })}
               </p>
             </div>
           )}
@@ -2035,13 +2035,13 @@ ${t('modern.plain.keyPointsIntro')}`;
         <div className="mb-8">
           <label className="block text-lg font-semibold text-white mb-4">
             <Star className="w-5 h-5 inline mr-2" />
-            选择塔罗牌 <span className="text-red-400">*</span>
-            <span className="text-sm text-purple-300 ml-2">（请选择1-10张牌）</span>
+            {t('modern.validation.selectCards', { defaultValue: '少なくとも1枚のタロットを選択してください' })} <span className="text-red-400">*</span>
+            <span className="text-sm text-purple-300 ml-2">（1〜10枚まで選択可能）</span>
           </label>
           
           <div className="mb-4">
             <div className="text-center text-purple-300 text-sm mb-4">
-              已选择 {selectedCards.length} 张牌 {selectedCards.length > 0 && `：${selectedCards.join('、')}`}
+              {t('modern.cards.selectedLabel', { defaultValue: '選択枚数' })}: {selectedCards.length} {selectedCards.length > 0 && `：${selectedCards.join('、')}`}
             </div>
           </div>
           
@@ -2469,7 +2469,7 @@ ${t('modern.plain.keyPointsIntro')}`;
             <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-3">
               <p className="text-blue-300 text-sm text-center flex items-center justify-center">
                 <Star className="w-4 h-4 mr-2" />
-                请选择咨询类型
+                {t('modern.validation.selectType', { defaultValue: '相談タイプを選択してください' })}
               </p>
             </div>
           )}
